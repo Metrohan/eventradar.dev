@@ -28,11 +28,34 @@ Bu proje, çeşitli Türk teknoloji ve kariyer platformlarından güncel etkinli
 * **uWSGI:** Flask uygulamasını Nginx ile entegre etmek için kullanılan bir uygulama sunucusu arayüzü.
 * **HTML/CSS/JavaScript:** Web arayüzünün frontend tasarımı ve etkileşimi için.
 
+## Public release, Güvenlik ve Etik
+
+Bu depo açık kaynak olarak paylaşıma hazırlanmıştır. Yayınlanmadan önce alınmış bazı önlemler ve önemli notlar:
+
+- `.gitignore` dosyası eklendi; lütfen `*.env`, `venv/`, `instance/` gibi yerel/hassas dosyaları hiçbir zaman commit etmeyin.
+- Ortam/konfigürasyon değerleri için `.env.example` dosyasını kullanın. Yerel çalışma için kopyalayın ve düzenleyin:
+
+```bash
+cp .env.example .env
+# Windows (PowerShell)
+Copy-Item .env.example .env
+```
+
+- Scraper'lar (web kazıyıcılar) etik ve yasal sorumluluk gerektirir. Aşağıdaki kurallara uyun:
+    - Hedef sitenin robots.txt ve Hizmet Şartları'na uyun.
+    - Aşırı istek göndermekten kaçının; uygun beklemeler ve rate-limit uygulayın.
+    - Kişisel verileri (PII) toplamaktan veya depolamaktan kaçının.
+    - Site sahibi ile iletişime geçip izin almak gerekiyorsa bunu yapın.
+
+- Eğer `.env` veya başka hassas veriler geçmiş commit'lerde yer aldıysa, bu gizlilik riskini azaltmak için anahtarları hemen değiştirin (rotate). Eğer isterseniz geçmiş commit'lerden gizli dosyaları silmek için `git filter-repo`/BFG ile tarihçe temizliği yapabilirim (dikkat: destructive / koordinasyon gerekir).
+
+- Güvenlik ihbarları için `SECURITY.md` dosyasına bakın.
+
 ## 🚀 Kurulum ve Çalıştırma
 
 Projeyi yerel makinenizde kurmak ve çalıştırmak için veya üretim ortamında dağıtmak için aşağıdaki adımları izleyin.
 
-**Önemli Not:** Bu depoda, platformların Hizmet Şartları ve etik nedenlerle web scraper kodları (`scrapers/` dizini) bulunmamaktadır. Eğer scraper'ları çalıştırmak istiyorsanız, bu modülleri kendi özel deponuzdan veya yerel olarak projenize eklemeniz gerekmektedir. 
+**Önemli Not:** Scraper'lar bu repoda yer alıyor olabilir; yine de yukarıdaki etik kurallarını uygulayın ve `.env` içinde API anahtarları/sifreler gibi bilgileri paylaşmayın.
 
 ### Önkoşullar
 
