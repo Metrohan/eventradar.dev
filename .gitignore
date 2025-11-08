@@ -1,0 +1,69 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+
+# Virtual environments
+env/
+venv/
+.venv/
+pip-wheel-metadata/
+
+# Environment files (DO NOT commit secrets)
+.env
+.env.*
+.flaskenv
+
+# Databases / local instances
+*.db
+*.sqlite3
+instance/
+backend/instance/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and output
+*.log
+logs/
+output/
+*.json
+
+# Webdrivers and build artifacts
+chromedriver/
+geckodriver/
+msedgedriver/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+frontend/dist/
+frontend/node_modules/
+
+# Caches
+.cache/
+.parcel-cache/
+.pytest_cache/
+.mypy_cache/
+
+# Certificates, keys
+*.pem
+*.key
+*.crt
+
+# Misc
+scraper_output.log
+
+# Example env files are allowed
+!.env.example
