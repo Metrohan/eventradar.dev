@@ -6,14 +6,14 @@ Bu proje, açık kaynak topluluğunun gücüne inanır ve her türlü katkıyı 
 
 Aşağıdaki yollarla projemize katkıda bulunabilirsiniz:
 
-1.  **Hata Raporlama:** Bir hata (bug) bulursanız, lütfen bir [GitHub Issue](https://github.com/Metrohan/TechEventRadar/issues) açın. Hatayı mümkün olduğunca detaylı açıklayın:
+1.  **Hata Raporlama:** Bir hata (bug) bulursanız, lütfen bir [GitHub Issue](https://github.com/Metrohan/eventradar.dev/issues) açın. Hatayı mümkün olduğunca detaylı açıklayın:
     * Hatayı nasıl tekrar oluşturabileceğinizi (adım adım).
     * Beklenen davranışın ne olduğunu.
     * Gerçekleşen davranışın ne olduğunu.
     * Kullandığınız ortam (işletim sistemi, Python sürümü, bağımlılık sürümleri).
     * Varsa ekran görüntüleri veya hata logları.
 
-2.  **Özellik Önerileri:** Yeni bir özellik veya iyileştirme fikriniz varsa, lütfen yine bir [GitHub Issue](https://github.com/Metrohan/TechEventRadar/issues) açın. Fikrinizi açıklayın ve neden faydalı olacağını belirtin.
+2.  **Özellik Önerileri:** Yeni bir özellik veya iyileştirme fikriniz varsa, lütfen yine bir [GitHub Issue](https://github.com/Metrohan/eventradar.dev/issues) açın. Fikrinizi açıklayın ve neden faydalı olacağını belirtin.
 
 3.  **Kod Katkısı (Pull Request):** Mevcut hataları düzeltmek veya yeni özellikler eklemek için kod yazmak isterseniz aşağıdaki adımları izleyin.
 
@@ -28,13 +28,26 @@ Kod ile katkıda bulunmak isterseniz, lütfen bu adımları takip edin:
 1.  **Repoyu Fork edin:** Projenin GitHub reposunu kendi hesabınıza fork edin.
 2.  **Repoyu Klonlayın:** Fork ettiğiniz repoyu yerel makinenize klonlayın.
     ```bash
-    git clone https://github.com/Metrohan/TechEventRadar.git
-    cd TechEventRadar
+    git clone https://github.com/Metrohan/eventradar.dev.git
+    cd eventradar.dev
     ```
-3.  **Bağımlılıkları Yükleyin:**
+3. **Geliştirme Ortamını Başlatma (Docker)**
+
+   * Proje, tutarlı bir geliştirme ortamı sağlamak için Docker ve Docker Compose kullanır. Lütfen yerel pip install yapmak yerine bu adımları izleyin.
+
+   * Ortam Değişkenlerini Ayarlayın: .env.example dosyasını kopyalayarak kendi .env dosyanızı oluşturun.
     ```bash
-    pip install -r requirements.txt
+      cp .env.example .env
+      # Windows (PowerShell)
+      Copy-Item .env.example .env
     ```
+   * (Gerekirse .env dosyasını düzenleyin, ancak varsayılan ayarlar genellikle geliştirme için yeterlidir.)
+   
+   * Docker Konteynerlerini Başlatın: Bu komut, Flask uygulaması ve PostgreSQL veritabanı da dahil olmak üzere gerekli tüm servisleri docker-compose.yml dosyasına göre ayağa kaldıracaktır.
+   ```bash
+    docker-compose up --build -d
+   ```
+   
 4.  **Yeni Bir Branch Oluşturun:** Yaptığınız değişikliklere özel, anlamlı bir isimle yeni bir branch oluşturun.
     * Hata düzeltmeleri için: `fix/hata-adi` (örn: `fix/favicon-import-error`)
     * Yeni özellikler için: `feat/ozellik-adi` (örn: `feat/search-bar`)
