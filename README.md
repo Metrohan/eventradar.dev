@@ -45,9 +45,6 @@ Copy-Item .env.example .env
     - Hedef sitenin robots.txt ve Hizmet Şartları'na uyun.
     - Aşırı istek göndermekten kaçının; uygun beklemeler ve rate-limit uygulayın.
     - Kişisel verileri (PII) toplamaktan veya depolamaktan kaçının.
-    - Site sahibi ile iletişime geçip izin almak gerekiyorsa bunu yapın.
-
-- Eğer `.env` veya başka hassas veriler geçmiş commit'lerde yer aldıysa, bu gizlilik riskini azaltmak için anahtarları hemen değiştirin (rotate). Eğer isterseniz geçmiş commit'lerden gizli dosyaları silmek için `git filter-repo`/BFG ile tarihçe temizliği yapabilirim (dikkat: destructive / koordinasyon gerekir).
 
 - Güvenlik ihbarları için `SECURITY.md` dosyasına bakın.
 
@@ -67,8 +64,8 @@ Projeyi yerel makinenizde kurmak ve çalıştırmak için veya üretim ortamınd
 
 1.  **Repoyu Klonlayın:**
     ```bash
-    git clone https://github.com/Metrohan/TechEventRadar.git
-    cd TechEventRadar
+    git clone https://github.com/Metrohan/eventradar.dev.git
+    cd eventradar.dev
     ```
 
 2.  **Docker Ortamını Başlatın (Uygulama ve PostgreSQL):**
@@ -115,7 +112,7 @@ Projeyi yerel makinenizde kurmak ve çalıştırmak için veya üretim ortamınd
         include /etc/letsencrypt/options-ssl-nginx.conf;
         ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-        root /home/username/TechEventRadar/; # Flask projenin ANA dizini (app.py, static, templates'ın olduğu dizin)
+        root /home/username/TechEventRadar/;
 
         location / {
             try_files $uri @app;
