@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import time
+import re
 import os
 
 def find_chromedriver():
@@ -87,7 +88,30 @@ def scrape_youthall_events():
                 
                 # Açıklama - events__content__details class'ından al
                 desc_elem = card.find('div', class_='events__content__details')
-                description = desc_elem.text.strip() if desc_elem else "Etkinlik açıklaması mevcut değil."
+                raw_details = desc_elem.text.strip() if desc_elem else ""
+                
+                # Clean whitespace for parsing
+                clean_details = " ".join(raw_details.split())
+                
+                # Default values
+                date_str = date_str or "Tarih belirtilmemiş"
+                location = "Online"
+                
+                # Parse Date and Location from details
+                # Format: "12 Şubat Perşembe, 12:00 Location String"
+                match = re.search(r'^(\d{1,2}\s+\w+\s+\w+),\s*(\d{1,2}:\d{2})\s*(.*)$', clean_details)
+                if match:
+                    parsed_date = match.group(1)
+                    parsed_time = match.group(2)
+                    parsed_loc = match.group(3).strip()
+                    
+                    date_str = f"{parsed_date}, {parsed_time}"
+                    location = parsed_loc if parsed_loc else "Online"
+                elif "Online" in clean_details:
+                     # Fallback if regex doesn't match but says Online
+                     location = "Online"
+                
+                description = clean_details if clean_details else "Etkinlik açıklaması mevcut değil."
                 
                 # Görsel - img tag'inden al
                 img_elem = card.find('img')
@@ -102,7 +126,7 @@ def scrape_youthall_events():
                     'description': description,
                     'image_url': image_url,
                     'source': 'Youthall',
-                    'location': 'Online',  # Youthall genelde online etkinlikler
+                    'location': location, 
                     'is_active': True
                 })
                 

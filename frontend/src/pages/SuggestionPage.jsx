@@ -26,18 +26,38 @@ const SuggestionPage = () => {
     <div className="container py-5">
       <div className="row justify-content-center">
         <div className="col-md-8 col-lg-6">
-          <div className="card shadow">
-            <div className="card-header bg-success text-white">
-              <h3 className="card-title mb-0">
+          <div className="card shadow border-0">
+            <div className="card-header bg-success border-0 py-3">
+              <h3 className="card-title mb-0" style={{ color: 'white' }}>
                 <i className="fas fa-lightbulb me-2"></i>
                 Öneri / Şikayet
               </h3>
             </div>
-            <div className="card-body">
+            <div className="card-body p-4">
               <p className="text-muted mb-4">
-                TechEventRadar'ı daha iyi hale getirmek için önerilerinizi ve şikayetlerinizi 
+                TechEventRadar'ı daha iyi hale getirmek için önerilerinizi ve şikayetlerinizi
                 bizimle paylaşın. Geri bildirimleriniz bizim için çok değerli!
               </p>
+
+              {/* Event Request Promo */}
+              <div className="alert alert-info border-0 shadow-sm mb-4">
+                <div className="d-flex align-items-center">
+                  <div className="me-3">
+                    <i className="fas fa-calendar-plus fa-2x text-primary"></i>
+                  </div>
+                  <div className="flex-grow-1">
+                    <h6 className="fw-bold mb-1">Yeni Bir Etkinlik mi Eklemek İstiyorsunuz?</h6>
+                    <p className="mb-0 small text-muted">
+                      Düzenlediğiniz veya bildiğiniz bir etkinliği takvimimize eklemek için talep oluşturabilirsiniz.
+                    </p>
+                  </div>
+                  <div>
+                    <a href="/etkinlik-talep" className="btn btn-sm btn-info text-white fw-bold text-nowrap">
+                      Etkinlik Ekle
+                    </a>
+                  </div>
+                </div>
+              </div>
 
               <form onSubmit={handleSubmit(onSubmit)}>
                 {/* Request Type */}

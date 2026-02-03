@@ -22,7 +22,7 @@ const EventCard = ({ event }) => {
   const status = getStatusInfo(event.is_active)
 
   return (
-    <div className="event-card">
+    <div className="event-card h-100">
       {/* Event image */}
       <div className="event-image-container">
         <img
@@ -36,61 +36,63 @@ const EventCard = ({ event }) => {
       </div>
 
       {/* Event content */}
-      <div className="event-content">
+      <div className="event-content d-flex flex-column h-100">
         <h3 className="event-title">{event.title}</h3>
-        
+
         {event.description && (
-          <p className="event-description">
-            {event.description.length > 150 
-              ? `${event.description.substring(0, 150)}...` 
+          <p className="event-description flex-grow-0">
+            {event.description.length > 200
+              ? `${event.description.substring(0, 200)}...`
               : event.description
             }
           </p>
         )}
 
-        {/* Event metadata */}
-        <div className="event-meta">
-          <div className="event-meta-item">
-            <i className="fas fa-calendar-alt"></i>
-            <span>{formatDate(event.date)}</span>
-          </div>
-          
-          {event.location && (
+        <div className="mt-auto">
+          {/* Event metadata */}
+          <div className="event-meta">
             <div className="event-meta-item">
-              <i className="fas fa-map-marker-alt"></i>
-              <span>{event.location}</span>
+              <i className="fas fa-calendar-alt"></i>
+              <span>{formatDate(event.date)}</span>
             </div>
-          )}
-          
-          <div className="event-meta-item">
-            <i className="fas fa-tag"></i>
-            <span>{event.source}</span>
+
+            {event.location && (
+              <div className="event-meta-item">
+                <i className="fas fa-map-marker-alt"></i>
+                <span>{event.location}</span>
+              </div>
+            )}
+
+            <div className="event-meta-item">
+              <i className="fas fa-tag"></i>
+              <span>{event.source}</span>
+            </div>
           </div>
-        </div>
 
-        {/* Event status */}
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <span className={`event-status ${status.className}`}>
-            {status.text}
-          </span>
-          
-          <small className="text-muted">
-            <i className="fas fa-clock me-1"></i>
-            {formatDate(event.scraped_at)}
-          </small>
-        </div>
+          {/* Event status */}
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <span className={`event-status ${status.className}`}>
+              {status.text}
+            </span>
 
-        {/* Action buttons */}
-        <div className="d-flex gap-2">
-          <a
-            href={event.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary btn-sm flex-fill"
-          >
-            <i className="fas fa-external-link-alt me-1"></i>
-            Etkinlik Sayfası
-          </a>
+            <small className="text-muted">
+              <i className="fas fa-clock me-1"></i>
+              {formatDate(event.scraped_at)}
+            </small>
+          </div>
+
+          {/* Action buttons */}
+          <div className="d-flex gap-2">
+            <a
+              href={event.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary btn-sm flex-fill"
+            >
+              <i className="fas fa-external-link-alt me-1"></i>
+              Etkinlik Sayfası
+            </a>
+          </div>
         </div>
       </div>
     </div>

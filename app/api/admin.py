@@ -12,6 +12,10 @@ from ..schemas.announcement import AnnouncementCreate, AnnouncementResponse, Ann
 from ..schemas.suggestion import SuggestionResponse, SuggestionListResponse
 from ..schemas.event_request import EventRequestResponse, EventRequestListResponse
 from ..schemas.auth import LoginRequest, LoginResponse
+from ..schemas.scraper_log import ScraperLogResponse
+from ..services.scraper_service import ScraperService
+from ..schemas.subscriber import SubscriberResponse, BroadcastRequest
+from ..services.notification_service import NotificationService
 from ..core.auth import get_current_admin
 
 router = APIRouter()
@@ -254,4 +258,77 @@ async def delete_event_request(
         return {"message": "Event request deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting event request: {str(e)}")
+
+# Scraper Control Center endpoints
+@router.get("/scrapers/logs", response_model=List[ScraperLogResponse])
+async def get_scraper_logs(
+    limit: int = 50,
+    db: Session = Depends(get_db),
+    current_admin: str = Depends(get_current_admin)
+):
+    """Get scraper execution logs"""
+    print(f"DEBUG: get_scraper_logs called by {current_admin}")
+    service = ScraperService(db)
+    return service.get_logs(limit)
+
+@router.get("/scrapers/status", response_model=List[ScraperLogResponse])
+async def get_scraper_status(
+    db: Session = Depends(get_db),
+    current_admin: str = Depends(get_current_admin)
+):
+    """Get latest status for each scraper source"""
+    service = ScraperService(db)
+    return service.get_latest_status()
+
+@router.post("/scrapers/trigger")
+async def trigger_scraper(
+    source: str = "all",
+    db: Session = Depends(get_db),
+    current_admin: str = Depends(get_current_admin)
+):
+    """Trigger a scraper manually"""
+    service = ScraperService(db)
+    return service.trigger_scraper(source)
+
+# Notification Management endpoints
+@router.get("/notifications/stats")
+async def get_notification_stats(
+    db: Session = Depends(get_db),
+    current_admin: str = Depends(get_current_admin)
+):
+    """Get subscriber statistics"""
+    service = NotificationService(db)
+    return service.get_stats()
+
+@router.get("/notifications/subscribers", response_model=List[SubscriberResponse])
+async def get_subscribers(
+    db: Session = Depends(get_db),
+    current_admin: str = Depends(get_current_admin)
+):
+    """Get all subscribers"""
+    service = NotificationService(db)
+    return service.get_subscribers()
+
+@router.post("/notifications/broadcast")
+async def broadcast_message(
+    request: BroadcastRequest,
+    db: Session = Depends(get_db),
+    current_admin: str = Depends(get_current_admin)
+):
+    """Broadcast a message"""
+    service = NotificationService(db)
+    return service.broadcast_message(request)
+
+# Analytics endpoints
+from ..services.analytics_service import AnalyticsService
+
+@router.get("/analytics/traffic")
+async def get_traffic_stats(
+    days: int = 30,
+    db: Session = Depends(get_db),
+    current_admin: str = Depends(get_current_admin)
+):
+    """Get site traffic statistics"""
+    service = AnalyticsService(db)
+    return service.get_stats(days)
 

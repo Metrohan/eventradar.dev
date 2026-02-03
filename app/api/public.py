@@ -4,8 +4,12 @@ from typing import List
 from ..core.database import get_db
 from ..services.event_service import EventService
 from ..services.announcement_service import AnnouncementService
+from ..services.suggestion_service import SuggestionService
+from ..services.event_request_service import EventRequestService
 from ..schemas.event import EventResponse, EventListResponse
 from ..schemas.announcement import AnnouncementResponse, AnnouncementListResponse
+from ..schemas.suggestion import SuggestionCreate, SuggestionResponse
+from ..schemas.event_request import EventRequestCreate, EventRequestResponse
 
 router = APIRouter()
 
@@ -67,5 +71,32 @@ async def get_latest_announcement(db: Session = Depends(get_db)):
         return announcement
     except Exception as e:
         return None  # Silently return null instead of 404
+
+
+@router.post("/suggestions", response_model=SuggestionResponse)
+async def submit_suggestion(suggestion: SuggestionCreate, db: Session = Depends(get_db)):
+    """
+    Public endpoint to submit a suggestion/complaint (converted from /suggestions/oneri_sikayet)
+    """
+    suggestion_service = SuggestionService(db)
+    suggestion_service = SuggestionService(db)
+    try:
+        new = suggestion_service.create_suggestion(suggestion)
+        return new
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating suggestion: {str(e)}")
+
+
+@router.post("/event-requests", response_model=EventRequestResponse)
+async def submit_event_request(request: EventRequestCreate, db: Session = Depends(get_db)):
+    """
+    Public endpoint to submit an event request (converted from /requests/etkinlik-talep)
+    """
+    event_request_service = EventRequestService(db)
+    try:
+        new = event_request_service.create_event_request(request)
+        return new
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating event request: {str(e)}")
 
 

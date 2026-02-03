@@ -38,8 +38,21 @@ const EventForm = ({ event, onClose, onSuccess }) => {
   }
 
   return (
-    <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
-      <div className="modal-dialog modal-lg">
+    <div
+      className="modal fade show"
+      style={{
+        display: 'block',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 99999,
+        overflow: 'auto'
+      }}
+      tabIndex="-1"
+    >
+      <div className="modal-dialog modal-lg" style={{ pointerEvents: 'auto', position: 'relative', zIndex: 100000 }}>
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">
@@ -190,7 +203,10 @@ const EventForm = ({ event, onClose, onSuccess }) => {
           </div>
         </div>
       </div>
-      <div className="modal-backdrop fade show"></div>
+      <div
+        className="modal-backdrop fade show"
+        style={{ zIndex: 99998, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'auto' }}
+      ></div>
     </div>
   )
 }

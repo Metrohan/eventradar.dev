@@ -15,6 +15,7 @@ logging.basicConfig(
 )
 
 from app.services.scraper_service import process_scraped_events, deactivate_past_events
+
 from app.scrapers import (
     scrape_techcareer_events,
     scrape_coderspace_events,
@@ -22,6 +23,9 @@ from app.scrapers import (
     scrape_kodluyoruz_events,
     scrape_youthall_events
 )
+from app.scrapers.akbank_scraper import scrape_akbank_events
+from app.scrapers.pupilica_scraper import scrape_pupilica_events
+
 
 SCRAPERS = {
     "TechCareer.net": scrape_techcareer_events,
@@ -29,6 +33,8 @@ SCRAPERS = {
     "Anbean": scrape_anbean_events,
     "Kodluyoruz": scrape_kodluyoruz_events,
     "Youthall": scrape_youthall_events,
+    "Akbank Gençlik Akademisi": scrape_akbank_events,
+    "Pupilica": scrape_pupilica_events,
 }
 
 def scrape_source(scraper_func, source_name):
@@ -57,13 +63,19 @@ def run_scraper_and_save_to_db():
     all_scraped_events = []
     
     # Selenium scraperları sırayla çalıştır (ChromeDriver çakışması önlemek için)
+
     # Önce static scraperlar (daha hızlı)
-    static_scrapers = [("Kodluyoruz", scrape_kodluyoruz_events), ("Anbean", scrape_anbean_events)]
+    static_scrapers = [
+        ("Kodluyoruz", scrape_kodluyoruz_events),
+        ("Anbean", scrape_anbean_events),
+        ("Akbank Gençlik Akademisi", scrape_akbank_events),
+        ("Pupilica", scrape_pupilica_events)
+    ]
     for name, func in static_scrapers:
         events = scrape_source(func, name)
         if events:
             all_scraped_events.extend(events)
-    
+
     # Sonra Selenium scraperlar sırayla
     selenium_scrapers = [
         ("TechCareer.net", scrape_techcareer_events),

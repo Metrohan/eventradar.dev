@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useAuth } from '../contexts/AuthContext'
 import { adminAPI } from '../services/api'
@@ -22,25 +23,25 @@ const AdminDashboard = () => {
   }
 
   // Fetch dashboard data (converted from Flask dashboard route)
-  const { 
-    data: eventsData, 
-    isLoading: eventsLoading, 
-    error: eventsError 
+  const {
+    data: eventsData,
+    isLoading: eventsLoading,
+    error: eventsError
   } = useQuery('admin-events', () => adminAPI.getEvents())
 
-  const { 
-    data: announcementsData, 
-    isLoading: announcementsLoading 
+  const {
+    data: announcementsData,
+    isLoading: announcementsLoading
   } = useQuery('admin-announcements', () => adminAPI.getAnnouncements())
 
-  const { 
-    data: suggestionsData, 
-    isLoading: suggestionsLoading 
+  const {
+    data: suggestionsData,
+    isLoading: suggestionsLoading
   } = useQuery('admin-suggestions', () => adminAPI.getSuggestions())
 
-  const { 
-    data: requestsData, 
-    isLoading: requestsLoading 
+  const {
+    data: requestsData,
+    isLoading: requestsLoading
   } = useQuery('admin-requests', () => adminAPI.getEventRequests())
 
   if (eventsLoading || announcementsLoading || suggestionsLoading || requestsLoading) {
@@ -85,6 +86,18 @@ const AdminDashboard = () => {
               <i className="fas fa-clock me-1"></i>
               Son Güncelleme: {new Date().toLocaleString('tr-TR')}
             </div>
+            <Link to="/admin/scrapers" className="btn btn-outline-light ms-3">
+              <i className="fas fa-robot me-2"></i>
+              Scraper Merkezi
+            </Link>
+            <Link to="/admin/notifications" className="btn btn-outline-warning ms-3">
+              <i className="fas fa-bullhorn me-2"></i>
+              Bildirimler
+            </Link>
+            <Link to="/admin/analytics" className="btn btn-outline-info ms-3">
+              <i className="fas fa-chart-line me-2"></i>
+              Trafik
+            </Link>
           </div>
         </div>
       </div>
@@ -104,7 +117,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="col-md-3 mb-3">
           <div className="card bg-success text-white">
             <div className="card-body">
@@ -118,7 +131,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="col-md-3 mb-3">
           <div className="card bg-warning text-white">
             <div className="card-body">
@@ -132,7 +145,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="col-md-3 mb-3">
           <div className="card bg-info text-white">
             <div className="card-body">

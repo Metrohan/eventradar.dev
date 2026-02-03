@@ -1,52 +1,59 @@
 import React from 'react'
+import SupportModal from './SupportModal'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import ThemeToggle from './ThemeToggle'
 
 const Header = () => {
   const { isAuthenticated, logout } = useAuth()
+  const [showSupport, setShowSupport] = React.useState(false)
+
 
   return (
     <header className="main-header">
       <div className="container">
         <div className="d-flex justify-content-between align-items-center">
-            {/* Left side - Logo and Support Button */}
-            <div className="header-left-buttons d-flex align-items-center gap-3">
-              <Link to="/" className="logo-link">
-                <img 
-                  src="/techeventradar_logo.png" 
-                  alt="TechEventRadar Logo" 
-                  className="header-logo"
-                />
-              </Link>
-            <a 
-              href="https://www.buymeacoffee.com/metehangnn" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="support-btn-link bmc-custom-button"
+          {/* Left side - Logo and Support Button */}
+          <div className="header-left-buttons d-flex align-items-center gap-3">
+            <Link to="/" className="logo-link">
+              <img
+                src="/techeventradar_logo.png"
+                alt="TechEventRadar Logo"
+                className="header-logo"
+              />
+            </Link>
+            <button
+              onClick={() => setShowSupport(true)}
+              className="support-btn-link bmc-custom-button border-0 cursor-pointer"
             >
               <img src="/coffee.svg" className="bmc-icon" alt="Coffee" />
               Destek Olmak İçin
-            </a>
+            </button>
+            <SupportModal show={showSupport} handleClose={() => setShowSupport(false)} />
           </div>
 
           {/* Right buttons */}
           <div className="header-right-buttons">
-            <Link to="/etkinlik-talep" className="button-link">
-              Etkinlik Ekleme Talebi
+            <Link to="/" className="button-link">
+              Anasayfa
+            </Link>
+            <Link to="/egitim-kaynaklari" className="button-link">
+              Ücretsiz Eğitimler
             </Link>
             <Link to="/oneri-sikayet" className="button-link">
               Öneri/Şikayet
             </Link>
-            <a 
-              href="https://github.com/Metrohan/TechEventRadar" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://github.com/Metrohan/eventradar.dev"
+              target="_blank"
+              rel="noopener noreferrer"
               className="button-link github-button"
             >
               <img src="/github-mark-white.png" alt="GitHub Logo" className="github-icon" />
               GitHub
             </a>
             {/* Admin login sadece direkt URL ile erişilebilir (/admin/login) */}
+            <ThemeToggle />
           </div>
         </div>
       </div>

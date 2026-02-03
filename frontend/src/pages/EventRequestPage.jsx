@@ -28,16 +28,16 @@ const EventRequestPage = () => {
     <div className="container py-5">
       <div className="row justify-content-center">
         <div className="col-md-8 col-lg-6">
-          <div className="card shadow">
-            <div className="card-header bg-primary text-white">
-              <h3 className="card-title mb-0">
+          <div className="card shadow border-0">
+            <div className="card-header bg-primary border-0 py-3">
+              <h3 className="card-title mb-0" style={{ color: 'white' }}>
                 <i className="fas fa-plus-circle me-2"></i>
                 Etkinlik Ekleme Talebi
               </h3>
             </div>
-            <div className="card-body">
+            <div className="card-body p-4">
               <p className="text-muted mb-4">
-                Kaçırdığımız bir teknoloji etkinliği mi var? Aşağıdaki formu doldurarak 
+                Kaçırdığımız bir teknoloji etkinliği mi var? Aşağıdaki formu doldurarak
                 bize bildirin. Talebinizi değerlendirip en kısa sürede ekleyeceğiz.
               </p>
 

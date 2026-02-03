@@ -38,71 +38,95 @@ api.interceptors.response.use(
 // Public API endpoints (converted from Flask routes)
 export const publicAPI = {
   // Get all events (converted from /events)
-  getEvents: (activeOnly = true) => 
+  getEvents: (activeOnly = true) =>
     api.get(`/events?active_only=${activeOnly}`),
-  
+
   // Get all announcements (converted from /api/announcements)
-  getAnnouncements: () => 
+  getAnnouncements: () =>
     api.get('/announcements'),
-  
+
   // Get latest announcement
-  getLatestAnnouncement: () => 
+  getLatestAnnouncement: () =>
     api.get('/announcements/latest'),
 }
 
 // Admin API endpoints (converted from Flask admin routes)
 export const adminAPI = {
   // Authentication (converted from /admin/admin)
-  login: (credentials) => 
+  login: (credentials) =>
     api.post('/admin/login', credentials),
-  
+
   // Event management (converted from /events/* routes)
-  getEvents: () => 
+  getEvents: () =>
     api.get('/admin/events'),
-  
-  createEvent: (eventData) => 
+
+  createEvent: (eventData) =>
     api.post('/admin/events', eventData),
-  
-  updateEvent: (eventId, eventData) => 
+
+  updateEvent: (eventId, eventData) =>
     api.put(`/admin/events/${eventId}`, eventData),
-  
-  deleteEvent: (eventId) => 
+
+  deleteEvent: (eventId) =>
     api.delete(`/admin/events/${eventId}`),
-  
+
   // Announcement management (converted from /announcements/* routes)
-  getAnnouncements: () => 
+  getAnnouncements: () =>
     api.get('/admin/announcements'),
-  
-  createAnnouncement: (announcementData) => 
+
+  createAnnouncement: (announcementData) =>
     api.post('/admin/announcements', announcementData),
-  
-  deleteAnnouncement: (announcementId) => 
+
+  deleteAnnouncement: (announcementId) =>
     api.delete(`/admin/announcements/${announcementId}`),
-  
+
   // Suggestion management (converted from /suggestions/* routes)
-  getSuggestions: () => 
+  getSuggestions: () =>
     api.get('/admin/suggestions'),
-  
-  deleteSuggestion: (suggestionId) => 
+
+  deleteSuggestion: (suggestionId) =>
     api.delete(`/admin/suggestions/${suggestionId}`),
-  
+
   // Event request management (converted from /events/requests)
-  getEventRequests: () => 
+  getEventRequests: () =>
     api.get('/admin/event-requests'),
-  
-  deleteEventRequest: (requestId) => 
+
+  deleteEventRequest: (requestId) =>
     api.delete(`/admin/event-requests/${requestId}`),
+
+  // Scraper Control
+  getScraperlogs: (limit = 50) =>
+    api.get(`/admin/scrapers/logs?limit=${limit}`),
+
+  getScraperStatus: () =>
+    api.get('/admin/scrapers/status'),
+
+  triggerScraper: (source) =>
+    api.post(`/admin/scrapers/trigger?source=${source}`),
+
+  // Notification Management
+  getNotificationStats: () =>
+    api.get('/admin/notifications/stats'),
+
+  getSubscribers: () =>
+    api.get('/admin/notifications/subscribers'),
+
+  broadcastMessage: (data) =>
+    api.post('/admin/notifications/broadcast', data),
+
+  // Analytics
+  getTrafficStats: (days = 30) =>
+    api.get(`/admin/analytics/traffic?days=${days}`),
 }
 
 // Form submission endpoints (converted from Flask form routes)
 export const formAPI = {
   // Submit event request (converted from /requests/etkinlik-talep)
-  submitEventRequest: (requestData) => 
-    api.post('/admin/event-requests', requestData),
-  
+  submitEventRequest: (requestData) =>
+    api.post('/event-requests', requestData),
+
   // Submit suggestion (converted from /suggestions/oneri_sikayet)
-  submitSuggestion: (suggestionData) => 
-    api.post('/admin/suggestions', suggestionData),
+  submitSuggestion: (suggestionData) =>
+    api.post('/suggestions', suggestionData),
 }
 
 export default api

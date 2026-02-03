@@ -4,6 +4,7 @@ from typing import List, Optional
 from datetime import datetime
 from ..models.event import Event
 from ..schemas.event import EventCreate, EventUpdate
+from .date_extractor import extract_date_from_text
 
 class EventService:
     def __init__(self, db: Session):
@@ -23,10 +24,16 @@ class EventService:
     def create_event(self, event_data: EventCreate) -> Event:
         """Create a new event"""
         try:
+            # Eğer date yoksa açıklamadan çek
+            date_val = event_data.date
+            if not date_val and event_data.description:
+                extracted = extract_date_from_text(event_data.description)
+                if extracted:
+                    date_val = extracted
             db_event = Event(
                 title=event_data.title,
                 description=event_data.description,
-                date=event_data.date,
+                date=date_val,
                 location=event_data.location,
                 url=str(event_data.url),
                 image_url=str(event_data.image_url) if event_data.image_url else None,
@@ -47,9 +54,13 @@ class EventService:
         db_event = self.get_event_by_id(event_id)
         if not db_event:
             return None
-        
         try:
             update_data = event_data.dict(exclude_unset=True)
+            # Eğer date güncellenmiyorsa ve açıklama varsa, açıklamadan çek
+            if ("date" not in update_data or not update_data.get("date")) and update_data.get("description"):
+                extracted = extract_date_from_text(update_data["description"])
+                if extracted:
+                    update_data["date"] = extracted
             for field, value in update_data.items():
                 if field == "url" and value:
                     setattr(db_event, field, str(value))
@@ -57,9 +68,10 @@ class EventService:
                     setattr(db_event, field, str(value))
                 else:
                     setattr(db_event, field, value)
-            
             db_event.scraped_at = datetime.now()
             self.db.commit()
+            self.db.refresh(db_event)
+            return db_event
             self.db.refresh(db_event)
             return db_event
         except IntegrityError:

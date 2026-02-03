@@ -13,6 +13,9 @@ def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(securi
     token = credentials.credentials
     username = auth_service.verify_token(token)
     
+    import logging
+    logging.warning(f"DEBUG AUTH: verify_token result for token ending in ...{token[-10:] if token else 'None'} -> {username}")
+
     if username is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

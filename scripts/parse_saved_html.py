@@ -1,69 +1,92 @@
-import sys, os, time
-sys.path.insert(0, '/app')
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 
-def find_chromedriver():
-    cache_dir = os.path.expanduser("~/.wdm/drivers/chromedriver")
-    if os.path.exists(cache_dir):
-        versions = os.listdir(cache_dir)
-        if versions:
-            latest = sorted(versions)[-1]
-            driver_dir = os.path.join(cache_dir, latest)
-            for root, dirs, files in os.walk(driver_dir):
-                for file in files:
-                    if file == "chromedriver":
-                        driver_path = os.path.join(root, file)
-                        os.chmod(driver_path, 0o755)
-                        return driver_path
-    return None
 
-driver_path = find_chromedriver()
-if not driver_path:
-    from webdriver_manager.chrome import ChromeDriverManager
-    ChromeDriverManager().install()
-    driver_path = find_chromedriver()
-
-options = Options()
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-
-service = Service(executable_path=driver_path)
-driver = webdriver.Chrome(service=service, options=options)
-
-print("=== YOUTHALL ===")
-driver.get("https://www.youthall.com/tr/events")
+# === PUPILICA ===
+print("=== PUPILICA ===")
+driver.get("https://pupilica.com/events")
 time.sleep(8)
-soup = BeautifulSoup(driver.page_source, "html.parser")
+pupilica_soup = BeautifulSoup(driver.page_source, "html.parser")
+events = pupilica_soup.find_all('div', class_='event-card')
+print(f'Pupilica: {len(events)} etkinlik bulundu.')
+for idx, event in enumerate(events[:3]):
+    title = event.find('h3') or event.find('h2')
+    title = title.get_text(strip=True) if title else 'Başlık yok'
+    desc = event.find('div', class_='event-description')
+    desc_text = desc.get_text(strip=True) if desc else ''
+    date = event.find('div', class_='event-date')
+    date_text = date.get_text(strip=True) if date else ''
+    # Fallback: try to extract date from description
+    if not date_text and desc_text:
+        from app.services.date_extractor import extract_date_from_text
+        date_text = extract_date_from_text(desc_text) or 'Tarih belirtilmemiş'
+    loc = event.find('div', class_='event-location')
+    location = loc.get_text(strip=True) if loc else ''
+    if not location and desc_text:
+        # Try to infer location from description
+        if 'online' in desc_text.lower():
+            location = 'Online'
+        else:
+            location = 'Konum belirtilmemiş'
+    print(f'  {idx+1}. {title} | {date_text} | {location}')
+print("Fetched Pupilica events page.")
 
-# Event row'ları bul
-event_rows = soup.find_all('div', class_='event-row')
-print(f'Total event-row divs: {len(event_rows)}')
 
-if event_rows:
-    for idx, row in enumerate(event_rows[:3]):
-        print(f'\n=== Event {idx} ===')
-        
-        # Başlık
-        title = row.find('h3') or row.find('h2') or row.find('h4')
-        if title:
-            print(f'  Title: {title.get_text(strip=True)[:80]}')
-        
-        # Link
-        link = row.find('a', href=True)
-        if link:
-            print(f'  Link: {link.get("href")}')
-        
-        # Date
-        date_box = row.find('div', class_='events__content__datebox')
-        if date_box:
-            print(f'  Date: {date_box.get_text(strip=True)}')
-        
-        # Image
-        img = row.find('img')
+# === AKBANK GENÇLİK AKADEMİSİ ===
+print("\n\n=== AKBANK GENÇLİK AKADEMİSİ ===")
+driver.get("https://www.akbankgenclikakademisi.com/etkinlik-takvimi")
+time.sleep(8)
+akbank_soup = BeautifulSoup(driver.page_source, "html.parser")
+events = akbank_soup.find_all('div', class_='event-card')
+print(f'Akbank: {len(events)} etkinlik bulundu.')
+for idx, event in enumerate(events[:3]):
+    title = event.find('h3') or event.find('h2')
+    title = title.get_text(strip=True) if title else 'Başlık yok'
+    desc = event.find('div', class_='event-description')
+    desc_text = desc.get_text(strip=True) if desc else ''
+    date = event.find('div', class_='event-date')
+    date_text = date.get_text(strip=True) if date else ''
+    if not date_text and desc_text:
+        from app.services.date_extractor import extract_date_from_text
+        date_text = extract_date_from_text(desc_text) or 'Tarih belirtilmemiş'
+    loc = event.find('div', class_='event-location')
+    location = loc.get_text(strip=True) if loc else ''
+    if not location and desc_text:
+        if 'online' in desc_text.lower():
+            location = 'Online'
+        else:
+            location = 'Konum belirtilmemiş'
+    print(f'  {idx+1}. {title} | {date_text} | {location}')
+print("Fetched Akbank Gençlik Akademisi events page.")
+
+
+# === YOUTHALL (NEW LINK) ===
+print("\n\n=== YOUTHALL (NEW LINK) ===")
+driver.get("https://www.youthall.com/tr/events/all")
+time.sleep(8)
+youthall_soup = BeautifulSoup(driver.page_source, "html.parser")
+event_rows = youthall_soup.find_all('div', class_='event-row')
+print(f'Youthall: {len(event_rows)} etkinlik bulundu.')
+from app.services.date_extractor import extract_date_from_text
+for idx, row in enumerate(event_rows[:3]):
+    title = row.find('h3') or row.find('h2') or row.find('h4')
+    title = title.get_text(strip=True) if title else 'Başlık yok'
+    date_box = row.find('div', class_='events__content__datebox')
+    date_text = date_box.get_text(strip=True) if date_box else ''
+    details = row.find('div', class_='events__content__details')
+    desc_text = details.get_text(strip=True) if details else ''
+    if not date_text and desc_text:
+        date_text = extract_date_from_text(desc_text) or 'Tarih belirtilmemiş'
+    location = ''
+    if desc_text:
+        if 'online' in desc_text.lower():
+            location = 'Online'
+        else:
+            location = 'Konum belirtilmemiş'
+    else:
+        location = 'Konum belirtilmemiş'
+    print(f'  {idx+1}. {title} | {date_text} | {location}')
+print("Fetched Youthall events page (all).")
+
+driver.quit()
         if img:
             print(f'  Image: {img.get("src")[:100]}')
         

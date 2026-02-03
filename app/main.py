@@ -41,6 +41,43 @@ app.add_middleware(
 # Include API routes
 app.include_router(api_router)
 
+# Traffic Logging Middleware
+from fastapi import Request
+from .core.database import SessionLocal
+from .services.analytics_service import AnalyticsService
+
+@app.middleware("http")
+async def log_traffic(request: Request, call_next):
+    # Skip logging for static files, docs, and admin API
+    path = request.url.path
+    if (
+        path.startswith("/static") or 
+        path.startswith("/docs") or 
+        path.startswith("/openapi.json") or 
+        path.startswith("/api/admin") or
+        request.method == "OPTIONS"
+    ):
+        return await call_next(request)
+    
+    response = await call_next(request)
+    
+    # Log valid successful requests
+    if 200 <= response.status_code < 400:
+        try:
+            db = SessionLocal()
+            service = AnalyticsService(db)
+            service.log_request(
+                path=path,
+                method=request.method,
+                ip=request.client.host if request.client else None,
+                user_agent=request.headers.get("user-agent")
+            )
+            db.close()
+        except Exception as e:
+            print(f"Error logging traffic: {e}")
+            
+    return response
+
 @app.get("/")
 async def root():
     """
