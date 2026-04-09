@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #007BFF; color: white; }
+        a.button, button {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 2px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        a.button:hover, button:hover {
+            background-color: #0056b3;
+        }
+        .danger {
+            background-color: #dc3545;
+        }
+        .danger:hover {
+            background-color: #a71d2a;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .flash { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<h1>Admin Paneli</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash">
+      {% for category, message in messages %}
+        <p class="{{ category }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<h2>Etkinlikler</h2>
+<a href="{{ url_for('add_event') }}" class="button">Yeni Etkinlik Ekle</a>
+<table>
+    <thead>
+        <tr>
+            <th>Başlık</th>
+            <th>Tarih</th>
+            <th>Konum</th>
+            <th>URL</th>
+            <th>Durum</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for event in events %}
+        <tr>
+            <td>{{ event.title }}</td>
+            <td>{{ event.date.strftime('%Y-%m-%d %H:%M') if event.date else 'Tarih Yok' }}</td>
+            <td>{{ event.location or 'Belirtilmedi' }}</td>
+            <td><a href="{{ event.url }}" target="_blank">Link</a></td>
+            <td>{{ 'Açık' if event.is_active else 'Kapalı' }}</td>
+            <td>
+                <a href="{{ url_for('edit_event', event_id=event.id) }}" class="button">Düzenle</a>
+                <form action="{{ url_for('delete_event', event_id=event.id) }}" method="post" style="display:inline-block;" onsubmit="return confirm('Bu etkinliği silmek istediğinize emin misiniz?');">
+                    <button type="submit" class="button danger">Sil</button>
+                </form>
+            </td>
+        </tr>
+    {% else %}
+        <tr><td colspan="6">Hiç etkinlik yok.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2>Etkinlik Talepleri</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Başlık</th>
+      <th>Link</th>
+      <th>Son Başvuru Tarihi</th>
+      <th>Açıklama</th>
+      <th>Gönderim Tarihi</th>
+      <th>İşlemler</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for req in requests %}
+    <tr>
+      <td>{{ req.event_title }}</td>
+      <td><a href="{{ req.event_link }}" target="_blank">Link</a></td>
+      <td>{{ req.event_date or '-' }}</td>
+      <td>{{ req.event_description or '-' }}</td>
+      <td>{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('etkinlik_talep_sil', id=req.id) }}" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+          <button type="submit" class="delete-button">Sil</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Öneri / Şikayet</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Tür</th>
+      <th>Başlık</th>
+      <th>Talep</th>
+      <th>İşlemler</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for req in requests %}
+    <tr>
+      <td>{{ req.suggest_type }}</td>
+      <td>{{ req.suggest_title }}</td>
+      <td>{{ req.suggest_text }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('oneri_sikayet_sil', id=req.id) }}" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+          <button type="submit" class="danger">Sil</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">Hiç öneri veya şikayet yok.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<h2>Duyurular</h2>
+<a href="{{ url_for('add_announcement') }}" class="button">Yeni Duyuru Ekle</a>
+<table>
+  <thead>
+    <tr>
+      <th>Başlık</th>
+      <th>Mesaj</th>
+      <th>İşlemler</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for announcement in announcements %}
+    <tr>
+      <td>{{ announcement.title }}</td>
+      <td>{{ announcement.message }}</td>
+      <td>
+        <form action="{{ url_for('delete_announcement', announcement_id=announcement.id) }}" method="post" style="display:inline;">
+          <button type="submit" onclick="return confirm('Duyuruyu silmek istediğinize emin misiniz?');">Sil</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ url_for('logout') }}" class="button danger">Çıkış Yap</a>
+
+</body>
+</html>

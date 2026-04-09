@@ -1,0 +1,21 @@
+<h2>Gelen Öneri ve Şikayetler</h2>
+{% for s in suggestions %}
+    <div style="border:1px solid #ccc; margin-bottom:1rem; padding:1rem;">
+        <p><strong>Tür:</strong> {{ s.suggestion_type }}</p>
+        <p><strong>İçerik:</strong> {{ s.suggestion_text }}</p>
+        <p><strong>Tarih:</strong> {{ s.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+        <p><strong>Durum:</strong> {{ '✅ Onaylandı' if s.is_approved else '❌ Bekliyor' }}</p>
+
+        {% if not s.is_approved %}
+        <form action="{{ url_for('oneri_onayla', id=s.id) }}" method="post" style="display:inline;">
+            <button type="submit">Onayla</button>
+        </form>
+        {% endif %}
+
+        <form action="{{ url_for('oneri_sil', id=s.id) }}" method="post" style="display:inline;">
+            <button type="submit" onclick="return confirm('Silmek istediğine emin misin?')">Sil</button>
+        </form>
+    </div>
+{% else %}
+    <p>Hiç öneri/şikayet yok.</p>
+{% endfor %}

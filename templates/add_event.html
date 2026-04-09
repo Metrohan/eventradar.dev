@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yeni Etkinlik Ekle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-left">
+            <a href="{{ url_for('index_redirect') }}" class="logo-link">
+                <img src="{{ url_for('static', filename='images/techeventradar_logo.png') }}" alt="TechEventRadar Logo" class="header-logo">
+            </a>
+        </div>
+        <div class="header-right">
+            <a href="{{ url_for('etkinlik_talep') }}" class="button-link">Etkinlik Ekleme Talebi</a>
+            <a href="{{ url_for('oneri_sikayet') }}" class="button-link">Öneri/Şikayet</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2>Yeni Etkinlik Ekle</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes"> {# flash-messages yerine flashes #}
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="event-request-form"> {# event-request-form sınıfı eklendi #}
+            <div class="form-group">
+                <label for="title">Başlık*:</label>
+                <input type="text" id="title" name="title" required placeholder="Etkinlik Başlığı">
+            </div>
+
+            <div class="form-group">
+                <label for="date">Tarih ve Saat:</label>
+                <input type="datetime-local" id="date" name="date">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Açıklama:</label>
+                <textarea id="description" name="description" rows="5" placeholder="Etkinlik hakkında detaylı bilgi"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="url">URL*:</label>
+                <input type="url" id="url" name="url" required placeholder="https://etkinlik.com/link">
+            </div>
+
+            <div class="form-group">
+                <label for="location">Yer:</label>
+                <input type="text" id="location" name="location" placeholder="Etkinlik Yeri">
+            </div>
+
+            <div class="form-group">
+                <label for="image_url">Resim URL:</label>
+                <input type="url" id="image_url" name="image_url" placeholder="https://resim.com/link">
+            </div>
+
+            <div class="form-group">
+                <label for="source">Kaynak:</label>
+                <input type="text" id="source" name="source" placeholder="Varsa Kaynak">
+            </div>
+
+            <div class="form-group">
+                <input type="checkbox" id="is_active" name="is_active" checked>
+                <label for="is_active" style="display: inline;">Aktif mi?</label> {# Yan yana gelmesi için display:inline #}
+            </div>
+
+            <button type="submit" class="submit-button">Ekle</button> {# submit-button sınıfı eklendi #}
+        </form>
+
+        <hr style="margin: 30px 0;"> {# Geliştirilmiş HR stili #}
+        <div style="text-align: center;"> {# Linkleri ortalamak için #}
+            <a href="{{ url_for('dashboard') }}" class="button-link">Geri Dön</a> {# button-link sınıfı eklendi #}
+            <a href="{{ url_for('view_requests') }}" class="button-link" style="margin-left:20px;">Talepleri Görüntüle</a> {# button-link sınıfı eklendi #}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechEventRadar. Tüm Hakları Saklıdır.</p>
+    </footer>
+</body>
+</html>

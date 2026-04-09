@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Etkinlik Düzenle</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+        form { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1);}
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input[type="text"], input[type="url"], input[type="datetime-local"], textarea {
+            width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box;
+            border: 1px solid #ccc; border-radius: 4px;
+        }
+        textarea { resize: vertical; height: 100px; }
+        button {
+            margin-top: 20px;
+            background-color: #007BFF; color: white; padding: 10px 15px;
+            border: none; border-radius: 4px; cursor: pointer;
+        }
+        button:hover { background-color: #0056b3; }
+        .cancel-link {
+            margin-left: 10px; text-decoration: none; color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Etkinlik Düzenle</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash">
+      {% for category, message in messages %}
+        <p class="{{ category }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<form method="POST">
+    <label for="title">Başlık*</label>
+    <input type="text" id="title" name="title" value="{{ event.title }}" required />
+
+    <label for="date">Tarih ve Saat</label>
+    <!-- datetime-local HTML input format: YYYY-MM-DDTHH:MM -->
+    <input type="datetime-local" id="date" name="date" value="{{ event.date.strftime('%Y-%m-%dT%H:%M') if event.date else '' }}" />
+
+    <label for="location">Konum</label>
+    <input type="text" id="location" name="location" value="{{ event.location or '' }}" />
+
+    <label for="description">Açıklama</label>
+    <textarea id="description" name="description">{{ event.description or '' }}</textarea>
+
+    <label for="url">URL*</label>
+    <input type="url" id="url" name="url" value="{{ event.url }}" required />
+
+    <label for="image_url">Resim URL</label>
+    <input type="url" id="image_url" name="image_url" value="{{ event.image_url or '' }}" />
+
+    <label for="source">Kaynak</label>
+    <input type="text" id="source" name="source" value="{{ event.source or 'Admin' }}" />
+
+    <label>
+        <input type="checkbox" name="is_active" {% if event.is_active %}checked{% endif %} />
+        Aktif
+    </label>
+
+    <button type="submit">Güncelle</button>
+    <a href="{{ url_for('dashboard') }}" class="cancel-link">İptal</a>
+</form>
+
+</body>
+</html>
