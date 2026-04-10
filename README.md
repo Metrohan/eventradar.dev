@@ -1,83 +1,131 @@
-# TechEventRadar - Modern Full-Stack Refactor
+# TechEventRadar
 
-Complete refactor from Flask to **FastAPI + React** architecture.
+Tek cümle amaç: **Öğrencilerin ve yeni mezunların güncel teknoloji etkinliklerini tek yerde kolayca bulması.**
 
-## 🏗️ Architecture
+TechEventRadar; bootcamp, webinar, hackathon, kariyer etkinliği ve topluluk buluşmalarını farklı kaynaklardan toplayıp tek bir ekranda sunar. Böylece öğrenciler "hangi etkinlik ne zaman, nerede, nasıl başvurulur" sorularını tek tek siteleri gezmeden yanıtlayabilir.
 
-- **Backend**: FastAPI with PostgreSQL, JWT auth, REST API
-- **Frontend**: React 18 + Vite, React Query, Bootstrap 5
-- **Database**: PostgreSQL with SQLAlchemy ORM
-- **Deployment**: Docker Compose
+![TechEventRadar Logo](frontend/public/techeventradar_logo.png)
 
-## 🚀 Quick Start
+## Neden Bu Proje?
 
-### Docker (Recommended)
+Öğrenciler için en büyük problem bilgiden çok **dağınıklık**:
+
+- Etkinlikler farklı platformlara dağılmış durumda
+- Son başvuru tarihleri kolayca kaçırılıyor
+- Ücretsiz/online etkinlikleri filtrelemek zaman alıyor
+
+TechEventRadar bu dağınıklığı azaltmak için geliştirildi.
+
+## Öne Çıkan Özellikler
+
+- Çoklu kaynaklardan etkinlik toplama
+- Tek listede arama ve filtreleme
+- Etkinlik detayına hızlı erişim
+- Admin paneli ile içerik yönetimi
+- Öneri/şikayet ve etkinlik ekleme talepleri
+- Duyuru sistemi
+
+![Etkinlik Kartı Placeholder](frontend/public/placeholder-image-colored.jpeg)
+
+## Mimari
+
+- **Backend:** FastAPI + SQLAlchemy + PostgreSQL
+- **Frontend:** React (Vite)
+- **Scraping:** Python tabanlı scraper modülleri
+- **Deployment:** Docker Compose
+
+## Hızlı Başlangıç
+
+### 1) Projeyi klonla
+
 ```bash
-docker-compose up -d
+git clone https://github.com/Metrohan/eventradar.dev.git
+cd eventradar.dev
 ```
-- Frontend: http://localhost:3000
-- Backend: http://localhost:8000
-- API Docs: http://localhost:8000/docs
 
-### Local Development
+### 2) Ortam değişkenlerini hazırla
+
 ```bash
-# Backend
+cp .env.example .env
+```
+
+`.env` içindeki değerleri kendi ortamına göre düzenle.
+
+### 3) Docker ile çalıştır
+
+```bash
+docker compose up -d --build
+```
+
+### 4) Uygulamayı aç
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:8000`
+- API Docs: `http://localhost:8000/docs`
+
+## Geliştirme (Local)
+
+### Backend
+
+```bash
 pip install -r requirements.txt
 uvicorn app.main:app --reload
+```
 
-# Frontend  
+### Frontend
+
+```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-## 📁 Structure
-```
-├── app/              # FastAPI backend source
-│   ├── api/          # REST endpoints
-│   ├── models/       # SQLAlchemy models
-│   ├── schemas/      # Pydantic validation
-│   └── services/     # Business logic
-├── frontend/         # React frontend
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   └── services/
-├── scripts/          # Scraper and maintenance scripts
-└── docker-compose.yml
-```
+## Katkı Sağlama
 
-## 🔄 Migration Summary
+Katkıların proje için çok değerli. Küçük düzeltmeler bile büyük etki oluşturur.
 
-| Flask → FastAPI | Templates → React | Forms → React Hook Form |
-|----------------|------------------|------------------------|
-| Routes → REST API | HTML → Components | Server → Client |
-| Sessions → JWT | Jinja2 → JSX | Validation → Pydantic |
+### Nasıl katkı verebilirsin?
 
-## ✨ Features
-- Event management (CRUD)
-- Admin dashboard
-- Event requests & suggestions
-- Announcements
-- JWT authentication
-- Auto-generated API docs
+- Yeni scraper kaynağı eklemek
+- Mevcut scraper hatalarını düzeltmek
+- Tarih/konum ayrıştırma doğruluğunu artırmak
+- Frontend filtreleme ve UX iyileştirmeleri
+- Dokümantasyon ve test kapsamını geliştirmek
 
-## 🔧 Environment
-```env
-# Backend
-DATABASE_URL=postgresql://user:pass@localhost:5432/db
-SECRET_KEY=your-secret-key
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=change_me
+### Adım adım katkı akışı
 
-# Frontend
-VITE_API_URL=http://localhost:8000
+1. Bu repoyu fork et
+2. Yeni bir branch aç
+3. Değişikliğini yap
+4. Test et
+5. Açıklayıcı bir Pull Request gönder
+
+Örnek:
+
+```bash
+git checkout -b feat/add-new-source
+git add .
+git commit -m "feat: add new event source scraper"
+git push origin feat/add-new-source
 ```
 
-## 📚 API Endpoints
-- `GET /api/events` - Public events
-- `POST /api/admin/login` - Admin auth
-- `GET /api/admin/events` - Admin events
-- `POST /api/admin/events` - Create event
-- Full docs at `/docs`
+Daha detaylı rehber için: [CONTRIBUTING.md](CONTRIBUTING.md)
 
+## Güvenlik ve Gizlilik
+
+Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güvenlik problemi görürsen lütfen [SECURITY.md](SECURITY.md) üzerinden bildir.
+
+## Yol Haritası
+
+- Kaynak sayısını artırmak
+- Daha sağlam tarih normalizasyonu
+- Kalite metrikleri (kaynak bazlı başarı oranı)
+- Öğrenci dostu kişiselleştirilmiş öneri sistemi
+
+## Lisans
+
+MIT Lisansı: [LICENSE](LICENSE)
+
+---
+
+Bu proje öğrencilerin fırsatlara daha hızlı ulaşabilmesi için geliştiriliyor. İyi bir etkinlik bazen kariyerin yönünü değiştirir.
