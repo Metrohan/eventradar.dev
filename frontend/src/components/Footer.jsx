@@ -11,10 +11,10 @@ const Footer = () => {
                             Türkiye'nin en güncel teknoloji etkinliklerini, hackathon'larını ve ücretsiz eğitimlerini tek bir noktadan takip edin.
                         </p>
                         <div className="d-flex gap-3 mt-4">
-                            <a href="https://github.com/Metrohan/eventradar.dev" target="_blank" rel="noopener noreferrer" className="text-secondary hover-primary transition-all">
+                            <a href="https://github.com/Metrohan/eventradar.dev" target="_blank" rel="noopener noreferrer" className="text-secondary hover-primary transition-all" aria-label="GitHub Repository">
                                 <i className="fab fa-github fa-lg"></i>
                             </a>
-                            <a href="mailto:metehangnn@outlook.com" className="text-secondary hover-primary transition-all">
+                            <a href="mailto:metehangnn@outlook.com" className="text-secondary hover-primary transition-all" aria-label="Send Email">
                                 <i className="fas fa-envelope fa-lg"></i>
                             </a>
                         </div>

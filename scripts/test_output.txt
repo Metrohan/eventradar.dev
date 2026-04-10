@@ -1,0 +1,82 @@
+--- Testing Pupilica ---
+Pupilica: Timeout waiting for event cards.
+Pupilica found: 0
+Debugging Pupilica HTML structure...
+Status Code: 200
+Sample HTML (first 500 chars):
+<!DOCTYPE html><html lang="tr"><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width" data-next-head=""/><title data-next-head="">Pupilica</title><meta name="description" content="Softtech&#x27;in teknoloji liderliği ve Koç Üniversitesi&#x27;nin kaliteli eğitim anlayışı ile hazırlanan platformda her genç geleceğini ve kariyerini en güncel eğitimlerle şekillendirebilecek." data-next-head=""/><meta property="og:title" content="Pupilica" data-next-head=""/
+
+--- Testing Akbank ---
+DEBUG Akbank: title=Akbank Case Maratonu, info=[]
+DEBUG Akbank: title=Akbank Gençlik Akademisi & Microsoft AI Academy Data Analyst Eğitimi, info=[]
+DEBUG Akbank: title=Siber Güvenlik Analisti, info=[]
+DEBUG Akbank: title=Yapay Zeka ve Yapay Zekanın Etik Kullanımı 101, info=[]
+DEBUG Akbank: title=Akbank ile Gençliğin Yeni Yıl Rotası, info=[]
+DEBUG Akbank: title=Çeşitlilik, Kapsayıcılık & Eşitlik 101, info=[]
+DEBUG Akbank: title=CEF ile Finans Programı, info=[]
+DEBUG Akbank: title=Akbank Gençlik Akademisi Kampüs 101 - Elazığ, info=[]
+DEBUG Akbank: title=Generative AI Bootcamp: Yeni Nesil Proje Kampı Başlıyor, info=[]
+DEBUG Akbank: title=Siber Güvenlik 101, info=[]
+DEBUG Akbank: title=Şehrin İyi Hali, info=[]
+DEBUG Akbank: title=Akbank Gençlik Akademisi İyi Olma Hali Buluşmaları, info=[]
+Akbank found: 12
+Title: Akbank Case Maratonu
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/akbank-case-maratonu
+--------------------
+Title: Akbank Gençlik Akademisi & Microsoft AI Academy Data Analyst Eğitimi
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/akbank-genclik-akademisi-microsoft-ai-academy-data-analyst-2025
+--------------------
+Title: Siber Güvenlik Analisti
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/siber-guevenlik-analisti
+--------------------
+Title: Yapay Zeka ve Yapay Zekanın Etik Kullanımı 101
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/yapay-zeka-ve-yapay-zekanin-etik-kullanimi-101
+--------------------
+Title: Akbank ile Gençliğin Yeni Yıl Rotası
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/akbank-ile-gencligin-yeni-yil-rotasi
+--------------------
+Title: Çeşitlilik, Kapsayıcılık & Eşitlik 101
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/cesitlilik-esitlik-kapsayicilik-101
+--------------------
+Title: CEF ile Finans Programı
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/cef-ile-finans-2025
+--------------------
+Title: Akbank Gençlik Akademisi Kampüs 101 - Elazığ
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/akbank-genclik-akademisi-kampues-101-elazig
+--------------------
+Title: Generative AI Bootcamp: Yeni Nesil Proje Kampı Başlıyor
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/generative-ai-bootcamp-yeni-nesil-proje-kampi-basliyor
+--------------------
+Title: Siber Güvenlik 101
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/siber-guevenlik-101
+--------------------
+Title: Şehrin İyi Hali
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/sehrin-iyi-hali
+--------------------
+Title: Akbank Gençlik Akademisi İyi Olma Hali Buluşmaları
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/akbank-genclik-akademisi-iyi-olma-hali-bulusmalari
+--------------------

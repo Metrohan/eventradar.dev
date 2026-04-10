@@ -1,0 +1,26 @@
+[Unit]
+Description=TechEventRadar FastAPI Backend Service
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+User=root
+# Adjust User/Group appropriately (e.g., www-data or your specific deployment user)
+WorkingDirectory=/path/to/TechEventRadarAdmin/backend
+
+# Wait for the PostgreSQL Docker container port to be available before starting
+ExecStartPre=/bin/sh -c 'while ! nc -z 127.0.0.1 5432; do sleep 1; done'
+
+# Activate virtual environment and start uvicorn with debug logging
+ExecStart=/bin/bash -c "source .venv/bin/activate && uvicorn app.main:app --host 127.0.0.1 --port 8000 --log-level debug"
+
+Restart=always
+RestartSec=5
+TimeoutStartSec=30
+TimeoutStopSec=30
+
+# Environment variables could also be loaded from an EnvironmentFile
+# EnvironmentFile=/path/to/TechEventRadarAdmin/backend/.env
+
+[Install]
+WantedBy=multi-user.target

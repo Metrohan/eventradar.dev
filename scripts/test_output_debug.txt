@@ -1,0 +1,189 @@
+--- Testing Pupilica ---
+Pupilica: Timeout waiting for event cards.
+DEBUG Pupilica Body HTML (first 2000 chars):
+<body class="withHeader">
+ <div id="__next">
+  <noscript>
+  </noscript>
+  <nav class="Header__Nav-sc-1v3avt1-0 ibzKGK">
+   <div class="MuiContainer-root MuiContainer-maxWidthLg Header__ContainerWrapper-sc-1v3avt1-1 cWvZTx css-236h3u">
+    <div class="MuiGrid-root MuiGrid-container css-1gr95ru" style="flex-wrap: nowrap; justify-content: space-between;">
+     <div class="Header__Column-sc-1v3avt1-2 ivUIYO">
+      <a href="/">
+       <img alt="Pupilica Logo" src="/images/pupilicaLogo.png" style="cursor: pointer;"/>
+      </a>
+      <div class="Dropdown__DropdownWrapper-sc-1kqiw6s-0 bbyUTQ TrainingDropdown__StyledDropdown-sc-1i26f1j-1 lEyuO">
+       <div class="TextButton-sc-1uym37g-0 fsMpPZ" style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+        Eğitimler
+        <svg aria-hidden="true" class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-1k33q06" data-testid="KeyboardArrowDownIcon" focusable="false" viewbox="0 0 24 24">
+         <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z">
+         </path>
+        </svg>
+       </div>
+      </div>
+      <div class="SearchInput__InputBG-sc-1rrg3xj-0 fGmEgH" mode="light">
+       <img alt="search-icon" class="SearchInput__SearchIcon-sc-1rrg3xj-2 daUYSv" src="/images/searchIcon.png"/>
+       <input class="SearchInput__Input-sc-1rrg3xj-1 eYQvFg" placeholder="Etkinlikler'de Ara" type="text"/>
+      </div>
+      <a href="/events">
+       <a class="TextButton-sc-1uym37g-0 fsMpPZ">
+        Etkinlikler
+       </a>
+      </a>
+      <a href="/blog">
+       <a class="TextButton-sc-1uym37g-0 fsMpPZ">
+        Blog
+       </a>
+      </a>
+      <div class="Dropdown__DropdownWrapper-sc-1kqiw6s-0 bbyUTQ">
+       <div class="TextButton-sc-1uym37g-0 fsMpPZ">
+        Topluluk
+       </div>
+      </div>
+      <div class="MuiGrid-root Header__ButtonGrid-sc-1v3avt1-3 dLMJKF css-rfnosa">
+       <button class="BaseButton__Button-sc-15ffoqe-0 dPFaky Outline__OutlineButton-sc-1h7k1q4-0 gSeKNZ Header__HeaderBu
+Pupilica found: 0
+Debugging Pupilica HTML structure...
+Status Code: 200
+Sample HTML (first 500 chars):
+<!DOCTYPE html><html lang="tr"><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width" data-next-head=""/><title data-next-head="">Pupilica</title><meta name="description" content="Softtech&#x27;in teknoloji liderliği ve Koç Üniversitesi&#x27;nin kaliteli eğitim anlayışı ile hazırlanan platformda her genç geleceğini ve kariyerini en güncel eğitimlerle şekillendirebilecek." data-next-head=""/><meta property="og:title" content="Pupilica" data-next-head=""/
+
+--- Testing Akbank ---
+DEBUG Akbank First Card HTML:
+<div class="event-item col-12 col-md-6 col-lg-4" data-applicationenddate="2026-12-31T20:59:17Z" data-applicationstartdate="2025-11-04T13:07:59Z" data-enddate="2027-01-31T00:00:00Z" data-eventid="c375ddb1-1b58-4d3f-9f78-7a2adb25527d" data-startdate="2027-01-01T00:00:00Z">
+ <div class="d-flex flex-column align-items-start">
+  <a class="img-link" href="/akbank-case-maratonu">
+   <img alt="" src="https://www.akbankgenclikakademisi.com/assets/b9d3913f-ccdb-47ec-9077-2968b6336a26?width=300&amp;height=300&amp;mode=cropupsize"/>
+  </a>
+  <span class="last-day" data-lastday="Başvuru için son gün 31 Aralık">
+   Başvuru için son gün 31 Aralık
+  </span>
+  <h6 class="text-primary">
+   <a href="/akbank-case-maratonu">
+    Akbank Case Maratonu
+   </a>
+  </h6>
+  <div class="info-list d-flex flex-column">
+   <div class="d-flex">
+    <span>
+     Etkinlik Başlangıç
+    </span>
+    <span>
+     :
+    </span>
+    <span>
+     1 Ocak 2027
+    </span>
+   </div>
+   <div class="d-flex">
+    <span>
+     Etkinlik Bitiş
+    </span>
+    <span>
+     :
+    </span>
+    <span>
+     31 Ocak 2027
+    </span>
+   </div>
+   <div class="d-flex">
+    <span>
+     Etkinlik Yeri
+    </span>
+    <span>
+     :
+    </span>
+    <span>
+    </span>
+   </div>
+   <div class="d-flex">
+    <span>
+     Etkinlik Formatı
+    </span>
+    <span>
+     :
+    </span>
+    <span>
+     -
+    </span>
+   </div>
+  </div>
+  <a class="btn btn-primary btn-sm" href="/akbank-case-maratonu">
+   Başvur
+  </a>
+ </div>
+</div>
+
+DEBUG Akbank: title=Akbank Case Maratonu, info=[]
+DEBUG Akbank: title=Akbank Gençlik Akademisi & Microsoft AI Academy Data Analyst Eğitimi, info=[]
+DEBUG Akbank: title=Siber Güvenlik Analisti, info=[]
+DEBUG Akbank: title=Yapay Zeka ve Yapay Zekanın Etik Kullanımı 101, info=[]
+DEBUG Akbank: title=Akbank ile Gençliğin Yeni Yıl Rotası, info=[]
+DEBUG Akbank: title=Çeşitlilik, Kapsayıcılık & Eşitlik 101, info=[]
+DEBUG Akbank: title=CEF ile Finans Programı, info=[]
+DEBUG Akbank: title=Akbank Gençlik Akademisi Kampüs 101 - Elazığ, info=[]
+DEBUG Akbank: title=Generative AI Bootcamp: Yeni Nesil Proje Kampı Başlıyor, info=[]
+DEBUG Akbank: title=Siber Güvenlik 101, info=[]
+DEBUG Akbank: title=Şehrin İyi Hali, info=[]
+DEBUG Akbank: title=Akbank Gençlik Akademisi İyi Olma Hali Buluşmaları, info=[]
+Akbank found: 12
+Title: Akbank Case Maratonu
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/akbank-case-maratonu
+--------------------
+Title: Akbank Gençlik Akademisi & Microsoft AI Academy Data Analyst Eğitimi
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/akbank-genclik-akademisi-microsoft-ai-academy-data-analyst-2025
+--------------------
+Title: Siber Güvenlik Analisti
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/siber-guevenlik-analisti
+--------------------
+Title: Yapay Zeka ve Yapay Zekanın Etik Kullanımı 101
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/yapay-zeka-ve-yapay-zekanin-etik-kullanimi-101
+--------------------
+Title: Akbank ile Gençliğin Yeni Yıl Rotası
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/akbank-ile-gencligin-yeni-yil-rotasi
+--------------------
+Title: Çeşitlilik, Kapsayıcılık & Eşitlik 101
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/cesitlilik-esitlik-kapsayicilik-101
+--------------------
+Title: CEF ile Finans Programı
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/cef-ile-finans-2025
+--------------------
+Title: Akbank Gençlik Akademisi Kampüs 101 - Elazığ
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/akbank-genclik-akademisi-kampues-101-elazig
+--------------------
+Title: Generative AI Bootcamp: Yeni Nesil Proje Kampı Başlıyor
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/generative-ai-bootcamp-yeni-nesil-proje-kampi-basliyor
+--------------------
+Title: Siber Güvenlik 101
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/siber-guevenlik-101
+--------------------
+Title: Şehrin İyi Hali
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/sehrin-iyi-hali
+--------------------
+Title: Akbank Gençlik Akademisi İyi Olma Hali Buluşmaları
+Date: 
+Location: Online
+URL: https://www.akbankgenclikakademisi.com/akbank-genclik-akademisi-iyi-olma-hali-bulusmalari
+--------------------

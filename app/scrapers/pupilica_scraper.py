@@ -91,7 +91,10 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
             if a_tag:
                  url_ = base_url + a_tag['href']
             else:
-                 url_ = url
+                 import re
+                 # Generate a unique slug from title if no link is found
+                 slug = re.sub(r'[\W_]+', '-', title.lower()).strip('-')
+                 url_ = f"{url}#{slug}"
 
             # Location
             # Pupilica events are mostly online, but we can check if text says otherwise

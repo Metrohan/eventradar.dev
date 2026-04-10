@@ -50,7 +50,7 @@ const trainings = [
         id: 'techcareer',
         title: 'Techcareer.net',
         description: 'Bootcamp\'ler, hackathon\'lar ve ücretsiz eğitimlerle teknoloji kariyerinize yön verin. Türkiye\'nin teknoloji kariyer platformu.',
-        url: 'https://www.techcareer.net/',
+        url: 'https://www.techcareer.net/courses',
         icon: 'fas fa-laptop-code',
         color: '#00C26D',
         badge: 'Kariyer & Bootcamp'
@@ -119,13 +119,13 @@ const trainings = [
         badge: 'Akademik Sertifika'
     },
     {
-        id: 'globalaihub',
-        title: 'Global AI Hub',
-        description: 'Yapay zeka ve Python üzerine ücretsiz kamplar ve teknik sertifikalar.',
-        url: 'https://globalaihub.com/',
-        icon: 'fas fa-project-diagram',
-        color: '#5A2C84',
-        badge: 'Yapay Zeka'
+        id: 'nvidia',
+        title: 'NVIDIA Deep Learning Institute',
+        description: 'Derin öğrenme, yapay zeka ve Python üzerine ücretsiz kamplar ve teknik sertifikalar.',
+        url: 'https://www.nvidia.com/en-us/deep-learning-ai/education/',
+        icon: 'fas fa-microchip',
+        color: '#76B900',
+        badge: 'Derin Öğrenme'
     },
     {
         id: 'iienstitu',

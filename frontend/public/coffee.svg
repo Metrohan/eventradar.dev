@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:ns1="http://sozi.baierouge.fr" id="svg2" sodipodi:docname="Coffee cup.svg" viewBox="0 0 287.97 275.67" version="1.1" inkscape:version="0.48.0 r9654">
+  <defs id="defs4">
+    <linearGradient id="linearGradient3767">
+      <stop id="stop3769" style="stop-color:#2b2b2b" offset="0"/>
+      <stop id="stop3771" style="stop-color:#666666" offset="1"/>
+    </linearGradient>
+    <filter id="filter3781" height="1.4663" width="1.1593" color-interpolation-filters="sRGB" y="-.23316" x="-.079655" inkscape:collect="always">
+      <feGaussianBlur id="feGaussianBlur3783" stdDeviation="13.323301" inkscape:collect="always"/>
+    </filter>
+    <filter id="filter3842" height="1.8906" width="1.364" color-interpolation-filters="sRGB" y="-.44528" x="-.18198" inkscape:collect="always">
+      <feGaussianBlur id="feGaussianBlur3844" stdDeviation="4.4043134" inkscape:collect="always"/>
+    </filter>
+    <filter id="filter3868" inkscape:collect="always" color-interpolation-filters="sRGB">
+      <feGaussianBlur id="feGaussianBlur3870" stdDeviation="1.8652408" inkscape:collect="always"/>
+    </filter>
+    <filter id="filter3939" height="1.9505" width="1.3247" color-interpolation-filters="sRGB" y="-.47526" x="-.16237" inkscape:collect="always">
+      <feGaussianBlur id="feGaussianBlur3941" stdDeviation="27.157745" inkscape:collect="always"/>
+    </filter>
+    <radialGradient id="radialGradient3074" gradientUnits="userSpaceOnUse" cy="73.072" cx="280" gradientTransform="matrix(1.8325 2.6522e-8 0 .16230 -123.31 250.6)" r="95.5" inkscape:collect="always">
+      <stop id="stop3803" style="stop-color:#ececec" offset="0"/>
+      <stop id="stop3805" style="stop-color:#bdbdbd" offset="1"/>
+    </radialGradient>
+    <radialGradient id="radialGradient3077" gradientUnits="userSpaceOnUse" cy="139.51" cx="280" gradientTransform="matrix(1 0 0 .7 109.78 205.81)" r="100" inkscape:collect="always">
+      <stop id="stop3793" style="stop-color:#ececec" offset="0"/>
+      <stop id="stop3795" style="stop-color:#bdbdbd" offset="1"/>
+    </radialGradient>
+    <linearGradient id="linearGradient3081" y2="140.96" gradientUnits="userSpaceOnUse" x2="422.53" gradientTransform="matrix(.80041 0 0 .80041 187.3 183.55)" y1="220.76" x1="343.33" inkscape:collect="always">
+      <stop id="stop3819" style="stop-color:#bdbdbd" offset="0"/>
+      <stop id="stop3821" style="stop-color:#ececec" offset="1"/>
+    </linearGradient>
+    <radialGradient id="radialGradient3083" xlink:href="#linearGradient3767" gradientUnits="userSpaceOnUse" cy="583.49" cx="392.14" gradientTransform="matrix(1 0 0 .34164 0 263.02)" r="200.71" inkscape:collect="always"/>
+    <radialGradient id="radialGradient3087" gradientUnits="userSpaceOnUse" cy="491.5" cx="396.43" gradientTransform="matrix(1 0 0 .34164 0 263.02)" r="200.71" inkscape:collect="always">
+      <stop id="stop3757" style="stop-color:#dddddd" offset="0"/>
+      <stop id="stop3759" style="stop-color:#b2b2b2" offset="1"/>
+    </radialGradient>
+  </defs>
+  <sodipodi:namedview id="base" bordercolor="#666666" inkscape:pageshadow="2" inkscape:window-y="-4" fit-margin-left="0" pagecolor="#ffffff" inkscape:window-height="742" inkscape:window-maximized="1" inkscape:zoom="0.7071068" inkscape:window-x="-4" showgrid="false" borderopacity="1.0" inkscape:current-layer="layer1" inkscape:cx="7.436507" inkscape:cy="230.98232" fit-margin-top="10" fit-margin-right="0" fit-margin-bottom="0" inkscape:window-width="1024" inkscape:pageopacity="0.0" inkscape:document-units="px">
+    <inkscape:grid id="grid3785" enabled="true" visible="true" snapvisiblegridlinesonly="true" type="xygrid" empspacing="5"/>
+  </sodipodi:namedview>
+  <g id="layer1" inkscape:label="Layer 1" inkscape:groupmode="layer" transform="translate(-246.53 -190.38)">
+    <g id="g3094">
+      <path id="path3779" sodipodi:rx="200.71428" sodipodi:ry="68.571426" style="filter:url(#filter3781);fill:url(#radialGradient3083)" sodipodi:type="arc" d="m600 399.51a200.71 68.571 0 1 1 -401.43 0 200.71 68.571 0 1 1 401.43 0z" transform="matrix(.61878 0 0 .64638 143.45 142.83)" sodipodi:cy="399.50504" sodipodi:cx="399.28571"/>
+      <path id="path3765" sodipodi:rx="200.71428" sodipodi:ry="68.571426" style="fill:url(#radialGradient3083)" sodipodi:type="arc" d="m600 399.51a200.71 68.571 0 1 1 -401.43 0 200.71 68.571 0 1 1 401.43 0z" transform="matrix(.61878 0 0 .64638 143.45 142.83)" sodipodi:cy="399.50504" sodipodi:cx="399.28571"/>
+      <path id="path3763" sodipodi:rx="200.71428" sodipodi:ry="68.571426" style="fill:#f2f2f2" sodipodi:type="arc" d="m600 399.51a200.71 68.571 0 1 1 -401.43 0 200.71 68.571 0 1 1 401.43 0z" transform="matrix(.64638 0 0 .64638 132.43 136.37)" sodipodi:cy="399.50504" sodipodi:cx="399.28571"/>
+      <path id="path2985" sodipodi:rx="200.71428" sodipodi:ry="68.571426" style="fill:url(#radialGradient3087)" sodipodi:type="arc" d="m600 399.51a200.71 68.571 0 1 1 -401.43 0 200.71 68.571 0 1 1 401.43 0z" transform="matrix(.64638 0 0 .64638 132.43 133.78)" sodipodi:cy="399.50504" sodipodi:cx="399.28571"/>
+      <path id="path3775" sodipodi:rx="200.71428" sodipodi:ry="68.571426" style="fill-opacity:.39216;stroke:#b7b7b7;stroke-width:5.6186;fill:#979797" sodipodi:type="arc" d="m600 399.51a200.71 68.571 0 1 1 -401.43 0 200.71 68.571 0 1 1 401.43 0z" transform="matrix(.37288 0 0 .31944 241.63 265.68)" sodipodi:cy="399.50504" sodipodi:cx="399.28571"/>
+      <path id="path3926" sodipodi:rx="200.71428" sodipodi:ry="68.571426" style="filter:url(#filter3939);fill:#000000" sodipodi:type="arc" d="m600 399.51a200.71 68.571 0 1 1 -401.43 0 200.71 68.571 0 1 1 401.43 0z" transform="matrix(.26550 0 0 .20019 283.77 318.15)" sodipodi:cy="399.50504" sodipodi:cx="399.28571"/>
+      <path id="path3815" d="m473.14 312.59 0.45571-13.039c16.793-1.265 38.45-8.3906 38.258 26.632-0.19184 35.023-38.646 28.281-48.437 23.687l0.65784-10.564c7.0973 2.4853 35.212 4.818 35.599-13.931 0.38725-18.749-9.9325-15.438-26.533-12.785z" sodipodi:nodetypes="cczcczc" style="stroke:#d6d6d6;stroke-width:.80041;fill:url(#linearGradient3081)" inkscape:connector-curvature="0"/>
+      <path id="path3787" d="m289.78 270.46s0-20 100-20 100 20 100 20 0 20-100 20-100-20-100-20z" sodipodi:nodetypes="czczc" style="fill:#e6e6e6" inkscape:connector-curvature="0"/>
+      <path id="path3789" d="m289.78 270.46s0 140 100 140 100-140 100-140 0 20-100 20-100-20-100-20z" sodipodi:nodetypes="czczc" style="fill:url(#radialGradient3077)" inkscape:connector-curvature="0"/>
+      <path id="path3799" sodipodi:nodetypes="czczc" style="stroke:#d6d6d6;fill:url(#radialGradient3074)" inkscape:connector-curvature="0" d="m294.78 270.46s0-15 95-15 95 15 95 15 0 15-95 15-95-15-95-15z"/>
+      <path id="path3809" style="fill:#562c08" inkscape:connector-curvature="0" d="m389.78 265.48c-64.116 0-83.293 7.5942-84.875 11.906 11.225 3.9349 34.897 8.0938 84.875 8.0938s73.65-4.1588 84.875-8.0938c-1.5825-4.312-20.759-11.906-84.875-11.906z"/>
+      <path id="path3827" d="m292.11 298.02c2.5594 4.8115 16.943 18.312 97.685 18.312 80.691 0 95.081-13.493 97.654-18.312-5.4635 5.7811-25.325 16.312-97.654 16.312-72.397 0-92.243-10.535-97.685-16.312z" style="fill:#000000" inkscape:connector-curvature="0"/>
+      <path id="path3832" style="fill:#000000" inkscape:connector-curvature="0" d="m291.54 294.02c2.5743 4.8115 17.042 18.312 98.253 18.312 81.16 0 95.634-13.493 98.222-18.312-5.4953 5.7811-25.472 16.312-98.222 16.312-72.818 0-92.78-10.535-98.253-16.312z"/>
+      <path id="path3834" d="m302.97 288.55 25.001 5.177c-2.7106 42.309 3.1912 65.464 23.739 99.626-25.412-23.587-42.165-53.006-48.74-104.8z" sodipodi:nodetypes="cccc" style="fill-opacity:.35294;fill:#ffffff" inkscape:connector-curvature="0"/>
+      <path id="path3836" sodipodi:rx="29.041885" sodipodi:ry="11.869292" style="filter:url(#filter3842);fill:#ffffff;fill-opacity:.35294" sodipodi:type="arc" d="m308.6 118.73a29.042 11.869 0 1 1 -58.084 0 29.042 11.869 0 1 1 58.084 0z" transform="matrix(1.3176 0 0 1.673 20.984 66.197)" sodipodi:cy="118.72869" sodipodi:cx="279.55972"/>
+      <path id="path3846" style="opacity:.5;filter:url(#filter3868);fill-opacity:.35294;fill:#eaa21f" d="m307.32 54.772c-11.669-21.128-16.926-23.676-27.873-26.495-20.947-2.3184-29.969 3.0839-29.281 17.972 0.68768 14.889 26.539 25.732 26.868 42.6 0.32912 16.868-19.631 51.743-19.631 51.743s31.428-33.991 30.989-51.465c-0.43918-17.475-21.707-27.295-24.675-34.23-2.9677-6.9344-1.4691-17.248 14.726-17.438 16.195-0.18932 28.879 17.312 28.879 17.312z" sodipodi:nodetypes="cczzczzzc" transform="matrix(.69763 0 0 .61772 194.06 186)" inkscape:connector-curvature="0"/>
+    </g>
+  </g>
+  <metadata>
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/>
+        <dc:publisher>
+          <cc:Agent rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>Coffee cup</dc:title>
+        <dc:date>2011-08-13T17:36:50</dc:date>
+        <dc:description>Mug of coffee on a saucer</dc:description>
+        <dc:source>https://openclipart.org/detail/155197/coffee-cup-by-lual</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>lual</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>Coffee</rdf:li>
+            <rdf:li>barrista</rdf:li>
+            <rdf:li>beverage</rdf:li>
+            <rdf:li>black</rdf:li>
+            <rdf:li>caffeine</rdf:li>
+            <rdf:li>china</rdf:li>
+            <rdf:li>cookware</rdf:li>
+            <rdf:li>drink</rdf:li>
+            <rdf:li>hot</rdf:li>
+            <rdf:li>photorealistic</rdf:li>
+            <rdf:li>saucer</rdf:li>
+            <rdf:li>tea</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>
