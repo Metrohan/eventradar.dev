@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from sqlalchemy.exc import IntegrityError
 from extensions import db
 from models import Event, PendingEvent
@@ -20,11 +20,21 @@ def process_scraped_events(events_data, default_source="Scraper"):
 
             # 2. Etkinliği doğrudan ekle
             event_date = None
-            if 'date' in event_data and event_data['date']:
-                try:
-                    event_date = dateparser.parse(event_data['date'], languages=['tr'])
-                except ValueError:
-                    app.logger.warning(f"Geçersiz tarih formatı: {event_data['date']}")
+            raw_date = event_data.get('date')
+            if raw_date:
+                # Scraper'lar bazen str yerine datetime/date döndürebiliyor.
+                # dateparser sadece string beklediği için tipleri normalize ediyoruz.
+                if isinstance(raw_date, datetime):
+                    event_date = raw_date
+                elif isinstance(raw_date, date):
+                    event_date = datetime.combine(raw_date, datetime.min.time())
+                elif isinstance(raw_date, str):
+                    try:
+                        event_date = dateparser.parse(raw_date, languages=['tr'])
+                    except ValueError:
+                        app.logger.warning(f"Geçersiz tarih formatı: {raw_date}")
+                else:
+                    app.logger.warning(f"Desteklenmeyen tarih tipi: {type(raw_date).__name__} - {raw_date}")
 
             db.session.add(Event(
                 title=event_data['title'],

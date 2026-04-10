@@ -11,6 +11,7 @@ import tempfile
 from urllib.parse import urljoin
 from datetime import datetime
 import shutil
+import os
 
 MAX_LOAD_ATTEMPTS = 2
 
@@ -49,7 +50,6 @@ def get_event_details(driver, event_url):
     description_str = "Açıklama Bulunamadı"
 
     try:
-        driver = webdriver.Chrome(service=service)
         driver.get(event_url)
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "c-job_detail_content_list"))
@@ -87,11 +87,12 @@ def get_event_details(driver, event_url):
             else:
                 description_str = "Etkinlik detay sayfasında açıklama bulunamadı."
         
-        location_element = detail_soup.find('div', class_='events_detail__content').find('span', string='Konum:')
-        if location_element:
-            location_str = location_element.find_next_sibling('span').text.strip()
-        else:
-            if "online" in detail_soup.get_text().lower():
+        details_content = detail_soup.find('div', class_='events_detail__content')
+        if details_content:
+            location_element = details_content.find('span', string='Konum:')
+            if location_element and location_element.find_next_sibling('span'):
+                location_str = location_element.find_next_sibling('span').text.strip()
+            elif "online" in detail_soup.get_text().lower():
                 location_str = "Online"
             else:
                 location_str = "Yerinde / Online Bilinmiyor"
@@ -209,14 +210,12 @@ def scrape_youthall_events():
         print(f"Hata: Youthall scraper çalışırken bir sorun oluştu: {e}")
         import traceback
         traceback.print_exc() 
-        if driver:
-            driver.quit()
-            shutil.rmtree(temp_profile)
         raise
     finally:
         if driver:
             driver.quit()
-            shutil.rmtree(temp_profile)
+        if temp_profile and os.path.isdir(temp_profile):
+            shutil.rmtree(temp_profile, ignore_errors=True)
 
 if __name__ == "__main__":
     open_events = scrape_youthall_events()
