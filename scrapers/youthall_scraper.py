@@ -12,6 +12,7 @@ from urllib.parse import urljoin
 from datetime import datetime
 import shutil
 import os
+import dateparser
 
 MAX_LOAD_ATTEMPTS = 2
 
@@ -19,27 +20,19 @@ service = Service(ChromeDriverManager().install())
 driver = None
 
 def parse_turkish_date(date_string):
-    months_turkish = {
-        'Ocak': 1, 'Şubat': 2, 'Mart': 3, 'Nisan': 4, 'Mayıs': 5, 'Haziran': 6,
-        'Temmuz': 7, 'Ağustos': 8, 'Eylül': 9, 'Ekim': 10, 'Kasım': 11, 'Aralık': 12
-    }
-    
     try:
-        parts = date_string.split()
-        day = int(parts[0])
-        month = months_turkish[parts[1]]
-        year = int(parts[2])
-        
-        if len(parts) > 4 and ':' in parts[4]:
-            time_part = parts[4]
-            hour, minute = map(int, time_part.split(':'))
-            return datetime(year, month, day, hour, minute)
-        elif len(parts) == 3 or (len(parts) == 4 and not ':' in parts[3]):
-            return datetime(year, month, day)
-        else:
+        if not date_string:
             return None
-    except (ValueError, KeyError) as e:
-        # print(f"Hata: Tarih parse edilemedi: '{date_string}' - {e}")
+        parsed = dateparser.parse(
+            date_string.strip(),
+            languages=['tr'],
+            settings={
+                'PREFER_DATES_FROM': 'future',
+                'RELATIVE_BASE': datetime.now()
+            }
+        )
+        return parsed
+    except Exception:
         return None
 
 def get_event_details(driver, event_url):
@@ -147,30 +140,56 @@ def scrape_youthall_events():
                 break
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        
-        event_cards = soup.find_all('div', class_='events box_hover border-line-light-blue')
+        event_cards = soup.select('div.events-card')
 
         if not event_cards:
-            print("Hata: Youthall sayfasında etkinlik kartları bulunamadı. Lütfen selector'ı veya sayfa yüklenme durumunu kontrol edin.")
+            print("Hata: Youthall sayfasında etkinlik kartları bulunamadı (selector: .events-card).")
             return []
 
         for card in event_cards:
             title = "Başlık Bulunamadı"
             link = None
+            image_url = None
+            source = "Youthall"
+            location = "Konum Bulunamadı"
             
-            link_element = card.find('a', href=True)
+            link_element = card.select_one('a.events-card__link[href]')
             if link_element and 'href' in link_element.attrs:
                 link = urljoin(base_url, link_element['href'].strip())
 
-            title_element = card.find('div', class_='events__content__title')
-            if title_element and title_element.find('h2'):
-                title = title_element.find('h2').text.strip()
-            
+            title_element = card.select_one('h2.events-card__title')
+            if title_element:
+                title = title_element.get_text(strip=True)
 
-            event_start_date_str, event_end_date_str, application_deadline_str, location, description = "","","","",""
-            if link:
-                print(f"Youthall: Detayları çekmek için linke gidiliyor: {link}")
-                event_start_date_str, event_end_date_str, application_deadline_str, location, description = get_event_details(driver, link)
+            company_element = card.select_one('div.events-card__company span')
+            if company_element and company_element.get_text(strip=True):
+                source = company_element.get_text(strip=True)
+
+            location_element = card.select_one('div.events-card__location span')
+            if location_element and location_element.get_text(strip=True):
+                location = location_element.get_text(strip=True)
+
+            image_element = card.select_one('div.events-card__img img')
+            if image_element and image_element.get('src'):
+                image_url = image_element.get('src').strip()
+
+            description = f"Youthall etkinliği: {title}"
+
+            # Yeni kart yapısından tarih alanlarını çek.
+            event_start_date_str, event_end_date_str, application_deadline_str = "", "", ""
+            for date_item in card.select('.events-card__dates .date-item'):
+                label_element = date_item.select_one('.date-text small')
+                value_element = date_item.select_one('.date-text strong')
+                if not label_element or not value_element:
+                    continue
+                label = label_element.get_text(" ", strip=True).lower()
+                value = value_element.get_text(" ", strip=True)
+                if "son başvuru" in label or "son katılım" in label:
+                    application_deadline_str = value
+                elif "başlangıç" in label:
+                    event_start_date_str = value
+                elif "bitiş" in label:
+                    event_end_date_str = value
 
             is_active = False
             final_event_date_for_db = None
@@ -196,8 +215,9 @@ def scrape_youthall_events():
                     'description': description,
                     'date': final_event_date_for_db,
                     'location': location,
+                    'image_url': image_url,
                     'url': link,
-                    'source': "Youthall",
+                    'source': source,
                     'is_active': True
                 })
             else:
@@ -210,7 +230,7 @@ def scrape_youthall_events():
         print(f"Hata: Youthall scraper çalışırken bir sorun oluştu: {e}")
         import traceback
         traceback.print_exc() 
-        raise
+        return []
     finally:
         if driver:
             driver.quit()
