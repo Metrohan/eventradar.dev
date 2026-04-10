@@ -34,3 +34,5 @@ msedgedriver/
 
 # keep example env tracked
 !.env.example
+
+frontend/.env.production

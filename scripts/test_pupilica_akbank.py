@@ -9,8 +9,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.insert(0, project_root)
 
-from app.scrapers.pupilica_scraper import scrape_pupilica_events
-from app.scrapers.akbank_scraper import scrape_akbank_events
+from scrapers.pupilica_scraper import scrape_pupilica_events
+from scrapers.akbank_scraper import scrape_akbank_events
 
 print("--- Testing Pupilica ---")
 try:
