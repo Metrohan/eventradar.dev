@@ -129,3 +129,27 @@ MIT Lisansı: [LICENSE](LICENSE)
 ---
 
 Bu proje öğrencilerin fırsatlara daha hızlı ulaşabilmesi için geliştiriliyor. İyi bir etkinlik bazen kariyerin yönünü değiştirir.
+
+## Scraper'ı Manuel Çalıştırma
+
+Etkinlikleri anlık çekmek için:
+
+```bash
+docker compose run --rm scraper python scripts/run_daily_scrape.py
+```
+
+## Hata Alarmı (Telegram)
+
+`backend`/`scraper` loglarında kritik hata olduğunda Telegram mesajı almak için:
+
+```bash
+export TELEGRAM_BOT_TOKEN="<BOT_TOKEN>"
+export TELEGRAM_CHAT_ID="<CHAT_ID>"
+python3 scripts/monitor_alerts.py
+```
+
+Sürekli izleme için cron örneği (her 2 dakikada bir):
+
+```bash
+*/2 * * * * cd /path/to/eventradar.dev && TELEGRAM_BOT_TOKEN=<BOT_TOKEN> TELEGRAM_CHAT_ID=<CHAT_ID> /usr/bin/python3 scripts/monitor_alerts.py >> /var/log/eventradar-alerts.log 2>&1
+```
