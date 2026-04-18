@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { adminAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
-import ErrorMessage from '../components/ErrorMessage'
 import { toast } from 'react-hot-toast'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
@@ -14,9 +13,6 @@ const ScraperControlPage = () => {
     const [logs, setLogs] = useState([])
     const [dataLoading, setDataLoading] = useState(true)
     const [triggering, setTriggering] = useState(false)
-
-    if (authLoading) return <LoadingSpinner />
-    if (!isAuthenticated) return <Navigate to="/admin/login" />
 
     const fetchData = async () => {
         try {
@@ -35,10 +31,11 @@ const ScraperControlPage = () => {
     }
 
     useEffect(() => {
+        if (!isAuthenticated) return undefined
         fetchData()
         const interval = setInterval(fetchData, 30000) // auto refresh every 30s
         return () => clearInterval(interval)
-    }, [])
+    }, [isAuthenticated])
 
     const handleTrigger = async (source) => {
         setTriggering(true)
@@ -48,12 +45,15 @@ const ScraperControlPage = () => {
             // Refresh logs immediately to show 'running' if we had that state, 
             // but for now just wait for next poll or manual refresh
             setTimeout(fetchData, 2000)
-        } catch (error) {
+        } catch {
             toast.error("Tetikleme başarısız")
         } finally {
             setTriggering(false)
         }
     }
+
+    if (authLoading) return <LoadingSpinner />
+    if (!isAuthenticated) return <Navigate to="/admin/login" />
 
     if (dataLoading) return <LoadingSpinner />
 

@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { useQuery } from 'react-query'
 import { useAuth } from '../contexts/AuthContext'
 import { adminAPI } from '../services/api'
-import toast from 'react-hot-toast'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import EventManagement from '../components/admin/EventManagement'
@@ -13,35 +12,34 @@ import EventRequestManagement from '../components/admin/EventRequestManagement'
 
 const AdminDashboard = () => {
   const { isAuthenticated } = useAuth()
-  const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState('events')
-
-  // Redirect if not authenticated
-  if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />
-  }
 
   // Fetch dashboard data (converted from Flask dashboard route)
   const {
     data: eventsData,
     isLoading: eventsLoading,
     error: eventsError
-  } = useQuery('admin-events', () => adminAPI.getEvents())
+  } = useQuery('admin-events', () => adminAPI.getEvents(), { enabled: isAuthenticated })
 
   const {
     data: announcementsData,
     isLoading: announcementsLoading
-  } = useQuery('admin-announcements', () => adminAPI.getAnnouncements())
+  } = useQuery('admin-announcements', () => adminAPI.getAnnouncements(), { enabled: isAuthenticated })
 
   const {
     data: suggestionsData,
     isLoading: suggestionsLoading
-  } = useQuery('admin-suggestions', () => adminAPI.getSuggestions())
+  } = useQuery('admin-suggestions', () => adminAPI.getSuggestions(), { enabled: isAuthenticated })
 
   const {
     data: requestsData,
     isLoading: requestsLoading
-  } = useQuery('admin-requests', () => adminAPI.getEventRequests())
+  } = useQuery('admin-requests', () => adminAPI.getEventRequests(), { enabled: isAuthenticated })
+
+  // Redirect if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" replace />
+  }
 
   if (eventsLoading || announcementsLoading || suggestionsLoading || requestsLoading) {
     return <LoadingSpinner message="Dashboard yükleniyor..." />

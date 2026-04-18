@@ -28,11 +28,6 @@ const AnnouncementManagement = ({ announcements }) => {
     }
   }
 
-  const handleEdit = (announcement) => {
-    setEditingAnnouncement(announcement)
-    setShowForm(true)
-  }
-
   const handleFormClose = () => {
     setShowForm(false)
     setEditingAnnouncement(null)

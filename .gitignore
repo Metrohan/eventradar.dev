@@ -36,3 +36,5 @@ msedgedriver/
 !.env.example
 
 frontend/.env.production
+frontend/node_modules/
+frontend/dist/

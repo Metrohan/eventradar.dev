@@ -1,11 +1,9 @@
 import React from 'react'
 import SupportModal from './SupportModal'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from './ThemeToggle'
 
 const Header = () => {
-  const { isAuthenticated, logout } = useAuth()
   const [showSupport, setShowSupport] = React.useState(false)
 
 

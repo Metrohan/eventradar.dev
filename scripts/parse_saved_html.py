@@ -87,16 +87,6 @@ for idx, row in enumerate(event_rows[:3]):
 print("Fetched Youthall events page (all).")
 
 driver.quit()
-        if img:
-            print(f'  Image: {img.get("src")[:100]}')
-        
-        # Description
-        details = row.find('div', class_='events__content__details')
-        if details:
-            desc_text = details.get_text(strip=True)
-            print(f'  Description: {desc_text[:120]}')
-
-driver.quit()
 
 print("\n\n=== CODERSPACE ===")
 options2 = Options()

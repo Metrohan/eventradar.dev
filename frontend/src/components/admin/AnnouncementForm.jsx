@@ -5,7 +5,6 @@ import { adminAPI } from '../../services/api'
 import toast from 'react-hot-toast'
 
 const AnnouncementForm = ({ announcement, onClose, onSuccess }) => {
-  const isEditing = !!announcement
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: announcement ? {
       title: announcement.title,

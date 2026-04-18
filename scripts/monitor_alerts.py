@@ -2,10 +2,12 @@
 import hashlib
 import json
 import os
+import shlex
 import subprocess
 import sys
 import time
 from pathlib import Path
+from typing import Sequence
 
 try:
     import requests
@@ -15,6 +17,7 @@ except Exception:
 
 STATE_FILE = Path(os.getenv("ALERT_STATE_FILE", ".alert_state.json"))
 COMPOSE_CMD = os.getenv("ALERT_COMPOSE_CMD", "docker compose")
+COMPOSE_ARGS = shlex.split(COMPOSE_CMD)
 SERVICES = [s.strip() for s in os.getenv("ALERT_SERVICES", "backend,scraper,db").split(",") if s.strip()]
 LOG_LINES = int(os.getenv("ALERT_LOG_LINES", "120"))
 COOLDOWN_SECONDS = int(os.getenv("ALERT_COOLDOWN_SECONDS", "900"))
@@ -33,8 +36,8 @@ KEYWORDS = [
 ]
 
 
-def run(cmd: str) -> tuple[int, str, str]:
-    p = subprocess.run(cmd, shell=True, text=True, capture_output=True)
+def run(cmd: Sequence[str]) -> tuple[int, str, str]:
+    p = subprocess.run(list(cmd), text=True, capture_output=True)
     return p.returncode, p.stdout.strip(), p.stderr.strip()
 
 
@@ -79,7 +82,7 @@ def send_telegram(text: str) -> bool:
 
 
 def parse_ps() -> list[dict]:
-    code, out, err = run(f"{COMPOSE_CMD} ps --format json")
+    code, out, err = run([*COMPOSE_ARGS, "ps", "--format", "json"])
     if code != 0:
         print(f"[WARN] compose ps okunamadi: {err or out}")
         return []
@@ -137,7 +140,7 @@ def collect_issues() -> list[str]:
             issues.append(f"Servis sagliksiz: {service} | health={health} | status={status or '-'}")
 
     for service in SERVICES:
-        code, logs, _ = run(f"{COMPOSE_CMD} logs --no-color --tail={LOG_LINES} {service}")
+        code, logs, _ = run([*COMPOSE_ARGS, "logs", "--no-color", f"--tail={LOG_LINES}", service])
         if code != 0:
             continue
         lines = [ln for ln in logs.splitlines() if any(k in ln for k in KEYWORDS)]

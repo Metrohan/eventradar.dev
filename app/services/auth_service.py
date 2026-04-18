@@ -27,24 +27,20 @@ class AuthService:
     def authenticate_user(self, username: str, password: str) -> bool:
         """Authenticate user credentials.
 
-        Priority:
-        1. Use ADMIN_USERNAME / ADMIN_PASSWORD from environment (via settings).
-           If password looks like a bcrypt hash (starts with "$2"), verify with hash.
-           Otherwise compare plain text for backward compatibility.
-        2. Fallback to legacy hardcoded (admin/password) if env vars missing.
+        Uses ADMIN_USERNAME / ADMIN_PASSWORD from environment.
+        If password looks like a bcrypt hash (starts with "$2"), verify with hash.
+        Otherwise compare plain text for backward compatibility.
         """
         env_user = settings.admin_username
         env_pass = settings.admin_password
 
-        if env_user and env_pass:
-            # Support hashed password if provided
-            if env_pass.startswith("$2"):
-                return username == env_user and self.verify_password(password, env_pass)
-            else:
-                return username == env_user and password == env_pass
+        if not env_user or not env_pass:
+            return False
 
-        # Legacy fallback
-        return (username == "admin" and password == "password")
+        # Support hashed password if provided
+        if env_pass.startswith("$2"):
+            return username == env_user and self.verify_password(password, env_pass)
+        return username == env_user and password == env_pass
     
     def create_access_token(self, data: dict, expires_delta: Optional[timedelta] = None) -> str:
         """Create a JWT access token"""
@@ -67,4 +63,3 @@ class AuthService:
             return username
         except JWTError:
             return None
-

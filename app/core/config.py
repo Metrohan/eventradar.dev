@@ -11,9 +11,9 @@ class Settings(BaseSettings):
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./instance/events.db")
 
     # Security
-    secret_key: str = os.getenv("SECRET_KEY", "default_dev_secret_key_change_this!")
-    admin_username: str = os.getenv("ADMIN_USERNAME", "admin")
-    admin_password: str = os.getenv("ADMIN_PASSWORD", "password")
+    secret_key: str = os.getenv("SECRET_KEY", "")
+    admin_username: str = os.getenv("ADMIN_USERNAME", "")
+    admin_password: str = os.getenv("ADMIN_PASSWORD", "")
 
     # CORS - allow override via env CORS_ORIGINS, append production domain automatically if present
     cors_origins: Union[str, List[str]] = os.getenv(
@@ -36,10 +36,19 @@ class Settings(BaseSettings):
                 "https://eventradar.dev",
                 "https://www.eventradar.dev"
             ])
+
+        # Security hardening: refuse to boot with weak/missing credentials by default.
+        allow_insecure_defaults = os.getenv("ALLOW_INSECURE_DEFAULTS", "false").lower() == "true"
+        if not allow_insecure_defaults:
+            if not self.secret_key or len(self.secret_key) < 32:
+                raise ValueError("SECRET_KEY is required and must be at least 32 characters.")
+            if not self.admin_username:
+                raise ValueError("ADMIN_USERNAME is required.")
+            if not self.admin_password:
+                raise ValueError("ADMIN_PASSWORD is required.")
     
     class Config:
         env_file = ".env"
         extra = "ignore"
 
 settings = Settings()
-

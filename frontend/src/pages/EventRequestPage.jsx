@@ -1,12 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
-import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { formAPI } from '../services/api'
 
 const EventRequestPage = () => {
-  const navigate = useNavigate()
   const { register, handleSubmit, formState: { errors }, reset } = useForm()
 
   // Submit event request mutation (converted from Flask route /requests/etkinlik-talep)
