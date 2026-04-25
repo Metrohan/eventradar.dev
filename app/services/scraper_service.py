@@ -42,75 +42,71 @@ class ScraperService:
         thread.start()
         return {"message": f"Scraper {source} triggered locally"}
 
-    def _run_scraper_task(self, source: str):
-        # We need a new session here usually, but for simple logging we can try catch
-        # Actually better to invoke the script wrapper that handles DB logging itself?
-        # Or we act as the wrapper here.
-        # For simplicity, let's call the script via subprocess which is safer for isolation
-        
-        # Determine script based on source
-        script_map = {
-            "all": "scripts/run_daily_scrape.py",
-            "youthall": "scripts/force_rescrape_youthall.py", # Reusing force script for now or specific
-            # Add mapping for others if they have dedicated scripts
-        }
-        
-        target_script = script_map.get(source.lower())
-        if not target_script and source.lower() != "all":
-             # Try generic match? No, let's stick to 'all' for now or 'youthall'
-             pass
-        
-        if source.lower() == "all":
-            cmd = ["python", "scripts/run_daily_scrape.py"]
-        elif source.lower() == "youthall":
-             # We might want to use the main scraper function directly instead of script
-             # But script is easier for now
-             cmd = ["python", "-m", "scripts.force_rescrape_youthall"]
-        else:
-            return # Unknown source
+    # Kaynak adı → scraper fonksiyonu eşlemesi
+    SCRAPER_FUNCS = {
+        "techcareer.net": "app.scrapers.techcareer_scraper:scrape_techcareer_events",
+        "coderspace":     "app.scrapers.cs_scraper:scrape_coderspace_events",
+        "anbean":         "app.scrapers.anbean_scraper:scrape_anbean_events",
+        "kodluyoruz":     "app.scrapers.kodluyoruz_scraper:scrape_kodluyoruz_events",
+        "youthall":       "app.scrapers.youthall_scraper:scrape_youthall_events",
+        "akbank gençlik akademisi": "app.scrapers.akbank_scraper:scrape_akbank_events",
+        "pupilica":       "app.scrapers.pupilica_scraper:scrape_pupilica_events",
+    }
 
-        # Log start?
-        
+    def _run_scraper_task(self, source: str):
+        from ..core.database import SessionLocal
+        import importlib
+
+        key = source.lower()
+        status = "failed"
+        error_msg = None
+        events_found = 0
+        new_count = 0
+
+        start_time = time.time()
         try:
-            start_time = time.time()
-            result = subprocess.run(cmd, capture_output=True, text=True)
-            duration = time.time() - start_time
-            
-            # We need a new DB session since this is a thread
-            from ..core.database import SessionLocal
-            db = SessionLocal()
-            
-            status = "success" if result.returncode == 0 else "failed"
-            error_msg = result.stderr if result.returncode != 0 else None
-            
-            # Parse output for events count? Too complex for regex on stdout right now
-            # Assume 0 or check logs?
-            # Let's just log execution
-            
+            if key == "all":
+                # Tüm scraper'ları sırayla çalıştır
+                cmd = ["python", "scripts/run_daily_scrape.py"]
+                proc = subprocess.run(cmd, capture_output=True, text=True)
+                status = "success" if proc.returncode == 0 else "failed"
+                if proc.returncode != 0:
+                    error_msg = proc.stderr
+            elif key in self.SCRAPER_FUNCS:
+                # İlgili scraper fonksiyonunu dinamik olarak çağır
+                module_path, func_name = self.SCRAPER_FUNCS[key].rsplit(":", 1)
+                module = importlib.import_module(module_path)
+                scraper_func = getattr(module, func_name)
+                events = scraper_func()
+                events_found = len(events)
+                if events:
+                    result_str = process_scraped_events(events, source)
+                    try:
+                        new_count = int(result_str.split("New:")[1].split(",")[0].strip())
+                    except Exception:
+                        pass
+                status = "success"
+            else:
+                error_msg = f"Bilinmeyen kaynak: {source}"
+                status = "failed"
+        except Exception as e:
+            error_msg = str(e)
+            status = "failed"
+
+        duration = time.time() - start_time
+        db = SessionLocal()
+        try:
             log = ScraperLog(
                 source=source,
                 status=status,
-                events_found=0, # Placeholder
-                new_events=0,   # Placeholder
+                events_found=events_found,
+                new_events=new_count,
                 error_message=error_msg,
-                duration_seconds=duration
+                duration_seconds=duration,
             )
             db.add(log)
             db.commit()
-            db.close()
-            
-        except Exception as e:
-            # Log failure
-            from ..core.database import SessionLocal
-            db = SessionLocal()
-            log = ScraperLog(
-                source=source,
-                status="failed",
-                error_message=str(e),
-                duration_seconds=0
-            )
-            db.add(log)
-            db.commit()
+        finally:
             db.close()
 
 
@@ -165,39 +161,39 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
     """Scrape edilen etkinlikleri veritabanına kaydeder."""
     from ..core.database import SessionLocal
     from ..models.event import Event
-    from dateparser import parse as parse_date
-    
+
     db = SessionLocal()
     new_count = 0
     updated_count = 0
-    
-    
+    failed_urls = []
+
     try:
+        # Mevcut URL'leri tek sorguda çek (N+1 sorgu önleme)
+        urls = [d.get("url") for d in events_data if d.get("url")]
+        existing_map = {
+            e.url: e
+            for e in db.query(Event).filter(Event.url.in_(urls)).all()
+        }
+
+        now = datetime.now()
         for data in events_data:
             url = data.get("url")
             if not url:
                 continue
-                
             try:
-                # Date parsing logic using the centralized helper
                 date_val = normalize_date(data.get("date"))
+                existing_event = existing_map.get(url)
 
-                # URL'ye göre mevcut etkinliği ara
-                existing_event = db.query(Event).filter(Event.url == url).first()
-                
                 if existing_event:
-                    # Güncelle
                     existing_event.title = data.get("title", existing_event.title)
                     existing_event.description = data.get("description", existing_event.description)
-                    # Sadece yeni tarih None değilse güncelle
                     if date_val is not None:
                         existing_event.date = date_val
                     existing_event.location = data.get("location", existing_event.location)
                     existing_event.image_url = data.get("image_url", existing_event.image_url)
-                    existing_event.scraped_at = datetime.now()
+                    existing_event.scraped_at = now
                     updated_count += 1
                 else:
-                    # Yeni ekle
                     new_event = Event(
                         title=data.get("title"),
                         description=data.get("description"),
@@ -207,21 +203,23 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
                         image_url=data.get("image_url"),
                         source=data.get("source", source_name),
                         is_active=True,
-                        scraped_at=datetime.now()
+                        scraped_at=now,
                     )
                     db.add(new_event)
                     new_count += 1
-                
-                # Her event için commit yapıyoruz (Batch dayanıklılığı)
-                db.commit()
             except Exception as e_event:
-                db.rollback()
                 print(f"Error processing single event ({url}): {e_event}")
+                failed_urls.append(url)
                 continue
-        
-        return f"New: {new_count}, Updated: {updated_count}"
+
+        db.commit()
+        result = f"New: {new_count}, Updated: {updated_count}"
+        if failed_urls:
+            result += f", Failed: {len(failed_urls)}"
+        return result
     except Exception as e:
-        print(f"Error in process_scraped_events loop: {e}")
+        db.rollback()
+        print(f"Error in process_scraped_events: {e}")
         return f"Error: {str(e)}"
     finally:
         db.close()

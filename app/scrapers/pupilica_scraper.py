@@ -20,7 +20,7 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
     try:
         # Initializing undetected-chromedriver
         options = get_chrome_options()
-        driver = uc.Chrome(options=options, use_subprocess=True, version_main=144, driver_executable_path="/root/.local/share/undetected_chromedriver/undetected_chromedriver")
+        driver = uc.Chrome(options=options, use_subprocess=True)
         
         driver.get(url)
         
@@ -34,12 +34,6 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
 
         # Parse rendered content
         soup = BeautifulSoup(driver.page_source, "html.parser")
-        
-        print("DEBUG Pupilica Body HTML (first 2000 chars):")
-        if soup.body:
-             print(soup.body.prettify()[:2000])
-        else:
-             print(driver.page_source[:2000])
         
         # Select cards using partial class match
         cards = soup.select("div[class*='EventsCard__CardWrapper']")

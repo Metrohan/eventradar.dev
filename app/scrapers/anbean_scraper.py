@@ -74,12 +74,7 @@ def scrape_anbean_events():
                 minute = int(m.group(5)) if m.group(5) else 0
                 # Normalize key without accents fallback
                 key_norm = month_name.capitalize()
-                if key_norm not in MONTHS_TR:
-                    # Try ascii version
-                    key_norm = (key_norm
-                                .replace('Ş','Subat') if key_norm=='Şubat' else key_norm
-                                )
-                month_num = MONTHS_TR.get(month_name, MONTHS_TR.get(key_norm))
+                month_num = MONTHS_TR.get(key_norm) or MONTHS_TR.get(month_name)
                 if month_num:
                     try:
                         return datetime(year, month_num, day, hour, minute)
@@ -163,14 +158,10 @@ def scrape_anbean_events():
         description = "Anbean Kampüs etkinliği."
         location = "Online"
 
-        is_application_open = False
         status_closed_badge = card.find('span', class_='mini-eventCard-statusBadge text-danger')
-        if status_closed_badge and "Başvurular Tamamlandı" in status_closed_badge.text:
-            is_application_open = False
-        else:
-            detail_button = card.find('button', class_='btn-primary')
-            if detail_button and "Detaylı Bilgi" in detail_button.text:
-                is_application_open = True
+        is_application_open = not (
+            status_closed_badge and "Başvurular Tamamlandı" in status_closed_badge.text
+        )
         
         img_tag = card.find('img', class_='mini-eventCard-HeaderImage')
         if img_tag and 'src' in img_tag.attrs:

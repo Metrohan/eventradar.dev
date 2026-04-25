@@ -72,8 +72,6 @@ class EventService:
             self.db.commit()
             self.db.refresh(db_event)
             return db_event
-            self.db.refresh(db_event)
-            return db_event
         except IntegrityError:
             self.db.rollback()
             raise ValueError("Event with this URL already exists")

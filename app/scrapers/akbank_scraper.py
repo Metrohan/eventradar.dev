@@ -44,10 +44,6 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
         else:
             cards = soup.find_all('div', class_='event-item')
             
-        if cards:
-            print("DEBUG Akbank First Card HTML:")
-            print(cards[0].prettify())
-            
         for card in cards:
             # Title
             title_tag = card.find('h6', class_='text-primary')
