@@ -1,5 +1,4 @@
 import React from 'react'
-
 import { useQuery } from 'react-query'
 import { publicAPI } from '../services/api'
 import EventCard from '../components/EventCard'
@@ -7,242 +6,267 @@ import AnnouncementModal from '../components/AnnouncementModal'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 
+const SOURCES = [
+  'TechCareer.net', 'Kodluyoruz', 'Youthall',
+  'Anbean', 'Coderspace', 'Akbank Gençlik Akademisi', 'Pupilica',
+]
+
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = React.useState('')
-  const [selectedLocation, setSelectedLocation] = React.useState('')
   const [selectedSource, setSelectedSource] = React.useState('')
+  const [selectedLocation, setSelectedLocation] = React.useState('')
   const [showPastEvents, setShowPastEvents] = React.useState(false)
 
-  // Fetch events (converted from Flask route /events)
-  const {
-    data: eventsData,
-    isLoading: eventsLoading,
-    error: eventsError
-  } = useQuery('events', () => publicAPI.getEvents(true))
+  const { data: eventsData, isLoading, error } = useQuery(
+    'events',
+    () => publicAPI.getEvents(true)
+  )
 
-  // Fetch latest announcement (converted from Flask announcement logic)
-  const {
-    data: announcementData,
-    isLoading: announcementLoading
-  } = useQuery('latest-announcement', () => publicAPI.getLatestAnnouncement(), {
-    retry: false, // Don't retry if no announcement exists
-  })
+  const { data: announcementData } = useQuery(
+    'latest-announcement',
+    () => publicAPI.getLatestAnnouncement(),
+    { retry: false }
+  )
 
-  // Derive unique locations and sources for filters
   const filterOptions = React.useMemo(() => {
     if (!eventsData?.data?.events) return { locations: [], sources: [] }
-
     const events = eventsData.data.events
     const locations = [...new Set(events.map(e => e.location).filter(Boolean))].sort()
     const sources = [...new Set(events.map(e => e.source).filter(Boolean))].sort()
-
     return { locations, sources }
   }, [eventsData])
 
-  if (eventsLoading) {
-    return <LoadingSpinner />
-  }
+  if (isLoading) return <LoadingSpinner />
+  if (error) return <ErrorMessage message="Etkinlikler yüklenirken bir sorun oluştu." />
 
-  if (eventsError) {
-    return <ErrorMessage message="Etkinlikler yüklenirken bir sorun oluştu." />
-  }
-
-  const now = new Date();
+  const now = new Date()
   const allEvents = eventsData?.data?.events || []
+  const totalCount = eventsData?.data?.total_count || 0
 
   const filteredEvents = allEvents.filter(event => {
-    // 1. Date Filter (Base filter)
-    if (!showPastEvents && event.date) {
-      if (new Date(event.date) < now) return false
-    }
-
-    // 2. Search Term Filter
+    if (!showPastEvents && event.date && new Date(event.date) < now) return false
     if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase()
-      const titleMatch = event.title?.toLowerCase().includes(searchLower)
-      const descMatch = event.description?.toLowerCase().includes(searchLower)
-      if (!titleMatch && !descMatch) return false
+      const s = searchTerm.toLowerCase()
+      if (!event.title?.toLowerCase().includes(s) && !event.description?.toLowerCase().includes(s)) return false
     }
-
-    // 3. Location Filter
-    if (selectedLocation && event.location !== selectedLocation) {
-      return false
-    }
-
-    // 4. Source Filter
-    if (selectedSource && event.source !== selectedSource) {
-      return false
-    }
-
+    if (selectedSource && event.source !== selectedSource) return false
+    if (selectedLocation && event.location !== selectedLocation) return false
     return true
   }).sort((a, b) => {
-    // Show upcoming events first if we are not showing past events primarily, 
-    // or keep the scraped_at sort?
-    // The original code used scraped_at. Let's stick to scraped_at for "Newest Added" feel,
-    // OR maybe users want to see "Soonest" events?
-    // Original: return new Date(b.scraped_at) - new Date(a.scraped_at);
-    // Let's keep original sorting logic for consistency unless requested otherwise.
-    return new Date(b.scraped_at) - new Date(a.scraped_at);
-  });
+    if (!a.date) return 1
+    if (!b.date) return -1
+    return new Date(a.date) - new Date(b.date)
+  })
 
-  const totalCount = eventsData?.data?.total_count || 0
-  const lastUpdated = eventsData?.data?.last_updated || "N/A"
+  const clearFilters = () => {
+    setSearchTerm('')
+    setSelectedSource('')
+    setSelectedLocation('')
+    setShowPastEvents(false)
+  }
+
+  const hasFilters = searchTerm || selectedSource || selectedLocation || showPastEvents
   const announcement = announcementData?.data
 
   return (
     <>
-      <div className="container py-4">
-        {/* Header info section (converted from Flask template) */}
-        <div className="header-info mb-4">
-          <div className="row">
-            <div className="col-md-8">
-              <h1 className="display-4 fw-bold text-primary mb-3">
-                TechEventRadar
-              </h1>
-              <p className="lead text-muted mb-4">
-                En güncel teknoloji kariyer etkinliklerini keşfedin!
-                Seminerler, hackathon'lar, atölyeler ve daha fazlası...
-              </p>
-              <div className="d-flex flex-wrap gap-3 mb-4">
-                <div className="badge bg-primary fs-6 px-3 py-2">
-                  <i className="fas fa-calendar-alt me-2"></i>
-                  {totalCount} Aktif Etkinlik
-                </div>
-                <div className="badge bg-success fs-6 px-3 py-2">
-                  <i className="fas fa-clock me-2"></i>
-                  Son Güncelleme: {lastUpdated ? new Date(lastUpdated).toLocaleString('tr-TR') : 'N/A'}
-                </div>
-              </div>
+      {/* ── Hero ─────────────────────────────────────────── */}
+      <section className="hero-section">
+        <div className="hero-glow hero-glow--blue" />
+        <div className="hero-glow hero-glow--purple" />
+        <div className="hero-grid" />
+
+        <div className="container">
+          <div className="hero-content">
+            <div className="hero-badge">
+              <i className="fas fa-bolt"></i>
+              Türkiye'nin Teknoloji Etkinlik Radarı
             </div>
-            <div className="col-md-4 text-end">
-              <div className="card bg-card border-0 shadow-sm">
-                <div className="card-body text-center">
-                  <i className="fas fa-rocket fa-3x text-primary mb-3"></i>
-                  <h5 className="card-title text-white">Etkinlik Ekleme Talebi</h5>
-                  <p className="card-text text-muted">
-                    Kaçırdığımız bir etkinlik mi var? Bize bildirin!
-                  </p>
-                  <a href="/etkinlik-talep" className="btn btn-primary">
-                    Talep Gönder
-                  </a>
-                </div>
+
+            <h1 className="hero-title">
+              Tüm Etkinlikleri<br />
+              <span className="gradient-text">Tek Platformda</span> Keşfet
+            </h1>
+
+            <p className="hero-subtitle">
+              TechCareer, Kodluyoruz, Youthall ve daha fazla platformdan otomatik toplanan
+              hackathon, seminer ve atölye etkinlikleri burada.
+            </p>
+
+            {/* Quick search */}
+            <div className="hero-search">
+              <i className="fas fa-search hero-search-icon"></i>
+              <input
+                type="text"
+                className="hero-search-input"
+                placeholder="Etkinlik, platform veya konu ara..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {/* Stats */}
+            <div className="hero-stats">
+              <div className="hero-stat">
+                <span className="hero-stat-number">{totalCount}+</span>
+                <span className="hero-stat-label">Aktif Etkinlik</span>
+              </div>
+              <div className="hero-stat-divider" />
+              <div className="hero-stat">
+                <span className="hero-stat-number">{SOURCES.length}</span>
+                <span className="hero-stat-label">Platform</span>
+              </div>
+              <div className="hero-stat-divider" />
+              <div className="hero-stat">
+                <span className="hero-stat-number">Günlük</span>
+                <span className="hero-stat-label">Güncelleme</span>
               </div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Filters Section */}
-        <div className="card bg-card border-0 shadow-sm mb-4">
-          <div className="card-body">
-            <div className="row g-3">
-              <div className="col-md-4">
-                <div className="input-group">
-                  <span className="input-group-text input-group-text-dark border-end-0">
-                    <i className="fas fa-search"></i>
-                  </span>
-                  <input
-                    type="text"
-                    className="form-control form-control-dark border-start-0 ps-0"
-                    placeholder="Etkinlik ara..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="col-md-3">
-                <label htmlFor="locationSelect" className="visually-hidden">Konum Seçin</label>
+      {/* ── Main content ─────────────────────────────────── */}
+      <div className="container py-4">
+
+        {/* Filters */}
+        <div className="filters-section mb-4">
+          <div className="filter-row">
+            {/* Source filter */}
+            <div className="filter-select-wrap">
+              <select
+                className="filter-select"
+                value={selectedSource}
+                onChange={e => setSelectedSource(e.target.value)}
+                aria-label="Platform seçin"
+              >
+                <option value="">Tüm Platformlar</option>
+                {filterOptions.sources.map(src => (
+                  <option key={src} value={src}>{src}</option>
+                ))}
+              </select>
+              <i className="fas fa-chevron-down filter-select-arrow"></i>
+            </div>
+
+            {/* Location filter */}
+            {filterOptions.locations.length > 0 && (
+              <div className="filter-select-wrap">
                 <select
-                  id="locationSelect"
-                  className="form-select form-select-dark"
+                  className="filter-select"
                   value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  onChange={e => setSelectedLocation(e.target.value)}
+                  aria-label="Konum seçin"
                 >
                   <option value="">Tüm Konumlar</option>
                   {filterOptions.locations.map(loc => (
                     <option key={loc} value={loc}>{loc}</option>
                   ))}
                 </select>
+                <i className="fas fa-chevron-down filter-select-arrow"></i>
               </div>
-              <div className="col-md-3">
-                <label htmlFor="sourceSelect" className="visually-hidden">Kaynak Seçin</label>
-                <select
-                  id="sourceSelect"
-                  className="form-select form-select-dark"
-                  value={selectedSource}
-                  onChange={(e) => setSelectedSource(e.target.value)}
-                >
-                  <option value="">Tüm Kaynaklar</option>
-                  {filterOptions.sources.map(src => (
-                    <option key={src} value={src}>{src}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-2 d-flex align-items-center">
-                <div className="form-check form-switch">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="showPastEvents"
-                    checked={showPastEvents}
-                    onChange={(e) => setShowPastEvents(e.target.checked)}
-                  />
-                  <label className="form-check-label" htmlFor="showPastEvents">
-                    Geçmişleri Göster
-                  </label>
-                </div>
-              </div>
-            </div>
+            )}
+
+            {/* Past events toggle */}
+            <label className={`filter-toggle ${showPastEvents ? 'active' : ''}`}>
+              <input
+                type="checkbox"
+                checked={showPastEvents}
+                onChange={e => setShowPastEvents(e.target.checked)}
+              />
+              <i className="fas fa-history"></i>
+              Geçmişleri Göster
+            </label>
+
+            {/* Clear */}
+            {hasFilters && (
+              <button
+                className="filter-toggle"
+                onClick={clearFilters}
+                style={{ marginLeft: 'auto', color: 'var(--danger)', borderColor: 'rgba(239,68,68,0.3)' }}
+              >
+                <i className="fas fa-times"></i>
+                Temizle
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Events section (converted from Flask template events display) */}
-        <div className="events-section">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="h3 mb-0">
-              <i className="fas fa-list me-2"></i>
-              Etkinlikler
-            </h2>
-            <span className="text-muted">
-              {filteredEvents.length} sonuç bulundu
+        {/* Section header */}
+        <div className="section-header">
+          <div className="section-title">
+            <span className="section-title-icon">
+              <i className="fas fa-calendar-alt"></i>
             </span>
+            Etkinlikler
           </div>
+          <span className="results-count">
+            {filteredEvents.length} sonuç
+          </span>
+        </div>
 
-          {filteredEvents.length === 0 ? (
-            <div className="text-center py-5">
-              <i className="fas fa-search fa-4x text-muted mb-3"></i>
-              <h4 className="text-muted">Aradığınız kriterlere uygun etkinlik bulunamadı</h4>
-              <button
-                className="btn btn-outline-primary mt-3"
-                onClick={() => {
-                  setSearchTerm('')
-                  setSelectedLocation('')
-                  setSelectedSource('')
-                  setShowPastEvents(false)
-                }}
-              >
+        {/* Events grid */}
+        {filteredEvents.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <i className="fas fa-search"></i>
+            </div>
+            <h4>Etkinlik bulunamadı</h4>
+            <p>Arama kriterlerinizi değiştirerek tekrar deneyin.</p>
+            {hasFilters && (
+              <button className="btn-outline-primary" onClick={clearFilters}>
+                <i className="fas fa-times me-1"></i>
                 Filtreleri Temizle
               </button>
-            </div>
-          ) : (
-            <div className="row">
-              {filteredEvents.map((event) => (
-                <div key={event.id} className="col-lg-6 col-xl-4 mb-4">
-                  <EventCard event={event} />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Announcement modal (converted from Flask template modal) */}
-        {announcement && !announcementLoading && (
-          <AnnouncementModal announcement={announcement} />
+            )}
+          </div>
+        ) : (
+          <div className="row g-4">
+            {filteredEvents.map(event => (
+              <div key={event.id} className="col-lg-6 col-xl-4">
+                <EventCard event={event} />
+              </div>
+            ))}
+          </div>
         )}
+
+        {/* Etkinlik ekleme CTA */}
+        <div
+          className="text-center mt-5 py-5"
+          style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '20px',
+          }}
+        >
+          <div
+            style={{
+              width: 56, height: 56,
+              borderRadius: '14px',
+              background: 'rgba(56,189,248,0.1)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 1rem',
+              fontSize: '1.4rem',
+              color: 'var(--action-primary)',
+            }}
+          >
+            <i className="fas fa-plus"></i>
+          </div>
+          <h5 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>
+            Bir etkinlik mi kaçırdık?
+          </h5>
+          <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '1.25rem' }}>
+            Eklenmesini istediğiniz bir etkinlik varsa bize bildirin.
+          </p>
+          <a href="/etkinlik-talep" className="btn-primary">
+            Etkinlik Ekle
+            <i className="fas fa-arrow-right" style={{ fontSize: '0.8rem' }}></i>
+          </a>
+        </div>
       </div>
+
+      {announcement && <AnnouncementModal announcement={announcement} />}
     </>
   )
 }
 
 export default HomePage
-
-

@@ -2,100 +2,95 @@ import React from 'react'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 
+const SOURCE_STYLES = {
+  'TechCareer.net':           { bg: 'rgba(56,189,248,0.18)',  color: '#38BDF8',  border: 'rgba(56,189,248,0.35)' },
+  'Kodluyoruz':               { bg: 'rgba(168,85,247,0.18)',  color: '#A855F7',  border: 'rgba(168,85,247,0.35)' },
+  'Youthall':                 { bg: 'rgba(16,185,129,0.18)',  color: '#10B981',  border: 'rgba(16,185,129,0.35)' },
+  'Anbean':                   { bg: 'rgba(245,158,11,0.18)',  color: '#F59E0B',  border: 'rgba(245,158,11,0.35)' },
+  'Coderspace':               { bg: 'rgba(99,102,241,0.18)',  color: '#6366F1',  border: 'rgba(99,102,241,0.35)' },
+  'Akbank Gençlik Akademisi': { bg: 'rgba(239,68,68,0.18)',   color: '#EF4444',  border: 'rgba(239,68,68,0.35)'  },
+  'Pupilica':                 { bg: 'rgba(34,197,94,0.18)',   color: '#22C55E',  border: 'rgba(34,197,94,0.35)'  },
+}
+
+const DEFAULT_SOURCE_STYLE = { bg: 'rgba(56,189,248,0.18)', color: '#38BDF8', border: 'rgba(56,189,248,0.35)' }
+
 const EventCard = ({ event }) => {
   const formatDate = (dateString) => {
     if (!dateString) return 'Tarih belirtilmemiş'
     try {
-      return format(new Date(dateString), 'dd MMMM yyyy, HH:mm', { locale: tr })
+      return format(new Date(dateString), 'dd MMM yyyy · HH:mm', { locale: tr })
     } catch {
-      return 'Geçersiz tarih'
+      return 'Tarih belirtilmemiş'
     }
   }
 
-  const getStatusInfo = (isActive) => {
-    return {
-      text: isActive ? 'Açık' : 'Kapalı',
-      className: isActive ? 'status-acik' : 'status-kapali'
-    }
-  }
-
-  const status = getStatusInfo(event.is_active)
+  const sourceStyle = SOURCE_STYLES[event.source] || DEFAULT_SOURCE_STYLE
+  const isActive = event.is_active
 
   return (
     <div className="event-card h-100">
-      {/* Event image */}
-      <div className="event-image-container">
+      {/* Image */}
+      <div className="event-image-wrapper">
         <img
           src={event.image_url || '/placeholder-image-colored.webp'}
           alt={event.title}
           className="event-image"
           width="400"
-          height="225"
+          height="200"
           loading="lazy"
-          onError={(e) => {
-            e.target.src = '/placeholder-image-colored.webp'
-          }}
+          onError={(e) => { e.target.src = '/placeholder-image-colored.webp' }}
         />
+        <div className="event-image-overlay" />
+        <span
+          className="event-source-badge"
+          style={{
+            background: sourceStyle.bg,
+            color: sourceStyle.color,
+            border: `1px solid ${sourceStyle.border}`,
+          }}
+        >
+          {event.source}
+        </span>
       </div>
 
-      {/* Event content */}
-      <div className="event-content d-flex flex-column h-100">
+      {/* Content */}
+      <div className="event-content">
         <h3 className="event-title">{event.title}</h3>
 
         {event.description && (
-          <p className="event-description flex-grow-0">
-            {event.description.length > 200
-              ? `${event.description.substring(0, 200)}...`
-              : event.description
-            }
+          <p className="event-description">
+            {event.description.length > 120
+              ? `${event.description.substring(0, 120)}…`
+              : event.description}
           </p>
         )}
 
-        <div className="mt-auto">
-          {/* Event metadata */}
-          <div className="event-meta">
+        <div className="event-meta">
+          <div className="event-meta-item">
+            <i className="fas fa-calendar-alt"></i>
+            <span>{formatDate(event.date)}</span>
+          </div>
+          {event.location && (
             <div className="event-meta-item">
-              <i className="fas fa-calendar-alt"></i>
-              <span>{formatDate(event.date)}</span>
+              <i className="fas fa-map-marker-alt"></i>
+              <span>{event.location}</span>
             </div>
+          )}
+        </div>
 
-            {event.location && (
-              <div className="event-meta-item">
-                <i className="fas fa-map-marker-alt"></i>
-                <span>{event.location}</span>
-              </div>
-            )}
-
-            <div className="event-meta-item">
-              <i className="fas fa-tag"></i>
-              <span>{event.source}</span>
-            </div>
-          </div>
-
-          {/* Event status */}
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <span className={`event-status ${status.className}`}>
-              {status.text}
-            </span>
-
-            <small className="text-muted">
-              <i className="fas fa-clock me-1"></i>
-              {formatDate(event.scraped_at)}
-            </small>
-          </div>
-
-          {/* Action buttons */}
-          <div className="d-flex gap-2">
-            <a
-              href={event.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary btn-sm flex-fill"
-            >
-              <i className="fas fa-external-link-alt me-1"></i>
-              Etkinlik Sayfası
-            </a>
-          </div>
+        <div className="event-footer">
+          <span className={`event-status ${isActive ? 'status-acik' : 'status-kapali'}`}>
+            {isActive ? 'Açık' : 'Kapalı'}
+          </span>
+          <a
+            href={event.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-event"
+          >
+            Başvur
+            <i className="fas fa-arrow-right" style={{ fontSize: '0.7rem' }}></i>
+          </a>
         </div>
       </div>
     </div>
@@ -103,5 +98,3 @@ const EventCard = ({ event }) => {
 }
 
 export default EventCard
-
-

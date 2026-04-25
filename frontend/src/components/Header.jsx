@@ -1,67 +1,89 @@
 import React from 'react'
 import SupportModal from './SupportModal'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import ThemeToggle from './ThemeToggle'
+
+const NAV_LINKS = [
+  { to: '/', label: 'Anasayfa' },
+  { to: '/egitim-kaynaklari', label: 'Ücretsiz Eğitimler' },
+  { to: '/oneri-sikayet', label: 'Öneri / Şikayet' },
+]
 
 const Header = () => {
   const [showSupport, setShowSupport] = React.useState(false)
+  const [mobileOpen, setMobileOpen] = React.useState(false)
+  const location = useLocation()
 
+  React.useEffect(() => {
+    setMobileOpen(false)
+  }, [location.pathname])
 
   return (
     <header className="main-header">
       <div className="container">
-        <div className="d-flex justify-content-between align-items-center">
-          {/* Left side - Logo and Support Button */}
-          <div className="header-left-buttons d-flex align-items-center gap-3">
-            <Link to="/" className="logo-link">
-              <img
-                src="/techeventradar_logo.webp"
-                alt="TechEventRadar Logo"
-                className="header-logo"
-                width="40"
-                height="40"
-              />
-            </Link>
-            <button
-              onClick={() => setShowSupport(true)}
-              className="support-btn-link bmc-custom-button border-0 cursor-pointer"
-            >
-              <img src="/coffee.webp" className="bmc-icon" alt="Coffee" width="24" height="24" />
-              Destek Olmak İçin
-            </button>
-            <SupportModal show={showSupport} handleClose={() => setShowSupport(false)} />
-          </div>
+        <div className="d-flex justify-content-between align-items-center" style={{ position: 'relative' }}>
 
-          {/* Right buttons */}
-          <div className="header-right-buttons">
-            <Link to="/" className="button-link">
-              Anasayfa
-            </Link>
-            <Link to="/egitim-kaynaklari" className="button-link">
-              Ücretsiz Eğitimler
-            </Link>
-            <Link to="/oneri-sikayet" className="button-link">
-              Öneri/Şikayet
-            </Link>
+          {/* Logo */}
+          <Link to="/" className="logo-link">
+            <img
+              src="/techeventradar_logo.webp"
+              alt="TechEventRadar"
+              className="header-logo"
+              width="36"
+              height="36"
+            />
+            <span className="logo-text gradient-text">TechEventRadar</span>
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className={`header-nav ${mobileOpen ? 'open' : ''}`}>
+            {NAV_LINKS.map(({ to, label }) => (
+              <Link
+                key={to}
+                to={to}
+                className="button-link"
+                style={location.pathname === to ? {
+                  color: 'var(--action-primary)',
+                  background: 'rgba(56,189,248,0.08)',
+                  borderColor: 'var(--border-subtle)',
+                } : {}}
+              >
+                {label}
+              </Link>
+            ))}
             <a
               href="https://github.com/Metrohan/eventradar.dev"
               target="_blank"
               rel="noopener noreferrer"
               className="button-link github-button"
             >
-              <img src="/github-mark-white.webp" alt="GitHub Logo" className="github-icon" />
+              <img src="/github-mark-white.webp" alt="GitHub" className="github-icon" />
               GitHub
             </a>
-            {/* Admin login sadece direkt URL ile erişilebilir (/admin/login) */}
             <ThemeToggle />
-          </div>
+            <button
+              onClick={() => setShowSupport(true)}
+              className="support-btn-link"
+            >
+              <img src="/coffee.webp" className="bmc-icon" alt="" width="18" height="18" />
+              Destek Ol
+            </button>
+          </nav>
+
+          {/* Mobile hamburger */}
+          <button
+            className="nav-mobile-toggle"
+            onClick={() => setMobileOpen(v => !v)}
+            aria-label="Menüyü aç/kapat"
+          >
+            <i className={`fas fa-${mobileOpen ? 'times' : 'bars'}`}></i>
+          </button>
         </div>
       </div>
+
+      <SupportModal show={showSupport} handleClose={() => setShowSupport(false)} />
     </header>
   )
 }
 
 export default Header
-
-
-
