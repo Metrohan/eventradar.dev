@@ -24,6 +24,16 @@ class Settings(BaseSettings):
     # App
     app_name: str = "TechEventRadar API"
     debug: bool = False
+
+    # Email (SMTP)
+    smtp_host: str = os.getenv("SMTP_HOST", "")
+    smtp_port: int = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user: str = os.getenv("SMTP_USER", "")
+    smtp_pass: str = os.getenv("SMTP_PASS", "")
+    smtp_from: str = os.getenv("SMTP_FROM", "noreply@eventradar.dev")
+
+    # Telegram
+    telegram_bot_token: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
