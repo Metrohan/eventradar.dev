@@ -5,8 +5,12 @@ BASE_URL = "https://kodluyoruz.org"
 URL = f"{BASE_URL}/programlar"  # Kodluyoruz etkinlik sayfası
 
 def scrape_kodluyoruz_events():
-    response = requests.get(URL)
-    response.raise_for_status()
+    try:
+        response = requests.get(URL)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Kodluyoruz: network error: {e}")
+        return []
     response.encoding = 'utf-8'
     
     soup = BeautifulSoup(response.text, "html.parser")
