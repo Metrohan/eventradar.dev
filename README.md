@@ -29,39 +29,74 @@ TechEventRadar bu dağınıklığı azaltmak için geliştirildi.
 
 ## Mimari
 
+```text
+┌─────────────────────────────────────────────────────────┐
+│                  Frontend (React + Vite)                 │
+│                    http://localhost:3000                  │
+└──────────────────────────┬──────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────┐
+│                 Backend (FastAPI)                        │
+│                  http://localhost:8000                   │
+│       /api/events  /api/admin  /health  /docs            │
+└──────────┬─────────────────────────────┬────────────────┘
+           │                             │
+  ┌────────▼────────┐          ┌─────────▼─────────┐
+  │   PostgreSQL    │          │     Scrapers       │
+  │  (Events DB)    │          │  youthall, akbank  │
+  └─────────────────┘          │  techcareer, ...   │
+                               └────────────────────┘
+```
+
 - **Backend:** FastAPI + SQLAlchemy + PostgreSQL
 - **Frontend:** React (Vite)
-- **Scraping:** Python tabanlı scraper modülleri
+- **Scraping:** Python tabanlı scraper modülleri (Selenium + requests)
 - **Deployment:** Docker Compose
 
-## Hızlı Başlangıç
-
-### 1) Projeyi klonla
+## Hızlı Başlangıç (Docker)
 
 ```bash
 git clone https://github.com/Metrohan/eventradar.dev.git
 cd eventradar.dev
-```
-
-### 2) Ortam değişkenlerini hazırla
-
-```bash
 cp .env.example .env
+# .env içinde SECRET_KEY, ADMIN_USERNAME, ADMIN_PASSWORD değerlerini düzenle
+docker compose up -d --build
+sleep 10
+curl http://localhost:8000/health
+# Frontend: http://localhost:3000
 ```
 
-`.env` içindeki değerleri kendi ortamına göre düzenle.
+## Scrapers
 
-### 3) Docker ile çalıştır
+| Kaynak | Durum | Selenium |
+|--------|-------|----------|
+| TechCareer | ✅ Aktif | ✓ |
+| Youthall | ✅ Aktif | ✓ |
+| Akbank Gençlik | ✅ Aktif | ✓ (UC) |
+| Pupilica | ✅ Aktif | ✓ (UC) |
+| Kodluyoruz | ✅ Aktif | ✗ |
+| Anbean | ✅ Aktif | ✗ |
+| Coderspace | ✅ Aktif | ✓ (UC) |
+
+## API Docs
+
+- Swagger UI: <http://localhost:8000/docs>
+- Health check: <http://localhost:8000/health>
+
+## Troubleshooting
+
+**Port 8000 zaten kullanımda:**
 
 ```bash
-docker compose up -d --build
+lsof -i :8000
+kill -9 <PID>
 ```
 
-### 4) Uygulamayı aç
+**Database connection error:**
+`.env` içindeki `DATABASE_URL` değerinin `docker-compose.yml`'deki servis adıyla eşleştiğini kontrol et.
 
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:8000`
-- API Docs: `http://localhost:8000/docs`
+**Scraper Chrome hatası:**
+Scraper logları için: `GET /api/admin/scraper-logs` (admin token gerekli)
 
 ## Geliştirme (Local)
 
@@ -78,6 +113,14 @@ uvicorn app.main:app --reload
 cd frontend
 npm install
 npm run dev
+```
+
+### Testler
+
+```bash
+pip install -r requirements-dev.txt
+pytest -m "not integration"          # Unit testler
+pytest -m integration                # Gerçek scraper testleri (Chrome gerekli)
 ```
 
 ## Katkı Sağlama
