@@ -5,7 +5,6 @@ os.environ.setdefault("SECRET_KEY", "test-secret-key-that-is-at-least-32-chars")
 os.environ.setdefault("ADMIN_USERNAME", "testadmin")
 os.environ.setdefault("ADMIN_PASSWORD", "testpassword")
 
-import pytest
 from app.services.announcement_service import AnnouncementService
 from app.schemas.announcement import AnnouncementCreate
 

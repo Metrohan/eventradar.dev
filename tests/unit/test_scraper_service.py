@@ -59,13 +59,15 @@ def test_deactivate_past_events(test_db):
     past_id = past.id
     future_id = future.id
 
-    with patch(
-        "app.core.database.SessionLocal", return_value=test_db
-    ):
+    # Patch definition-site because deactivate_past_events uses a local import
+    # (`from ..core.database import SessionLocal` inside the function body),
+    # so patching the module-level name is the only way to intercept it.
+    with patch("app.core.database.SessionLocal", return_value=test_db):
         count = deactivate_past_events()
 
     assert count == 1
     from app.models.event import Event as EventModel
+
     past_after = test_db.query(EventModel).filter(EventModel.id == past_id).first()
     future_after = test_db.query(EventModel).filter(EventModel.id == future_id).first()
     assert past_after.is_active is False

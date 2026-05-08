@@ -5,7 +5,6 @@ os.environ.setdefault("SECRET_KEY", "test-secret-key-that-is-at-least-32-chars")
 os.environ.setdefault("ADMIN_USERNAME", "testadmin")
 os.environ.setdefault("ADMIN_PASSWORD", "testpassword")
 
-import pytest
 from app.services.event_request_service import EventRequestService
 from app.schemas.event_request import EventRequestCreate
 
