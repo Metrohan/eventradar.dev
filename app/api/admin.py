@@ -128,6 +128,8 @@ async def delete_event(
         if not success:
             raise HTTPException(status_code=404, detail="Event not found")
         return {"message": "Event deleted successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting event: {str(e)}")
 
