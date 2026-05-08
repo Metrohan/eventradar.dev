@@ -108,6 +108,8 @@ async def update_event(
         return event
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating event: {str(e)}")
 
@@ -191,6 +193,8 @@ async def delete_announcement(
         if not success:
             raise HTTPException(status_code=404, detail="Announcement not found")
         return {"message": "Announcement deleted successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error deleting announcement: {str(e)}"

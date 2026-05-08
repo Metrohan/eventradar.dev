@@ -118,3 +118,8 @@ def test_delete_announcement_with_auth(client, auth_headers, test_db):
     test_db.refresh(a)
     resp = client.delete(f"/api/admin/announcements/{a.id}", headers=auth_headers)
     assert resp.status_code == 200
+
+
+def test_delete_announcement_not_found(client, auth_headers):
+    resp = client.delete("/api/admin/announcements/99999", headers=auth_headers)
+    assert resp.status_code == 404
