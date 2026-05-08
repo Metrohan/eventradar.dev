@@ -9,6 +9,7 @@ import time
 from ..models.scraper_log import ScraperLog
 from ..schemas.scraper_log import ScraperLogCreate
 
+
 class ScraperService:
     def __init__(self, db: Session):
         self.db = db
@@ -21,14 +22,24 @@ class ScraperService:
         return db_log
 
     def get_logs(self, limit: int = 50) -> List[ScraperLog]:
-        return self.db.query(ScraperLog).order_by(desc(ScraperLog.created_at)).limit(limit).all()
+        return (
+            self.db.query(ScraperLog)
+            .order_by(desc(ScraperLog.created_at))
+            .limit(limit)
+            .all()
+        )
 
     def get_latest_status(self) -> List[ScraperLog]:
         # Get distinct sources
         sources = self.db.query(ScraperLog.source).distinct().all()
         result = []
         for (source,) in sources:
-            latest = self.db.query(ScraperLog).filter(ScraperLog.source == source).order_by(desc(ScraperLog.created_at)).first()
+            latest = (
+                self.db.query(ScraperLog)
+                .filter(ScraperLog.source == source)
+                .order_by(desc(ScraperLog.created_at))
+                .first()
+            )
             if latest:
                 result.append(latest)
         return result
@@ -45,12 +56,12 @@ class ScraperService:
     # Kaynak adı → scraper fonksiyonu eşlemesi
     SCRAPER_FUNCS = {
         "techcareer.net": "app.scrapers.techcareer_scraper:scrape_techcareer_events",
-        "coderspace":     "app.scrapers.cs_scraper:scrape_coderspace_events",
-        "anbean":         "app.scrapers.anbean_scraper:scrape_anbean_events",
-        "kodluyoruz":     "app.scrapers.kodluyoruz_scraper:scrape_kodluyoruz_events",
-        "youthall":       "app.scrapers.youthall_scraper:scrape_youthall_events",
+        "coderspace": "app.scrapers.cs_scraper:scrape_coderspace_events",
+        "anbean": "app.scrapers.anbean_scraper:scrape_anbean_events",
+        "kodluyoruz": "app.scrapers.kodluyoruz_scraper:scrape_kodluyoruz_events",
+        "youthall": "app.scrapers.youthall_scraper:scrape_youthall_events",
         "akbank gençlik akademisi": "app.scrapers.akbank_scraper:scrape_akbank_events",
-        "pupilica":       "app.scrapers.pupilica_scraper:scrape_pupilica_events",
+        "pupilica": "app.scrapers.pupilica_scraper:scrape_pupilica_events",
     }
 
     def _run_scraper_task(self, source: str):
@@ -82,7 +93,9 @@ class ScraperService:
                 if events:
                     result_str = process_scraped_events(events, source)
                     try:
-                        new_count = int(result_str.split("New:")[1].split(",")[0].strip())
+                        new_count = int(
+                            result_str.split("New:")[1].split(",")[0].strip()
+                        )
                     except Exception:
                         pass
                 status = "success"
@@ -114,21 +127,20 @@ def deactivate_past_events() -> int:
     """Geçmiş etkinlikleri deaktive eder."""
     from ..core.database import SessionLocal
     from ..models.event import Event
-    
+
     db = SessionLocal()
     try:
         now = datetime.now()
         # Tarihi geçmiş ve hala aktif olan etkinlikleri bul
-        past_events = db.query(Event).filter(
-            Event.is_active == True,
-            Event.date < now
-        ).all()
-        
+        past_events = (
+            db.query(Event).filter(Event.is_active == True, Event.date < now).all()
+        )
+
         count = 0
         for event in past_events:
             event.is_active = False
             count += 1
-        
+
         db.commit()
         return count
     except Exception as e:
@@ -138,8 +150,10 @@ def deactivate_past_events() -> int:
     finally:
         db.close()
 
+
 def normalize_date(date_val) -> Optional[datetime]:
     from dateparser import parse as parse_date
+
     if not date_val:
         return None
     if isinstance(date_val, datetime):
@@ -149,13 +163,14 @@ def normalize_date(date_val) -> Optional[datetime]:
         invalid_texts = ["tarih belirtilmemiş", "belirtilmemiş", "-", ""]
         if date_val.strip().lower() in invalid_texts:
             return None
-        
+
         try:
             parsed_dt = parse_date(date_val, languages=["tr"])
             return parsed_dt
         except Exception:
             return None
     return None
+
 
 def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
     """Scrape edilen etkinlikleri veritabanına kaydeder."""
@@ -171,8 +186,7 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
         # Mevcut URL'leri tek sorguda çek (N+1 sorgu önleme)
         urls = [d.get("url") for d in events_data if d.get("url")]
         existing_map = {
-            e.url: e
-            for e in db.query(Event).filter(Event.url.in_(urls)).all()
+            e.url: e for e in db.query(Event).filter(Event.url.in_(urls)).all()
         }
 
         now = datetime.now()
@@ -186,11 +200,17 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
 
                 if existing_event:
                     existing_event.title = data.get("title", existing_event.title)
-                    existing_event.description = data.get("description", existing_event.description)
+                    existing_event.description = data.get(
+                        "description", existing_event.description
+                    )
                     if date_val is not None:
                         existing_event.date = date_val
-                    existing_event.location = data.get("location", existing_event.location)
-                    existing_event.image_url = data.get("image_url", existing_event.image_url)
+                    existing_event.location = data.get(
+                        "location", existing_event.location
+                    )
+                    existing_event.image_url = data.get(
+                        "image_url", existing_event.image_url
+                    )
                     existing_event.scraped_at = now
                     updated_count += 1
                 else:

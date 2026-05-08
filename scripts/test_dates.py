@@ -1,5 +1,6 @@
 import sys
-sys.path.insert(0, '/app')
+
+sys.path.insert(0, "/app")
 
 from app.scrapers.kodluyoruz_scraper import scrape_kodluyoruz_events
 from app.scrapers.anbean_scraper import scrape_anbean_events

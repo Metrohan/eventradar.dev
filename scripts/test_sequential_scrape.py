@@ -1,4 +1,5 @@
 import os, sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from app.scrapers import (
@@ -6,7 +7,7 @@ from app.scrapers import (
     scrape_coderspace_events,
     scrape_anbean_events,
     scrape_kodluyoruz_events,
-    scrape_youthall_events
+    scrape_youthall_events,
 )
 from app.services.scraper_service import process_scraped_events
 

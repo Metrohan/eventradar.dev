@@ -9,5 +9,5 @@ test_dates = [
 
 print("=== Dateparser Test ===")
 for date_str in test_dates:
-    parsed = dateparser.parse(str(date_str), languages=['tr', 'en'])
+    parsed = dateparser.parse(str(date_str), languages=["tr", "en"])
     print(f"'{date_str}' -> {parsed} (tür: {type(parsed)})")

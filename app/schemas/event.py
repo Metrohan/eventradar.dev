@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
+
 class EventBase(BaseModel):
     title: str
     description: Optional[str] = None
@@ -12,8 +13,10 @@ class EventBase(BaseModel):
     source: str = "Admin"
     is_active: bool = True
 
+
 class EventCreate(EventBase):
     pass
+
 
 class EventUpdate(BaseModel):
     title: Optional[str] = None
@@ -25,16 +28,16 @@ class EventUpdate(BaseModel):
     source: Optional[str] = None
     is_active: Optional[bool] = None
 
+
 class EventResponse(EventBase):
     id: int
     scraped_at: datetime
-    
+
     class Config:
         from_attributes = True
+
 
 class EventListResponse(BaseModel):
     events: list[EventResponse]
     total_count: int
     last_updated: Optional[str] = None
-
-

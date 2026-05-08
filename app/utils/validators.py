@@ -1,7 +1,6 @@
 import re
 from typing import Any
 
-
 _URL_RE = re.compile(r"^https?://\S+")
 
 

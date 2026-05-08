@@ -18,7 +18,11 @@ except Exception:
 STATE_FILE = Path(os.getenv("ALERT_STATE_FILE", ".alert_state.json"))
 COMPOSE_CMD = os.getenv("ALERT_COMPOSE_CMD", "docker compose")
 COMPOSE_ARGS = shlex.split(COMPOSE_CMD)
-SERVICES = [s.strip() for s in os.getenv("ALERT_SERVICES", "backend,scraper,db").split(",") if s.strip()]
+SERVICES = [
+    s.strip()
+    for s in os.getenv("ALERT_SERVICES", "backend,scraper,db").split(",")
+    if s.strip()
+]
 LOG_LINES = int(os.getenv("ALERT_LOG_LINES", "120"))
 COOLDOWN_SECONDS = int(os.getenv("ALERT_COOLDOWN_SECONDS", "900"))
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
@@ -135,12 +139,18 @@ def collect_issues() -> list[str]:
         health = (row.get("Health") or "").lower()
         status = row.get("Status") or ""
         if state not in {"running"}:
-            issues.append(f"Servis ayakta degil: {service} | state={state or '-'} | status={status or '-'}")
+            issues.append(
+                f"Servis ayakta degil: {service} | state={state or '-'} | status={status or '-'}"
+            )
         if health and health not in {"healthy"}:
-            issues.append(f"Servis sagliksiz: {service} | health={health} | status={status or '-'}")
+            issues.append(
+                f"Servis sagliksiz: {service} | health={health} | status={status or '-'}"
+            )
 
     for service in SERVICES:
-        code, logs, _ = run([*COMPOSE_ARGS, "logs", "--no-color", f"--tail={LOG_LINES}", service])
+        code, logs, _ = run(
+            [*COMPOSE_ARGS, "logs", "--no-color", f"--tail={LOG_LINES}", service]
+        )
         if code != 0:
             continue
         lines = [ln for ln in logs.splitlines() if any(k in ln for k in KEYWORDS)]
@@ -174,8 +184,7 @@ def main() -> int:
 
     text = (
         "TechEventRadar Alarm\n"
-        f"Zaman: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n"
-        + "\n\n".join(issues)
+        f"Zaman: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n" + "\n\n".join(issues)
     )
 
     sent = send_telegram(text)

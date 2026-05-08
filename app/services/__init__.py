@@ -6,10 +6,8 @@ from .auth_service import AuthService
 
 __all__ = [
     "EventService",
-    "AnnouncementService", 
+    "AnnouncementService",
     "SuggestionService",
     "EventRequestService",
-    "AuthService"
+    "AuthService",
 ]
-
-

@@ -6,5 +6,3 @@ api_router = APIRouter()
 
 api_router.include_router(public_router, prefix="/api", tags=["public"])
 api_router.include_router(admin_router, prefix="/api/admin", tags=["admin"])
-
-

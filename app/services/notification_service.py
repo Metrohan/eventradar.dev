@@ -21,7 +21,9 @@ class NotificationService:
 
     def get_stats(self):
         total = self.db.query(Subscriber).count()
-        telegram = self.db.query(Subscriber).filter(Subscriber.channel == "telegram").count()
+        telegram = (
+            self.db.query(Subscriber).filter(Subscriber.channel == "telegram").count()
+        )
         email = self.db.query(Subscriber).filter(Subscriber.channel == "email").count()
         active = self.db.query(Subscriber).filter(Subscriber.is_active == True).count()
         return {
@@ -40,11 +42,15 @@ class NotificationService:
         sent = 0
         failed = 0
         for sub in subscribers:
-            if request.target_interest and request.target_interest not in (sub.interests or []):
+            if request.target_interest and request.target_interest not in (
+                sub.interests or []
+            ):
                 continue
             try:
                 if sub.channel == "email":
-                    self._send_email(sub.contact_info, "EventRadar Bildirimi", request.message)
+                    self._send_email(
+                        sub.contact_info, "EventRadar Bildirimi", request.message
+                    )
                 elif sub.channel == "telegram":
                     self._send_telegram(sub.contact_info, request.message)
                 sent += 1
@@ -81,5 +87,7 @@ class NotificationService:
             return
 
         url = f"https://api.telegram.org/bot{settings.telegram_bot_token}/sendMessage"
-        resp = http_requests.post(url, json={"chat_id": chat_id, "text": message}, timeout=10)
+        resp = http_requests.post(
+            url, json={"chat_id": chat_id, "text": message}, timeout=10
+        )
         resp.raise_for_status()

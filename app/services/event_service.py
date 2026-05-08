@@ -6,21 +6,22 @@ from ..models.event import Event
 from ..schemas.event import EventCreate, EventUpdate
 from .date_extractor import extract_date_from_text
 
+
 class EventService:
     def __init__(self, db: Session):
         self.db = db
-    
+
     def get_events(self, active_only: bool = True) -> List[Event]:
         """Get all events, optionally filtered by active status"""
         query = self.db.query(Event)
         if active_only:
             query = query.filter(Event.is_active == True)
         return query.order_by(Event.date.desc()).all()
-    
+
     def get_event_by_id(self, event_id: int) -> Optional[Event]:
         """Get event by ID"""
         return self.db.query(Event).filter(Event.id == event_id).first()
-    
+
     def create_event(self, event_data: EventCreate) -> Event:
         """Create a new event"""
         try:
@@ -39,7 +40,7 @@ class EventService:
                 image_url=str(event_data.image_url) if event_data.image_url else None,
                 source=event_data.source,
                 is_active=event_data.is_active,
-                scraped_at=datetime.now()
+                scraped_at=datetime.now(),
             )
             self.db.add(db_event)
             self.db.commit()
@@ -48,7 +49,7 @@ class EventService:
         except IntegrityError:
             self.db.rollback()
             raise ValueError("Event with this URL already exists")
-    
+
     def update_event(self, event_id: int, event_data: EventUpdate) -> Optional[Event]:
         """Update an existing event"""
         db_event = self.get_event_by_id(event_id)
@@ -57,7 +58,9 @@ class EventService:
         try:
             update_data = event_data.dict(exclude_unset=True)
             # Eğer date güncellenmiyorsa ve açıklama varsa, açıklamadan çek
-            if ("date" not in update_data or not update_data.get("date")) and update_data.get("description"):
+            if (
+                "date" not in update_data or not update_data.get("date")
+            ) and update_data.get("description"):
                 extracted = extract_date_from_text(update_data["description"])
                 if extracted:
                     update_data["date"] = extracted
@@ -75,23 +78,21 @@ class EventService:
         except IntegrityError:
             self.db.rollback()
             raise ValueError("Event with this URL already exists")
-    
+
     def delete_event(self, event_id: int) -> bool:
         """Delete an event"""
         db_event = self.get_event_by_id(event_id)
         if not db_event:
             return False
-        
+
         self.db.delete(db_event)
         self.db.commit()
         return True
-    
+
     def get_total_active_events(self) -> int:
         """Get count of active events"""
         return self.db.query(Event).filter(Event.is_active == True).count()
-    
+
     def get_last_updated_event(self) -> Optional[Event]:
         """Get the most recently updated event"""
         return self.db.query(Event).order_by(Event.scraped_at.desc()).first()
-
-

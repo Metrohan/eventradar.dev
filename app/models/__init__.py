@@ -10,14 +10,12 @@ from .traffic_log import TrafficLog
 
 __all__ = [
     "Event",
-    "Announcement", 
+    "Announcement",
     "Suggestion",
     "EventRequest",
     "PendingEvent",
     "SimilarEventPair",
     "ScraperLog",
     "Subscriber",
-    "TrafficLog"
+    "TrafficLog",
 ]
-
-

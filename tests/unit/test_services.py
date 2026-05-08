@@ -31,11 +31,13 @@ def test_get_stats_empty_db(test_db):
 
 
 def test_get_stats_with_subscribers(test_db):
-    test_db.add_all([
-        _make_subscriber("email", "a@example.com"),
-        _make_subscriber("telegram", "123456"),
-        _make_subscriber("email", "b@example.com", active=False),
-    ])
+    test_db.add_all(
+        [
+            _make_subscriber("email", "a@example.com"),
+            _make_subscriber("telegram", "123456"),
+            _make_subscriber("email", "b@example.com", active=False),
+        ]
+    )
     test_db.commit()
 
     service = NotificationService(test_db)
@@ -55,7 +57,9 @@ def test_broadcast_email_calls_send_email(test_db):
         req = BroadcastRequest(message="Hello!", target_channel="email")
         result = service.broadcast_message(req)
 
-    mock_send.assert_called_once_with("test@example.com", "EventRadar Bildirimi", "Hello!")
+    mock_send.assert_called_once_with(
+        "test@example.com", "EventRadar Bildirimi", "Hello!"
+    )
     assert result["recipient_count"] == 1
     assert result["failed_count"] == 0
 

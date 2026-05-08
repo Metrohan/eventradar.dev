@@ -31,7 +31,9 @@ def scrape_techcareer_events():
         driver = webdriver.Chrome(service=Service(driver_path), options=options)
         driver.get("https://www.techcareer.net/events")
         WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test="single-event-box"]'))
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, '[data-test="single-event-box"]')
+            )
         )
         time.sleep(3)
 
@@ -39,37 +41,41 @@ def scrape_techcareer_events():
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(2)
 
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        soup = BeautifulSoup(driver.page_source, "html.parser")
         for card in soup.find_all(attrs={"data-test": "single-event-box"}):
             try:
-                link = card.get('href', '')
-                if link and not link.startswith('http'):
+                link = card.get("href", "")
+                if link and not link.startswith("http"):
                     link = f"https://www.techcareer.net{link}"
 
-                title_elem = card.find('h3', attrs={"data-test": "single-event-title"})
+                title_elem = card.find("h3", attrs={"data-test": "single-event-title"})
                 title = title_elem.text.strip() if title_elem else None
 
-                date_elem = card.find('div', attrs={"data-test": "single-event-date"})
+                date_elem = card.find("div", attrs={"data-test": "single-event-date"})
                 date_str = date_elem.text.strip() if date_elem else None
 
                 img_elem = card.find("img", attrs={"data-test": "single-event-image"})
                 image_url = img_elem.get("src") if img_elem else None
-                if image_url and not image_url.startswith('http'):
+                if image_url and not image_url.startswith("http"):
                     image_url = f"https://www.techcareer.net{image_url}"
 
-                is_active = bool(card.find('button', attrs={"data-test": "single-event-open-btn"}))
+                is_active = bool(
+                    card.find("button", attrs={"data-test": "single-event-open-btn"})
+                )
 
                 if is_active and link and title:
-                    all_events.append({
-                        'title': title,
-                        'description': "TechCareer.net etkinliği",
-                        'date': date_str,
-                        'location': "Online",
-                        'url': link,
-                        'image_url': image_url,
-                        'source': "TechCareer.net",
-                        'is_active': True
-                    })
+                    all_events.append(
+                        {
+                            "title": title,
+                            "description": "TechCareer.net etkinliği",
+                            "date": date_str,
+                            "location": "Online",
+                            "url": link,
+                            "image_url": image_url,
+                            "source": "TechCareer.net",
+                            "is_active": True,
+                        }
+                    )
             except Exception:
                 continue
         return all_events

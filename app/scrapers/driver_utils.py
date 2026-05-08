@@ -27,6 +27,7 @@ def ensure_chromedriver() -> str | None:
         return path
     try:
         from webdriver_manager.chrome import ChromeDriverManager
+
         ChromeDriverManager().install()
         return find_chromedriver()
     except Exception as e:

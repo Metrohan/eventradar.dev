@@ -6,6 +6,7 @@ import time, os, sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
+
 def find_chromedriver():
     cache_dir = os.path.expanduser("~/.wdm/drivers/chromedriver")
     if os.path.exists(cache_dir):
@@ -21,9 +22,11 @@ def find_chromedriver():
                         return driver_path
     return None
 
+
 driver_path = find_chromedriver()
 if not driver_path:
     from webdriver_manager.chrome import ChromeDriverManager
+
     ChromeDriverManager().install()
     driver_path = find_chromedriver()
 
@@ -48,10 +51,14 @@ print("Saved page HTML to /tmp/coderspace_page.html")
 # Find all unique class names
 all_classes = set()
 for tag in soup.find_all(True):
-    if tag.get('class'):
-        all_classes.update(tag.get('class'))
+    if tag.get("class"):
+        all_classes.update(tag.get("class"))
 
-event_related = [c for c in all_classes if 'event' in c.lower() or 'card' in c.lower() or 'item' in c.lower()]
+event_related = [
+    c
+    for c in all_classes
+    if "event" in c.lower() or "card" in c.lower() or "item" in c.lower()
+]
 print(f"Event-related classes: {sorted(event_related)[:10]}")
 
 # Find links
@@ -88,10 +95,14 @@ with open("/tmp/youthall_page.html", "w", encoding="utf-8") as f:
 # Find all unique class names
 all_classes = set()
 for tag in soup.find_all(True):
-    if tag.get('class'):
-        all_classes.update(tag.get('class'))
+    if tag.get("class"):
+        all_classes.update(tag.get("class"))
 
-event_related = [c for c in all_classes if 'event' in c.lower() or 'card' in c.lower() or 'item' in c.lower()]
+event_related = [
+    c
+    for c in all_classes
+    if "event" in c.lower() or "card" in c.lower() or "item" in c.lower()
+]
 print(f"Event-related classes: {sorted(event_related)[:10]}")
 
 # Find links

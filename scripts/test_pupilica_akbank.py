@@ -22,7 +22,7 @@ try:
         print(f"Location: {e['location']}")
         print(f"URL: {e['url']}")
         print("-" * 20)
-    
+
     if len(events) == 0:
         # Debug: Fetch raw html to see structure
         print("Debugging Pupilica HTML structure...")
@@ -45,7 +45,7 @@ try:
         print("-" * 20)
 
     if len(events) == 0:
-         # Debug: Fetch raw html to see structure
+        # Debug: Fetch raw html to see structure
         print("Debugging Akbank HTML structure...")
         resp = requests.get("https://www.akbankgenclikakademisi.com/etkinlik-takvimi")
         print(f"Status Code: {resp.status_code}")

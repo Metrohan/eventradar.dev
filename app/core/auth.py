@@ -4,17 +4,21 @@ from ..services.auth_service import AuthService
 
 security = HTTPBearer()
 
+
 def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """
     Dependency to get current authenticated admin user
     """
     auth_service = AuthService()
-    
+
     token = credentials.credentials
     username = auth_service.verify_token(token)
-    
+
     import logging
-    logging.warning(f"DEBUG AUTH: verify_token result for token ending in ...{token[-10:] if token else 'None'} -> {username}")
+
+    logging.warning(
+        f"DEBUG AUTH: verify_token result for token ending in ...{token[-10:] if token else 'None'} -> {username}"
+    )
 
     if username is None:
         raise HTTPException(
@@ -22,7 +26,5 @@ def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(securi
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     return username
-
-

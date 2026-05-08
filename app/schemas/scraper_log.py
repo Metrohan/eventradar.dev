@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
+
 class ScraperLogBase(BaseModel):
     source: str
     status: str
@@ -10,8 +11,10 @@ class ScraperLogBase(BaseModel):
     error_message: Optional[str] = None
     duration_seconds: float = 0.0
 
+
 class ScraperLogCreate(ScraperLogBase):
     pass
+
 
 class ScraperLogResponse(ScraperLogBase):
     id: int

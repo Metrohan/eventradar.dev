@@ -1,3 +1,1 @@
 # FastAPI application initialization
-
-

@@ -11,6 +11,7 @@ from app.models.event import Event
 from app.core.config import settings
 from app.core.database import Base
 
+
 def create_mock_events():
     # Use the database URL from settings
     engine = create_engine(settings.database_url)
@@ -24,7 +25,7 @@ def create_mock_events():
             return
 
         print("Adding mock events...")
-        
+
         events = [
             Event(
                 title="Tech Innovations Summit 2026",
@@ -34,7 +35,7 @@ def create_mock_events():
                 url="https://example.com/tech-summit-2026",
                 image_url="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1000&q=80",
                 source="mock",
-                is_active=True
+                is_active=True,
             ),
             Event(
                 title="Developer Week Eurasia",
@@ -44,9 +45,9 @@ def create_mock_events():
                 url="https://example.com/dev-week",
                 image_url="https://images.unsplash.com/photo-1591115765373-5207764f72e7?auto=format&fit=crop&w=1000&q=80",
                 source="mock",
-                is_active=True
+                is_active=True,
             ),
-             Event(
+            Event(
                 title="Startup Grind Global",
                 description="Connecting startups with investors.",
                 date=datetime.now() + timedelta(days=15),
@@ -54,7 +55,7 @@ def create_mock_events():
                 url="https://example.com/startup-grind",
                 image_url="https://images.unsplash.com/photo-1475721027767-4d529c148373?auto=format&fit=crop&w=1000&q=80",
                 source="mock",
-                is_active=True
+                is_active=True,
             ),
             Event(
                 title="React Native EU",
@@ -64,8 +65,8 @@ def create_mock_events():
                 url="https://example.com/react-native-eu",
                 image_url="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1000&q=80",
                 source="mock",
-                is_active=True
-            )
+                is_active=True,
+            ),
         ]
 
         db.add_all(events)
@@ -77,6 +78,7 @@ def create_mock_events():
         db.rollback()
     finally:
         db.close()
+
 
 if __name__ == "__main__":
     create_mock_events()

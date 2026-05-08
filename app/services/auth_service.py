@@ -12,18 +12,19 @@ SECRET_KEY = settings.secret_key
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+
 class AuthService:
     def __init__(self):
         pass
-    
+
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         """Verify a password against its hash"""
         return pwd_context.verify(plain_password, hashed_password)
-    
+
     def get_password_hash(self, password: str) -> str:
         """Hash a password"""
         return pwd_context.hash(password)
-    
+
     def authenticate_user(self, username: str, password: str) -> bool:
         """Authenticate user credentials.
 
@@ -41,8 +42,10 @@ class AuthService:
         if env_pass.startswith("$2"):
             return username == env_user and self.verify_password(password, env_pass)
         return username == env_user and password == env_pass
-    
-    def create_access_token(self, data: dict, expires_delta: Optional[timedelta] = None) -> str:
+
+    def create_access_token(
+        self, data: dict, expires_delta: Optional[timedelta] = None
+    ) -> str:
         """Create a JWT access token"""
         to_encode = data.copy()
         if expires_delta:
@@ -52,7 +55,7 @@ class AuthService:
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt
-    
+
     def verify_token(self, token: str) -> Optional[str]:
         """Verify and decode a JWT token"""
         try:
