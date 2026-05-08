@@ -200,8 +200,9 @@ def test_akbank_scraper_returns_list(mock_chrome):
     mock_driver = _make_selenium_driver(_html("akbank.html"))
     mock_chrome.return_value = mock_driver
 
-    with patch("app.scrapers.cs_scraper.get_chrome_options", return_value=MagicMock()), \
-         patch("selenium.webdriver.support.ui.WebDriverWait"):
+    with patch(
+        "app.scrapers.cs_scraper.get_chrome_options", return_value=MagicMock()
+    ), patch("selenium.webdriver.support.ui.WebDriverWait"):
         result = scrape_akbank_events()
 
     assert isinstance(result, list)
@@ -254,8 +255,9 @@ def test_cs_scraper_returns_list(mock_chrome):
     mock_driver.find_elements.return_value = []
     mock_chrome.return_value = mock_driver
 
-    with patch("app.scrapers.cs_scraper.WebDriverWait"), \
-         patch("app.scrapers.cs_scraper.time.sleep"):
+    with patch("app.scrapers.cs_scraper.WebDriverWait"), patch(
+        "app.scrapers.cs_scraper.time.sleep"
+    ):
         result = scrape_coderspace_events()
 
     assert isinstance(result, list)
@@ -319,8 +321,9 @@ def test_pupilica_scraper_returns_list(mock_chrome):
     mock_driver = _make_selenium_driver(_html("pupilica.html"))
     mock_chrome.return_value = mock_driver
 
-    with patch("app.scrapers.cs_scraper.get_chrome_options", return_value=MagicMock()), \
-         patch("selenium.webdriver.support.ui.WebDriverWait"):
+    with patch(
+        "app.scrapers.cs_scraper.get_chrome_options", return_value=MagicMock()
+    ), patch("selenium.webdriver.support.ui.WebDriverWait"):
         result = scrape_pupilica_events()
 
     assert isinstance(result, list)

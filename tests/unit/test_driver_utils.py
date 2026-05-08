@@ -23,8 +23,9 @@ def test_find_chromedriver_returns_none_when_cache_missing():
 def test_find_chromedriver_returns_none_when_no_versions():
     from app.scrapers.driver_utils import find_chromedriver
 
-    with patch("os.path.exists", return_value=True), \
-         patch("os.listdir", return_value=[]):
+    with patch("os.path.exists", return_value=True), patch(
+        "os.listdir", return_value=[]
+    ):
         assert find_chromedriver() is None
 
 
@@ -35,8 +36,9 @@ def test_find_chromedriver_returns_path_when_found(tmp_path):
     driver_file.parent.mkdir(parents=True)
     driver_file.write_text("binary")
 
-    with patch("os.path.expanduser", return_value=str(tmp_path)), \
-         patch("os.path.exists", return_value=True):
+    with patch("os.path.expanduser", return_value=str(tmp_path)), patch(
+        "os.path.exists", return_value=True
+    ):
         result = find_chromedriver()
 
     assert result is not None
@@ -50,8 +52,9 @@ def test_find_chromedriver_returns_none_when_no_binary(tmp_path):
     version_dir.mkdir(parents=True)
     (version_dir / "notes.txt").write_text("nothing here")
 
-    with patch("os.path.expanduser", return_value=str(tmp_path)), \
-         patch("os.path.exists", return_value=True):
+    with patch("os.path.expanduser", return_value=str(tmp_path)), patch(
+        "os.path.exists", return_value=True
+    ):
         result = find_chromedriver()
 
     assert result is None
@@ -60,7 +63,10 @@ def test_find_chromedriver_returns_none_when_no_binary(tmp_path):
 def test_ensure_chromedriver_returns_existing_path():
     from app.scrapers.driver_utils import ensure_chromedriver
 
-    with patch("app.scrapers.driver_utils.find_chromedriver", return_value="/usr/bin/chromedriver"):
+    with patch(
+        "app.scrapers.driver_utils.find_chromedriver",
+        return_value="/usr/bin/chromedriver",
+    ):
         result = ensure_chromedriver()
 
     assert result == "/usr/bin/chromedriver"
@@ -72,8 +78,13 @@ def test_ensure_chromedriver_installs_when_not_found():
     mock_manager = MagicMock()
     mock_manager.return_value.install.return_value = "/cached/chromedriver"
 
-    with patch("app.scrapers.driver_utils.find_chromedriver", side_effect=[None, "/cached/chromedriver"]), \
-         patch.dict("sys.modules", {"webdriver_manager.chrome": MagicMock(ChromeDriverManager=mock_manager)}):
+    with patch(
+        "app.scrapers.driver_utils.find_chromedriver",
+        side_effect=[None, "/cached/chromedriver"],
+    ), patch.dict(
+        "sys.modules",
+        {"webdriver_manager.chrome": MagicMock(ChromeDriverManager=mock_manager)},
+    ):
         result = ensure_chromedriver()
 
     assert result == "/cached/chromedriver"
@@ -82,8 +93,9 @@ def test_ensure_chromedriver_installs_when_not_found():
 def test_ensure_chromedriver_returns_none_on_install_error():
     from app.scrapers.driver_utils import ensure_chromedriver
 
-    with patch("app.scrapers.driver_utils.find_chromedriver", return_value=None), \
-         patch("builtins.__import__", side_effect=ImportError("no webdriver_manager")):
+    with patch("app.scrapers.driver_utils.find_chromedriver", return_value=None), patch(
+        "builtins.__import__", side_effect=ImportError("no webdriver_manager")
+    ):
         result = ensure_chromedriver()
 
     assert result is None
