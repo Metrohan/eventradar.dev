@@ -7,7 +7,7 @@ URL = f"{BASE_URL}/programlar"  # Kodluyoruz etkinlik sayfası
 
 def scrape_kodluyoruz_events():
     try:
-        response = requests.get(URL)
+        response = requests.get(URL, timeout=30)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Kodluyoruz: network error: {e}")

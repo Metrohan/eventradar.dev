@@ -33,7 +33,7 @@ def find_chromedriver():
                     if file == "chromedriver" or file == "chromedriver.exe":
                         driver_path = os.path.join(root, file)
                         # Executable olduğundan emin ol
-                        os.chmod(driver_path, 0o755)
+                        os.chmod(driver_path, 0o750)  # nosec B103
                         return driver_path
 
     return None

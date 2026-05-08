@@ -15,7 +15,7 @@ def find_chromedriver() -> str | None:
         for file in files:
             if file in ("chromedriver", "chromedriver.exe"):
                 driver_path = os.path.join(root, file)
-                os.chmod(driver_path, 0o755)
+                os.chmod(driver_path, 0o750)  # nosec B103
                 return driver_path
     return None
 
