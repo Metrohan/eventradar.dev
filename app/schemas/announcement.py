@@ -21,5 +21,8 @@ class AnnouncementResponse(AnnouncementBase):
 
 
 class AnnouncementListResponse(BaseModel):
-    announcements: List[Any]
+    announcements: List[AnnouncementResponse]
     total_count: int
+
+    class Config:
+        from_attributes = True

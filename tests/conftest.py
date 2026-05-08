@@ -2,6 +2,7 @@ import os
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 os.environ.setdefault("ALLOW_INSECURE_DEFAULTS", "true")
 os.environ.setdefault("SECRET_KEY", "test-secret-key-that-is-at-least-32-chars")
@@ -10,11 +11,24 @@ os.environ.setdefault("ADMIN_PASSWORD", "testpassword")
 
 from app.core.database import Base
 
+# Import all models so Base.metadata is populated before create_all
+import app.models.event  # noqa: F401
+import app.models.announcement  # noqa: F401
+import app.models.suggestion  # noqa: F401
+import app.models.event_request  # noqa: F401
+import app.models.scraper_log  # noqa: F401
+import app.models.subscriber  # noqa: F401
+import app.models.traffic_log  # noqa: F401
+import app.models.pending_event  # noqa: F401
+import app.models.similar_event_pair  # noqa: F401
+
 
 @pytest.fixture(scope="function")
 def test_db():
     engine = create_engine(
-        "sqlite:///:memory:", connect_args={"check_same_thread": False}
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
     )
     Base.metadata.create_all(bind=engine)
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

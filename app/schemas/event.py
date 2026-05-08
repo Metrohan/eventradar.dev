@@ -38,6 +38,9 @@ class EventResponse(EventBase):
 
 
 class EventListResponse(BaseModel):
-    events: List[Any]
+    events: List[EventResponse]
     total_count: int
     last_updated: Optional[str] = None
+
+    class Config:
+        from_attributes = True
