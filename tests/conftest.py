@@ -46,3 +46,33 @@ def invalid_event():
         "url": "not-a-url",
         "source": "test",
     }
+
+
+from fastapi.testclient import TestClient
+
+
+@pytest.fixture
+def client(test_db):
+    from app.main import app
+    from app.core.database import get_db
+
+    app.dependency_overrides[get_db] = lambda: test_db
+    with TestClient(app) as c:
+        yield c
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def auth_headers(client):
+    import os
+
+    resp = client.post(
+        "/api/admin/login",
+        json={
+            "username": os.environ["ADMIN_USERNAME"],
+            "password": os.environ["ADMIN_PASSWORD"],
+        },
+    )
+    assert resp.status_code == 200, f"Login failed: {resp.text}"
+    token = resp.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
