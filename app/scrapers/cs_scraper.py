@@ -134,7 +134,7 @@ def scrape_coderspace_events() -> List[Dict[str, Any]]:
                 link_elem = card.select_one("a[href]")
                 if not link_elem:
                     continue
-                href = link_elem["href"]
+                href = str(link_elem["href"])
                 # Fast string concatenation
                 link_url = (
                     href if href.startswith("http") else f"https://coderspace.io{href}"
@@ -154,7 +154,7 @@ def scrape_coderspace_events() -> List[Dict[str, Any]]:
 
                 # Image
                 img_elem = card.find("img")
-                image_src = img_elem.get("src") if img_elem else ""
+                image_src = str(img_elem.get("src")) if img_elem else ""
                 image_url = ""
                 if image_src:
                     image_url = (

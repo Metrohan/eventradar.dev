@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Any, List, Optional
 from datetime import datetime
 
 
@@ -21,5 +21,5 @@ class AnnouncementResponse(AnnouncementBase):
 
 
 class AnnouncementListResponse(BaseModel):
-    announcements: list[AnnouncementResponse]
+    announcements: List[Any]
     total_count: int

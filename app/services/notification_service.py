@@ -49,10 +49,10 @@ class NotificationService:
             try:
                 if sub.channel == "email":
                     self._send_email(
-                        sub.contact_info, "EventRadar Bildirimi", request.message
+                        str(sub.contact_info), "EventRadar Bildirimi", request.message
                     )
                 elif sub.channel == "telegram":
-                    self._send_telegram(sub.contact_info, request.message)
+                    self._send_telegram(str(sub.contact_info), request.message)
                 sent += 1
             except Exception as e:
                 logger.error("Notification failed for %s: %s", sub.contact_info, e)

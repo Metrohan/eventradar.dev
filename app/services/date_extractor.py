@@ -1,12 +1,14 @@
 import re
+from datetime import datetime
 from dateparser import parse
 from typing import Optional
 
 
-def extract_date_from_text(text: str) -> Optional[str]:
+def extract_date_from_text(text: str) -> Optional[datetime]:
     """
-    Metin içinden ilk geçerli tarihi döndürür (ISO formatında).
+    Metin içinden ilk geçerli tarihi döndürür.
     """
+
     if not text:
         return None
     # Basit tarih regex: 12 Aralık 2025, 13 Mart, 07 Aralık, vs.
@@ -21,5 +23,5 @@ def extract_date_from_text(text: str) -> Optional[str]:
         if match:
             dt = parse(match.group(), languages=["tr"])
             if dt:
-                return dt.isoformat()
+                return dt
     return None

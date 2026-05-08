@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Any, List, Optional
 from datetime import datetime
 
 
@@ -22,5 +22,5 @@ class SuggestionResponse(SuggestionBase):
 
 
 class SuggestionListResponse(BaseModel):
-    suggestions: list[SuggestionResponse]
+    suggestions: List[Any]
     total_count: int

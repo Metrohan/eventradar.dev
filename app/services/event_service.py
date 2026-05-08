@@ -71,7 +71,7 @@ class EventService:
                     setattr(db_event, field, str(value))
                 else:
                     setattr(db_event, field, value)
-            db_event.scraped_at = datetime.now()
+            db_event.scraped_at = datetime.now()  # type: ignore[assignment]
             self.db.commit()
             self.db.refresh(db_event)
             return db_event

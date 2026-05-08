@@ -90,7 +90,7 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
                     a_tag = parent
 
             if a_tag:
-                url_ = base_url + a_tag["href"]
+                url_ = base_url + str(a_tag["href"])
             else:
                 import re
 

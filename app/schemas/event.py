@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Any, List, Optional
 from datetime import datetime
 
 
@@ -38,6 +38,6 @@ class EventResponse(EventBase):
 
 
 class EventListResponse(BaseModel):
-    events: list[EventResponse]
+    events: List[Any]
     total_count: int
     last_updated: Optional[str] = None

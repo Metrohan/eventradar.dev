@@ -1,5 +1,5 @@
 from pydantic import BaseModel, HttpUrl
-from typing import Optional
+from typing import Any, List, Optional
 from datetime import datetime, date
 
 
@@ -23,5 +23,5 @@ class EventRequestResponse(EventRequestBase):
 
 
 class EventRequestListResponse(BaseModel):
-    requests: list[EventRequestResponse]
+    requests: List[Any]
     total_count: int

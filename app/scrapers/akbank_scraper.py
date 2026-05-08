@@ -55,7 +55,7 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
             # Link
             link_tag = title_tag.find("a") if title_tag else None
             if link_tag and link_tag.has_attr("href"):
-                href = link_tag["href"]
+                href = str(link_tag["href"])
                 if href.startswith("http"):
                     url_ = href
                 else:
@@ -66,7 +66,7 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
             # Image
             img_tag = card.find("a", class_="img-link")
             img = img_tag.find("img") if img_tag else None
-            image_url = img["src"] if img and img.has_attr("src") else None
+            image_url = str(img["src"]) if img and img.has_attr("src") else None
             if image_url and not image_url.startswith("http"):
                 image_url = base_url + image_url
 
@@ -92,7 +92,9 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
             date_text = ""
             if raw_start_date:
                 try:
-                    dt = datetime.fromisoformat(raw_start_date.replace("Z", "+00:00"))
+                    dt = datetime.fromisoformat(
+                        str(raw_start_date).replace("Z", "+00:00")
+                    )
                     date_text = dt.strftime("%d.%m.%Y")
                 except ValueError:
                     # Fallback to text

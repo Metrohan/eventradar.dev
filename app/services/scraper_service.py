@@ -138,7 +138,7 @@ def deactivate_past_events() -> int:
 
         count = 0
         for event in past_events:
-            event.is_active = False
+            event.is_active = False  # type: ignore[assignment]
             count += 1
 
         db.commit()
@@ -204,14 +204,14 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
                         "description", existing_event.description
                     )
                     if date_val is not None:
-                        existing_event.date = date_val
+                        existing_event.date = date_val  # type: ignore[assignment]
                     existing_event.location = data.get(
                         "location", existing_event.location
                     )
                     existing_event.image_url = data.get(
                         "image_url", existing_event.image_url
                     )
-                    existing_event.scraped_at = now
+                    existing_event.scraped_at = now  # type: ignore[assignment]
                     updated_count += 1
                 else:
                     new_event = Event(
