@@ -63,7 +63,9 @@ async def get_admin_events(
             last_updated = last_updated_event.scraped_at.isoformat()
 
         return EventListResponse(
-            events=events, total_count=total_count, last_updated=last_updated
+            events=events,  # type: ignore[arg-type]
+            total_count=total_count,
+            last_updated=last_updated,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading events: {str(e)}")
@@ -149,7 +151,8 @@ async def get_admin_announcements(
     try:
         announcements = announcement_service.get_announcements()
         return AnnouncementListResponse(
-            announcements=announcements, total_count=len(announcements)
+            announcements=announcements,  # type: ignore[arg-type]
+            total_count=len(announcements),
         )
     except Exception as e:
         raise HTTPException(
@@ -214,7 +217,8 @@ async def get_suggestions(
     try:
         suggestions = suggestion_service.get_suggestions()
         return SuggestionListResponse(
-            suggestions=suggestions, total_count=len(suggestions)
+            suggestions=suggestions,  # type: ignore[arg-type]
+            total_count=len(suggestions),
         )
     except Exception as e:
         raise HTTPException(
@@ -256,7 +260,10 @@ async def get_event_requests(
 
     try:
         requests = event_request_service.get_event_requests()
-        return EventRequestListResponse(requests=requests, total_count=len(requests))
+        return EventRequestListResponse(
+            requests=requests,  # type: ignore[arg-type]
+            total_count=len(requests),
+        )
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error loading event requests: {str(e)}"

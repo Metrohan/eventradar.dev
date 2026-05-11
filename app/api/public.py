@@ -32,7 +32,9 @@ async def get_events(active_only: bool = True, db: Session = Depends(get_db)):
             last_updated = last_updated_event.scraped_at.isoformat()
 
         return EventListResponse(
-            events=events, total_count=total_count, last_updated=last_updated
+            events=events,  # type: ignore[arg-type]
+            total_count=total_count,
+            last_updated=last_updated,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading events: {str(e)}")
@@ -48,7 +50,8 @@ async def get_announcements(db: Session = Depends(get_db)):
     try:
         announcements = announcement_service.get_announcements()
         return AnnouncementListResponse(
-            announcements=announcements, total_count=len(announcements)
+            announcements=announcements,  # type: ignore[arg-type]
+            total_count=len(announcements),
         )
     except Exception as e:
         raise HTTPException(
