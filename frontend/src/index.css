@@ -1237,3 +1237,120 @@ code {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
 }
+
+/* =====================================================
+   MOBILE OVERLAY (nav backdrop)
+   ===================================================== */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 997;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* =====================================================
+   MOBILE RESPONSIVE IMPROVEMENTS
+   ===================================================== */
+
+/* Tighter horizontal padding on very small screens */
+@media (max-width: 480px) {
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* ── Hero ──────────────────────────────────────────── */
+@media (max-width: 576px) {
+  .hero-section { padding: 2.5rem 0 2rem; }
+
+  .hero-badge {
+    font-size: 0.72rem;
+    padding: 0.3rem 0.8rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-search { margin-bottom: 1.75rem; }
+
+  /* Override the existing 576px rule to be more complete */
+  .hero-stats {
+    width: 100%;
+    gap: 0.6rem;
+    padding: 0.875rem 0.875rem;
+    justify-content: center;
+  }
+
+  .hero-stat-divider { height: 24px; }
+  .hero-stat-number { font-size: 1.1rem; }
+  .hero-stat-label { font-size: 0.65rem; }
+}
+
+/* ── Filters ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  .filters-section { padding: 0.875rem; }
+
+  .filter-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-select-wrap {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .filter-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── Section header ────────────────────────────────── */
+@media (max-width: 480px) {
+  .section-header { margin-bottom: 1rem; }
+  .section-title { font-size: 1.05rem; }
+  .results-count { font-size: 0.8rem; }
+}
+
+/* ── Event card footer on very narrow screens ──────── */
+@media (max-width: 380px) {
+  .event-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .btn-event {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── CTA block (HomePage bottom) ───────────────────── */
+@media (max-width: 576px) {
+  .cta-block {
+    padding: 2rem 1.25rem !important;
+    border-radius: 14px !important;
+    margin-top: 2.5rem !important;
+  }
+}
+
+/* ── Modal margin on mobile ────────────────────────── */
+@media (max-width: 576px) {
+  .modal-dialog { margin: 0.75rem; }
+
+  .modal-body { padding: 1rem 1.25rem; }
+  .modal-header { padding: 0.875rem 1.25rem; }
+  .modal-footer { padding: 0.875rem 1.25rem; }
+}
+
+/* ── Support modal body padding ────────────────────── */
+@media (max-width: 576px) {
+  .modal-body.px-5 { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+}

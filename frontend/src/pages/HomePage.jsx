@@ -231,11 +231,13 @@ const HomePage = () => {
 
         {/* Etkinlik ekleme CTA */}
         <div
-          className="text-center mt-5 py-5"
+          className="text-center cta-block"
           style={{
             background: 'var(--bg-card)',
             border: '1px solid var(--border-subtle)',
             borderRadius: '20px',
+            marginTop: '3rem',
+            padding: '3rem 2rem',
           }}
         >
           <div
