@@ -18,7 +18,20 @@ const Header = () => {
     setMobileOpen(false)
   }, [location.pathname])
 
+  React.useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [mobileOpen])
+
   return (
+    <>
+      {mobileOpen && (
+        <div
+          className="nav-overlay"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     <header className="main-header">
       <div className="container">
         <div className="d-flex justify-content-between align-items-center" style={{ position: 'relative' }}>
@@ -83,6 +96,7 @@ const Header = () => {
 
       <SupportModal show={showSupport} handleClose={() => setShowSupport(false)} />
     </header>
+    </>
   )
 }
 

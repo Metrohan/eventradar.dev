@@ -142,36 +142,32 @@ const FreeTrainingsPage = () => {
     return (
         <div className="container py-4">
             {/* Header Section */}
-            <div className="header-info mb-5">
-                <div className="row">
-                    <div className="col-md-8">
-                        <h1 className="display-4 fw-bold text-primary mb-3">
-                            Ücretsiz Eğitim Kaynakları
-                        </h1>
-                        <p className="lead text-muted">
-                            Dünyanın önde gelen teknoloji şirketlerinin sunduğu ücretsiz eğitimler ile kariyerinize değer katın.
-                        </p>
-                    </div>
-                </div>
+            <div className="header-info mb-4 mb-md-5">
+                <h1 className="fw-bold text-primary mb-3" style={{ fontSize: 'clamp(1.6rem, 5vw, 2.75rem)' }}>
+                    Ücretsiz Eğitim Kaynakları
+                </h1>
+                <p className="text-muted" style={{ fontSize: 'clamp(0.95rem, 2.5vw, 1.1rem)', maxWidth: 600 }}>
+                    Dünyanın önde gelen teknoloji şirketlerinin sunduğu ücretsiz eğitimler ile kariyerinize değer katın.
+                </p>
             </div>
 
             {/* Trainings Grid */}
             <div className="row g-4">
                 {trainings.map((training) => (
-                    <div key={training.id} className="col-md-6 col-lg-6">
+                    <div key={training.id} className="col-12 col-md-6">
                         <div className="card h-100 bg-card border-0 shadow-sm hover-elevate transition-all">
                             <div className="card-body p-4 d-flex flex-column h-100">
                                 <div className="d-flex align-items-center mb-4">
                                     <div
-                                        className="icon-wrapper d-flex align-items-center justify-content-center rounded-3 me-3"
+                                        className="icon-wrapper d-flex align-items-center justify-content-center rounded-3 me-3 flex-shrink-0"
                                         style={{
-                                            width: '60px',
-                                            height: '60px',
-                                            backgroundColor: `${training.color}20`, // 20 varies opacity 
+                                            width: '52px',
+                                            height: '52px',
+                                            backgroundColor: `${training.color}20`,
                                             color: training.color
                                         }}
                                     >
-                                        <i className={`${training.icon} fa-2x`}></i>
+                                        <i className={`${training.icon} fa-lg`}></i>
                                     </div>
                                     <div>
                                         <span className="badge bg-success mb-1">
@@ -183,7 +179,7 @@ const FreeTrainingsPage = () => {
                                     </div>
                                 </div>
 
-                                <p className="card-text text-muted mb-4 fs-5 flex-grow-0">
+                                <p className="card-text text-muted mb-4 flex-grow-0" style={{ fontSize: '0.95rem', lineHeight: 1.65 }}>
                                     {training.description}
                                 </p>
 

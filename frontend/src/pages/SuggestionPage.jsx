@@ -41,18 +41,14 @@ const SuggestionPage = () => {
 
               {/* Event Request Promo */}
               <div className="alert alert-info border-0 shadow-sm mb-4">
-                <div className="d-flex align-items-center">
-                  <div className="me-3">
-                    <i className="fas fa-calendar-plus fa-2x text-primary"></i>
-                  </div>
-                  <div className="flex-grow-1">
+                <div className="d-flex align-items-start gap-3">
+                  <i className="fas fa-calendar-plus fa-2x text-primary flex-shrink-0 mt-1"></i>
+                  <div>
                     <h6 className="fw-bold mb-1">Yeni Bir Etkinlik mi Eklemek İstiyorsunuz?</h6>
-                    <p className="mb-0 small text-muted">
+                    <p className="mb-2 small text-muted">
                       Düzenlediğiniz veya bildiğiniz bir etkinliği takvimimize eklemek için talep oluşturabilirsiniz.
                     </p>
-                  </div>
-                  <div>
-                    <a href="/etkinlik-talep" className="btn btn-sm btn-info text-white fw-bold text-nowrap">
+                    <a href="/etkinlik-talep" className="btn btn-sm btn-info text-white fw-bold">
                       Etkinlik Ekle
                     </a>
                   </div>
