@@ -5,12 +5,12 @@ Revises: fa600aa31cfe
 Create Date: 2026-05-25 19:13:48.466116
 
 """
+
 from alembic import op
 import sqlalchemy as sa
 
-
-revision = 'f87bd78e167e'
-down_revision = 'fa600aa31cfe'
+revision = "f87bd78e167e"
+down_revision = "fa600aa31cfe"
 branch_labels = None
 depends_on = None
 

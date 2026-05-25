@@ -218,7 +218,9 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
                         data.get("title", existing_event.title),
                         data.get("description", existing_event.description),
                     )
-                    existing_event.tags = [all_tags[n] for n in tag_names if n in all_tags]
+                    existing_event.tags = [
+                        all_tags[n] for n in tag_names if n in all_tags
+                    ]
                     updated_count += 1
                 else:
                     new_event = Event(

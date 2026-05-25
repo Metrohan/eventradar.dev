@@ -1,4 +1,5 @@
 import os
+
 os.environ.setdefault("ALLOW_INSECURE_DEFAULTS", "true")
 os.environ.setdefault("SECRET_KEY", "test-secret-key-that-is-at-least-32-chars")
 os.environ.setdefault("ADMIN_USERNAME", "testadmin")

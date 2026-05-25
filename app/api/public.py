@@ -24,7 +24,9 @@ async def get_events(
 
     try:
         events = event_service.get_events(active_only=active_only, tags=tags)
-        total_count = event_service.get_total_active_events() if not tags else len(events)
+        total_count = (
+            event_service.get_total_active_events() if not tags else len(events)
+        )
         last_updated_event = event_service.get_last_updated_event()
 
         last_updated = None

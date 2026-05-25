@@ -12,7 +12,9 @@ class EventService:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_events(self, active_only: bool = True, tags: list[str] | None = None) -> List[Event]:
+    def get_events(
+        self, active_only: bool = True, tags: list[str] | None = None
+    ) -> List[Event]:
         """Get all events, optionally filtered by active status and/or tag names."""
         query = self.db.query(Event)
         if active_only:

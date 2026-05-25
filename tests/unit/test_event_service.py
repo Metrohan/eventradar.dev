@@ -117,8 +117,12 @@ def _seed_and_get_tags(db):
 def test_get_events_filter_by_single_tag(test_db):
     tags = _seed_and_get_tags(test_db)
     service = EventService(test_db)
-    e1 = service.create_event(_create_data(url="https://example.com/hack", title="Hackathon 2026"))
-    e2 = service.create_event(_create_data(url="https://example.com/work", title="React Workshop"))
+    e1 = service.create_event(
+        _create_data(url="https://example.com/hack", title="Hackathon 2026")
+    )
+    e2 = service.create_event(
+        _create_data(url="https://example.com/work", title="React Workshop")
+    )
     e1.tags = [tags["hackathon"]]
     e2.tags = [tags["atolye"]]
     test_db.commit()
@@ -131,9 +135,15 @@ def test_get_events_filter_by_single_tag(test_db):
 def test_get_events_filter_by_multiple_tags_uses_or(test_db):
     tags = _seed_and_get_tags(test_db)
     service = EventService(test_db)
-    e1 = service.create_event(_create_data(url="https://example.com/hack", title="Hackathon 2026"))
-    e2 = service.create_event(_create_data(url="https://example.com/work", title="React Workshop"))
-    e3 = service.create_event(_create_data(url="https://example.com/other", title="Toplantı"))
+    e1 = service.create_event(
+        _create_data(url="https://example.com/hack", title="Hackathon 2026")
+    )
+    e2 = service.create_event(
+        _create_data(url="https://example.com/work", title="React Workshop")
+    )
+    e3 = service.create_event(
+        _create_data(url="https://example.com/other", title="Toplantı")
+    )
     e1.tags = [tags["hackathon"]]
     e2.tags = [tags["atolye"]]
     e3.tags = [tags["diger"]]

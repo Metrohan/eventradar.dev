@@ -3,19 +3,19 @@ from ..models.tag import Tag
 
 KEYWORD_MAP = {
     "hackathon": ["hackathon", "datathon", "ideathon"],
-    "seminer":   ["seminer", "webinar", "sunum", "söyleşi", "konuşma"],
-    "atolye":    ["atölye", "workshop", "lab", "pratik", "uygulama"],
+    "seminer": ["seminer", "webinar", "sunum", "söyleşi", "konuşma"],
+    "atolye": ["atölye", "workshop", "lab", "pratik", "uygulama"],
     "konferans": ["konferans", "summit", "zirve", "conference"],
-    "bootcamp":  ["bootcamp", "boot camp", "yoğun eğitim", "kamp"],
+    "bootcamp": ["bootcamp", "boot camp", "yoğun eğitim", "kamp"],
 }
 
 _SEED_DATA = [
-    {"name": "hackathon", "label": "Hackathon",         "color": "blue"},
-    {"name": "seminer",   "label": "Seminer / Webinar",  "color": "purple"},
-    {"name": "atolye",    "label": "Atölye",             "color": "green"},
-    {"name": "konferans", "label": "Konferans",           "color": "orange"},
-    {"name": "bootcamp",  "label": "Bootcamp",            "color": "pink"},
-    {"name": "diger",     "label": "Diğer",               "color": "gray"},
+    {"name": "hackathon", "label": "Hackathon", "color": "blue"},
+    {"name": "seminer", "label": "Seminer / Webinar", "color": "purple"},
+    {"name": "atolye", "label": "Atölye", "color": "green"},
+    {"name": "konferans", "label": "Konferans", "color": "orange"},
+    {"name": "bootcamp", "label": "Bootcamp", "color": "pink"},
+    {"name": "diger", "label": "Diğer", "color": "gray"},
 ]
 
 

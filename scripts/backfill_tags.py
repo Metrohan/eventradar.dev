@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """One-time script to classify and assign tags to all existing events."""
+
 import os
 import sys
 

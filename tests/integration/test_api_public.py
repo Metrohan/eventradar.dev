@@ -134,7 +134,9 @@ from app.models.event import Event as EventModel
 
 
 def _seed_event_with_title(db, url, title):
-    e = EventModel(title=title, url=url, source="test", is_active=True, scraped_at=datetime.now())
+    e = EventModel(
+        title=title, url=url, source="test", is_active=True, scraped_at=datetime.now()
+    )
     db.add(e)
     db.commit()
     db.refresh(e)
@@ -158,8 +160,12 @@ def test_get_events_tags_in_response(client, test_db):
 def test_get_events_filter_by_tags(client, test_db):
     seed_tags(test_db)
     tags = {t.name: t for t in test_db.query(TagModel).all()}
-    e1 = _seed_event_with_title(test_db, url="https://example.com/hack", title="Hackathon 2026")
-    e2 = _seed_event_with_title(test_db, url="https://example.com/work", title="Workshop")
+    e1 = _seed_event_with_title(
+        test_db, url="https://example.com/hack", title="Hackathon 2026"
+    )
+    e2 = _seed_event_with_title(
+        test_db, url="https://example.com/work", title="Workshop"
+    )
     e1.tags = [tags["hackathon"]]
     e2.tags = [tags["atolye"]]
     test_db.commit()

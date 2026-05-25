@@ -36,6 +36,7 @@ def on_startup():
     Base.metadata.create_all(bind=engine)
     from .core.database import SessionLocal
     from .services.tag_service import seed_tags
+
     db = SessionLocal()
     try:
         seed_tags(db)
