@@ -176,6 +176,8 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
     """Scrape edilen etkinlikleri veritabanına kaydeder."""
     from ..core.database import SessionLocal
     from ..models.event import Event
+    from ..models.tag import Tag
+    from .tag_service import classify_event
 
     db = SessionLocal()
     new_count = 0
@@ -183,11 +185,11 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
     failed_urls = []
 
     try:
-        # Mevcut URL'leri tek sorguda çek (N+1 sorgu önleme)
         urls = [d.get("url") for d in events_data if d.get("url")]
         existing_map = {
             e.url: e for e in db.query(Event).filter(Event.url.in_(urls)).all()
         }
+        all_tags = {t.name: t for t in db.query(Tag).all()}
 
         now = datetime.now()
         for data in events_data:
@@ -212,6 +214,11 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
                         "image_url", existing_event.image_url
                     )
                     existing_event.scraped_at = now  # type: ignore[assignment]
+                    tag_names = classify_event(
+                        data.get("title", existing_event.title),
+                        data.get("description", existing_event.description),
+                    )
+                    existing_event.tags = [all_tags[n] for n in tag_names if n in all_tags]
                     updated_count += 1
                 else:
                     new_event = Event(
@@ -226,6 +233,11 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
                         scraped_at=now,
                     )
                     db.add(new_event)
+                    db.flush()
+                    tag_names = classify_event(
+                        data.get("title", ""), data.get("description")
+                    )
+                    new_event.tags = [all_tags[n] for n in tag_names if n in all_tags]
                     new_count += 1
             except Exception as e_event:
                 print(f"Error processing single event ({url}): {e_event}")
