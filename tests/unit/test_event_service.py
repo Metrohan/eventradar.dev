@@ -8,6 +8,8 @@ os.environ.setdefault("ADMIN_PASSWORD", "testpassword")
 import pytest
 from app.services.event_service import EventService
 from app.schemas.event import EventCreate, EventUpdate
+from app.services.tag_service import seed_tags
+from app.models.tag import Tag
 
 
 def _create_data(**kwargs) -> EventCreate:
@@ -105,3 +107,52 @@ def test_get_last_updated_event(test_db):
     service.create_event(_create_data())
     latest = service.get_last_updated_event()
     assert latest is not None
+
+
+def _seed_and_get_tags(db):
+    seed_tags(db)
+    return {t.name: t for t in db.query(Tag).all()}
+
+
+def test_get_events_filter_by_single_tag(test_db):
+    tags = _seed_and_get_tags(test_db)
+    service = EventService(test_db)
+    e1 = service.create_event(_create_data(url="https://example.com/hack", title="Hackathon 2026"))
+    e2 = service.create_event(_create_data(url="https://example.com/work", title="React Workshop"))
+    e1.tags = [tags["hackathon"]]
+    e2.tags = [tags["atolye"]]
+    test_db.commit()
+
+    result = service.get_events(tags=["hackathon"])
+    assert len(result) == 1
+    assert result[0].url == "https://example.com/hack"
+
+
+def test_get_events_filter_by_multiple_tags_uses_or(test_db):
+    tags = _seed_and_get_tags(test_db)
+    service = EventService(test_db)
+    e1 = service.create_event(_create_data(url="https://example.com/hack", title="Hackathon 2026"))
+    e2 = service.create_event(_create_data(url="https://example.com/work", title="React Workshop"))
+    e3 = service.create_event(_create_data(url="https://example.com/other", title="Toplantı"))
+    e1.tags = [tags["hackathon"]]
+    e2.tags = [tags["atolye"]]
+    e3.tags = [tags["diger"]]
+    test_db.commit()
+
+    result = service.get_events(tags=["hackathon", "atolye"])
+    urls = {e.url for e in result}
+    assert "https://example.com/hack" in urls
+    assert "https://example.com/work" in urls
+    assert "https://example.com/other" not in urls
+
+
+def test_get_events_no_tag_filter_returns_all(test_db):
+    tags = _seed_and_get_tags(test_db)
+    service = EventService(test_db)
+    e1 = service.create_event(_create_data(url="https://example.com/a"))
+    e2 = service.create_event(_create_data(url="https://example.com/b"))
+    e1.tags = [tags["hackathon"]]
+    test_db.commit()
+
+    result = service.get_events(tags=None)
+    assert len(result) == 2

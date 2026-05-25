@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from datetime import datetime
 from ..models.event import Event
+from ..models.tag import Tag
 from ..schemas.event import EventCreate, EventUpdate
 from .date_extractor import extract_date_from_text
 
@@ -11,11 +12,13 @@ class EventService:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_events(self, active_only: bool = True) -> List[Event]:
-        """Get all events, optionally filtered by active status"""
+    def get_events(self, active_only: bool = True, tags: list[str] | None = None) -> List[Event]:
+        """Get all events, optionally filtered by active status and/or tag names."""
         query = self.db.query(Event)
         if active_only:
             query = query.filter(Event.is_active == True)
+        if tags:
+            query = query.filter(Event.tags.any(Tag.name.in_(tags)))
         return query.order_by(Event.date.desc()).all()
 
     def get_event_by_id(self, event_id: int) -> Optional[Event]:
