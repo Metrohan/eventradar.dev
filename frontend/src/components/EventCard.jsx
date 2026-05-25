@@ -52,13 +52,17 @@ const EventCard = ({ event }) => {
         >
           {event.source}
         </span>
-        {event.tags && event.tags.slice(0, 2).map(name => (
-          <TagBadge key={name} name={name} />
-        ))}
-        {event.tags && event.tags.length > 2 && (
-          <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-            +{event.tags.length - 2}
-          </span>
+        {event.tags && event.tags.length > 0 && (
+          <div style={{ position: 'absolute', bottom: '8px', left: '8px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+            {event.tags.slice(0, 2).map(name => (
+              <TagBadge key={name} name={name} />
+            ))}
+            {event.tags.length > 2 && (
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, alignSelf: 'center' }}>
+                +{event.tags.length - 2}
+              </span>
+            )}
+          </div>
         )}
       </div>
 

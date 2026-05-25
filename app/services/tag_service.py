@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from ..models.tag import Tag
 
 KEYWORD_MAP = {
-    "hackathon": ["hackathon", "hack", "datathon", "ideathon"],
+    "hackathon": ["hackathon", "datathon", "ideathon"],
     "seminer":   ["seminer", "webinar", "sunum", "söyleşi", "konuşma"],
     "atolye":    ["atölye", "workshop", "lab", "pratik", "uygulama"],
     "konferans": ["konferans", "summit", "zirve", "conference"],

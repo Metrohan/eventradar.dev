@@ -24,7 +24,7 @@ async def get_events(
 
     try:
         events = event_service.get_events(active_only=active_only, tags=tags)
-        total_count = event_service.get_total_active_events()
+        total_count = event_service.get_total_active_events() if not tags else len(events)
         last_updated_event = event_service.get_last_updated_event()
 
         last_updated = None
@@ -82,7 +82,6 @@ async def submit_suggestion(
     """
     Public endpoint to submit a suggestion/complaint (converted from /suggestions/oneri_sikayet)
     """
-    suggestion_service = SuggestionService(db)
     suggestion_service = SuggestionService(db)
     try:
         new = suggestion_service.create_suggestion(suggestion)
