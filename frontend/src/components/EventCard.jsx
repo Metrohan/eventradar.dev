@@ -1,6 +1,7 @@
 import React from 'react'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import TagBadge from './TagBadge'
 
 const SOURCE_STYLES = {
   'TechCareer.net':           { bg: 'rgba(56,189,248,0.18)',  color: '#38BDF8',  border: 'rgba(56,189,248,0.35)' },
@@ -51,6 +52,14 @@ const EventCard = ({ event }) => {
         >
           {event.source}
         </span>
+        {event.tags && event.tags.slice(0, 2).map(name => (
+          <TagBadge key={name} name={name} />
+        ))}
+        {event.tags && event.tags.length > 2 && (
+          <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+            +{event.tags.length - 2}
+          </span>
+        )}
       </div>
 
       {/* Content */}
