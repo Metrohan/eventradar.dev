@@ -7,6 +7,7 @@ from .similar_event_pair import SimilarEventPair
 from .scraper_log import ScraperLog
 from .subscriber import Subscriber
 from .traffic_log import TrafficLog
+from .tag import Tag, event_tags
 
 __all__ = [
     "Event",
@@ -18,4 +19,6 @@ __all__ = [
     "ScraperLog",
     "Subscriber",
     "TrafficLog",
+    "Tag",
+    "event_tags",
 ]

@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from ..core.database import Base
 
 
@@ -16,6 +17,7 @@ class Event(Base):
     source = Column(String(100), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     scraped_at = Column(DateTime, default=func.now(), nullable=False)
+    tags = relationship("Tag", secondary="event_tags", lazy="selectin")
 
     def __repr__(self):
         return f"<Event {self.title}>"

@@ -21,6 +21,7 @@ import app.models.subscriber  # noqa: F401
 import app.models.traffic_log  # noqa: F401
 import app.models.pending_event  # noqa: F401
 import app.models.similar_event_pair  # noqa: F401
+import app.models.tag  # noqa: F401
 
 
 @pytest.fixture(scope="function")
