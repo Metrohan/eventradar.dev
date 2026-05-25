@@ -5,6 +5,7 @@ import EventCard from '../components/EventCard'
 import AnnouncementModal from '../components/AnnouncementModal'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
+import TagBadge, { TAG_STYLES } from '../components/TagBadge'
 
 const SOURCES = [
   'TechCareer.net', 'Kodluyoruz', 'Youthall',
@@ -16,6 +17,7 @@ const HomePage = () => {
   const [selectedSource, setSelectedSource] = React.useState('')
   const [selectedLocation, setSelectedLocation] = React.useState('')
   const [showPastEvents, setShowPastEvents] = React.useState(false)
+  const [selectedTags, setSelectedTags] = React.useState([])
 
   const { data: eventsData, isLoading, error } = useQuery(
     'events',
@@ -51,6 +53,10 @@ const HomePage = () => {
     }
     if (selectedSource && event.source !== selectedSource) return false
     if (selectedLocation && event.location !== selectedLocation) return false
+    if (selectedTags.length > 0) {
+      const eventTags = event.tags || []
+      if (!selectedTags.some(t => eventTags.includes(t))) return false
+    }
     return true
   }).sort((a, b) => {
     if (!a.date) return 1
@@ -63,9 +69,16 @@ const HomePage = () => {
     setSelectedSource('')
     setSelectedLocation('')
     setShowPastEvents(false)
+    setSelectedTags([])
   }
 
-  const hasFilters = searchTerm || selectedSource || selectedLocation || showPastEvents
+  const toggleTag = (name) => {
+    setSelectedTags(prev =>
+      prev.includes(name) ? prev.filter(t => t !== name) : [...prev, name]
+    )
+  }
+
+  const hasFilters = searchTerm || selectedSource || selectedLocation || showPastEvents || selectedTags.length > 0
   const announcement = announcementData?.data
 
   return (
@@ -188,6 +201,22 @@ const HomePage = () => {
                 Temizle
               </button>
             )}
+          </div>
+
+          {/* Category tag filter */}
+          <div className="filter-row" style={{ marginTop: '10px', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.05em', flexShrink: 0 }}>
+              KATEGORİ:
+            </span>
+            {Object.keys(TAG_STYLES).map(name => (
+              <TagBadge
+                key={name}
+                name={name}
+                selected={selectedTags.includes(name)}
+                clickable
+                onClick={() => toggleTag(name)}
+              />
+            ))}
           </div>
         </div>
 
