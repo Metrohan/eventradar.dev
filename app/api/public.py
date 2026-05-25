@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from ..core.database import get_db
 from ..services.event_service import EventService
 from ..services.announcement_service import AnnouncementService
@@ -15,15 +15,15 @@ router = APIRouter()
 
 
 @router.get("/events", response_model=EventListResponse)
-async def get_events(active_only: bool = True, db: Session = Depends(get_db)):
-    """
-    Get all events (converted from Flask route /events)
-    """
+async def get_events(
+    active_only: bool = True,
+    tags: Optional[List[str]] = Query(default=None),
+    db: Session = Depends(get_db),
+):
     event_service = EventService(db)
-    announcement_service = AnnouncementService(db)
 
     try:
-        events = event_service.get_events(active_only=active_only)
+        events = event_service.get_events(active_only=active_only, tags=tags)
         total_count = event_service.get_total_active_events()
         last_updated_event = event_service.get_last_updated_event()
 

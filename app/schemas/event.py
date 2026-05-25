@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import List, Optional
 from datetime import datetime
 
@@ -32,6 +32,14 @@ class EventUpdate(BaseModel):
 class EventResponse(EventBase):
     id: int
     scraped_at: datetime
+    tags: list[str] = []
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def extract_tag_names(cls, v):
+        if not v:
+            return []
+        return [t.name if hasattr(t, "name") else t for t in v]
 
     class Config:
         from_attributes = True
