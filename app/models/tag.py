@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey, PrimaryKeyConstraint
-from sqlalchemy.orm import relationship
 from ..core.database import Base
 
 event_tags = Table(
