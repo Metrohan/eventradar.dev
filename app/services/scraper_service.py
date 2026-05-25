@@ -189,7 +189,7 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
         existing_map = {
             e.url: e for e in db.query(Event).filter(Event.url.in_(urls)).all()
         }
-        all_tags = {t.name: t for t in db.query(Tag).all()}
+        all_tags: dict[str, Tag] = {str(t.name): t for t in db.query(Tag).all()}
 
         now = datetime.now()
         for data in events_data:
