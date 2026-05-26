@@ -39,7 +39,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="logo-link">
             <img
-              src="/techeventradar_logo.webp"
+              src="/techeventradar_logo.png"
               alt="TechEventRadar"
               className="header-logo"
               width="36"
@@ -70,7 +70,7 @@ const Header = () => {
               rel="noopener noreferrer"
               className="button-link github-button"
             >
-              <img src="/github-mark-white.webp" alt="GitHub" className="github-icon" />
+              <img src="/github-mark-white.png" alt="GitHub" className="github-icon" />
               GitHub
             </a>
             <ThemeToggle />
