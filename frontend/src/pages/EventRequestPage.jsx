@@ -44,8 +44,8 @@ const EventRequestPage = () => {
       <div className="wizard-card">
         {/* Step indicator */}
         <div className="step-indicator" role="list" aria-label="Form adımları">
-          <div className="step-item" role="listitem">
-            <div className={`step-circle ${step === 1 ? 'active' : 'done'}`} aria-current={step === 1 ? 'step' : undefined}>
+          <div className="step-item" role="listitem" aria-current={step === 1 ? 'step' : undefined}>
+            <div className={`step-circle ${step === 1 ? 'active' : 'done'}`}>
               {step > 1
                 ? <i className="fas fa-check" style={{ fontSize: '10px' }} aria-hidden="true" />
                 : '1'}
@@ -53,8 +53,8 @@ const EventRequestPage = () => {
             <span className={`step-label ${step === 1 ? 'active' : 'inactive'}`}>Link</span>
           </div>
           <div className={`step-line ${step > 1 ? 'done' : 'inactive'}`} aria-hidden="true" />
-          <div className="step-item" role="listitem">
-            <div className={`step-circle ${step === 2 ? 'active' : 'inactive'}`} aria-current={step === 2 ? 'step' : undefined}>2</div>
+          <div className="step-item" role="listitem" aria-current={step === 2 ? 'step' : undefined}>
+            <div className={`step-circle ${step === 2 ? 'active' : 'inactive'}`}>2</div>
             <span className={`step-label ${step === 2 ? 'active' : 'inactive'}`}>Detaylar</span>
           </div>
         </div>
@@ -100,7 +100,7 @@ const EventRequestPage = () => {
                 Etkinlik Detayları
               </h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '20px' }}>
-                Bilgi eklemek zorunda değilsin, ama yardımcı olur.
+                Başlık zorunlu, diğer alanlar isteğe bağlıdır.
               </p>
 
               <div style={{ marginBottom: '16px' }}>
