@@ -176,6 +176,7 @@ h1, h2, h3, h4, h5, h6 {
 .support-btn-link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
   background: linear-gradient(135deg, #F59E0B, #F97316);
   color: #000;
@@ -188,6 +189,7 @@ h1, h2, h3, h4, h5, h6 {
   border: none;
   cursor: pointer;
   box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  white-space: nowrap;
 }
 
 .support-btn-link:hover {
@@ -251,6 +253,8 @@ h1, h2, h3, h4, h5, h6 {
     gap: 0.25rem;
     box-shadow: var(--shadow-card);
     z-index: 999;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
   }
 
   .header-nav.open { display: flex; }
@@ -258,6 +262,11 @@ h1, h2, h3, h4, h5, h6 {
   .button-link {
     padding: 0.6rem 1rem;
     border-radius: 8px;
+  }
+
+  .support-btn-link {
+    width: 100%;
+    min-height: 42px;
   }
 }
 

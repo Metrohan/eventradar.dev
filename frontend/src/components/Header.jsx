@@ -78,7 +78,7 @@ const Header = () => {
               onClick={() => setShowSupport(true)}
               className="support-btn-link"
             >
-              <img src="/coffee.webp" className="bmc-icon" alt="" width="18" height="18" />
+              <img src="/coffee.svg" className="bmc-icon" alt="" width="18" height="18" />
               Destek Ol
             </button>
           </nav>
