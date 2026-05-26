@@ -11,6 +11,7 @@ class EventRequest(Base):
     event_title = Column(String(300), nullable=False)
     event_date = Column(Date, nullable=True)
     event_description = Column(Text, nullable=True)
+    contact_email = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
 
     def __repr__(self):

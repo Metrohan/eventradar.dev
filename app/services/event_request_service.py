@@ -25,6 +25,7 @@ class EventRequestService:
             event_title=request_data.event_title,
             event_date=request_data.event_date,
             event_description=request_data.event_description,
+            contact_email=request_data.contact_email,
         )
         self.db.add(db_request)
         self.db.commit()
