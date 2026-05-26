@@ -1465,7 +1465,7 @@ code {
 }
 .field-error {
   font-size: 0.78rem;
-  color: #f43f5e;
+  color: var(--danger);
   margin-top: 4px;
   margin-bottom: 0;
 }
