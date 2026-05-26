@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { createPortal } from 'react-dom'
 
 const SupportModal = ({ show, handleClose }) => {
     const [copySuccess, setCopySuccess] = useState(false)
@@ -14,7 +15,7 @@ const SupportModal = ({ show, handleClose }) => {
 
     if (!show) return null
 
-    return (
+    return createPortal(
         <div className="support-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="support-modal-title" tabIndex="-1">
             <div className="support-modal-dialog">
                 <div className="modal-content border-0 shadow-lg support-modal-content">
@@ -70,7 +71,8 @@ const SupportModal = ({ show, handleClose }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     )
 }
 
