@@ -21,11 +21,14 @@ TechEventRadar bu dağınıklığı azaltmak için geliştirildi.
 ## Öne Çıkan Özellikler
 
 - Çoklu kaynaklardan etkinlik toplama
+- **Kategori tag sistemi** — Hackathon, Seminer/Webinar, Atölye, Konferans, Bootcamp badge'leriyle filtreleme
 - Tek listede arama ve filtreleme
 - Etkinlik detayına hızlı erişim
 - Admin paneli ile içerik yönetimi
 - Öneri/şikayet ve etkinlik ekleme talepleri
 - Duyuru sistemi
+
+**🌐 Canlı Demo:** [eventradar.dev](https://eventradar.dev)
 
 ![Etkinlik Kartı Placeholder](frontend/public/placeholder-image-colored.jpeg)
 
