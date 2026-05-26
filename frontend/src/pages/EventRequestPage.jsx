@@ -50,7 +50,7 @@ const EventRequestPage = () => {
                 ? <i className="fas fa-check" style={{ fontSize: '10px' }} aria-hidden="true" />
                 : '1'}
             </div>
-            <span className="step-label active">Link</span>
+            <span className={`step-label ${step === 1 ? 'active' : 'inactive'}`}>Link</span>
           </div>
           <div className={`step-line ${step > 1 ? 'done' : 'inactive'}`} aria-hidden="true" />
           <div className="step-item" role="listitem">
