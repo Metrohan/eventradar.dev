@@ -39,11 +39,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="logo-link">
             <img
-<<<<<<< HEAD
               src="/techeventradar_logo.png"
-=======
-              src="/techeventradar_logo.png?v=2"
->>>>>>> 72797172 (fix: png and webp issues)
               alt="TechEventRadar"
               className="header-logo"
               width="36"
@@ -68,19 +64,15 @@ const Header = () => {
                 {label}
               </Link>
             ))}
-            <a
-              href="https://github.com/Metrohan/eventradar.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="button-link github-button"
-            >
-<<<<<<< HEAD
-              <img src="/github-mark-white.png" alt="GitHub" className="github-icon" />
-=======
-              <img src="/github-mark-white.png?v=2" alt="GitHub" className="github-icon" />
->>>>>>> 72797172 (fix: png and webp issues)
-              GitHub
-            </a>
+	   <a
+	  href="https://github.com/Metrohan/eventradar.dev"
+  	  target="_blank"
+	  rel="noopener noreferrer"
+	  className="button-link github-button"
+	>
+	  <img src="/github-mark-white.png" alt="GitHub" className="github-icon" />
+	  GitHub
+	</a>
             <ThemeToggle />
             <button
               onClick={() => setShowSupport(true)}
