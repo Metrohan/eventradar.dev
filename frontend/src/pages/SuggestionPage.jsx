@@ -78,10 +78,15 @@ const SuggestionPage = () => {
 
             {/* Type selector */}
             <div style={{ marginBottom: '20px' }}>
-              <label className="form-label-dark">
+              <label id="type-label" className="form-label-dark">
                 Talep Türü <span style={{ color: 'var(--danger)' }}>*</span>
               </label>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <div
+                role="group"
+                aria-labelledby="type-label"
+                aria-describedby={errors.suggestion_type ? 'type-error' : undefined}
+                style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}
+              >
                 {TYPES.map(t => {
                   const active = selectedType === t.value
                   return (
@@ -99,7 +104,7 @@ const SuggestionPage = () => {
                 })}
               </div>
               {errors.suggestion_type && (
-                <p className="field-error">{errors.suggestion_type.message}</p>
+                <p id="type-error" className="field-error" role="alert">{errors.suggestion_type.message}</p>
               )}
             </div>
 
