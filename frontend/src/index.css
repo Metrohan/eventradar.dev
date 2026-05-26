@@ -987,7 +987,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 5rem 1rem 1rem;
+  padding: clamp(0.75rem, 5vh, 2rem) 1rem;
   background: rgba(10, 15, 30, 0.72);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -996,7 +996,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .support-modal-dialog {
   width: min(100%, 500px);
-  max-height: calc(100vh - 6rem);
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
   overflow-y: auto;
 }
 
