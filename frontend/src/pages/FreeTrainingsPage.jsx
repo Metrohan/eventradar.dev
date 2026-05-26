@@ -9,6 +9,8 @@ const CATEGORIES = [
   { key: 'kariyer',  label: '🚀 Kariyer',   color: '#fb923c' },
 ]
 
+const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map(c => [c.key, c]))
+
 const trainings = [
   {
     id: 'google',
@@ -197,10 +199,12 @@ const FreeTrainingsPage = () => {
         {CATEGORIES.map(cat => {
           const active = selectedCategory === cat.key
           return (
-            <span
+            <button
               key={cat.key}
+              type="button"
               className="cat-badge"
               onClick={() => toggleCategory(cat.key)}
+              aria-pressed={active}
               style={{
                 background: active ? `${cat.color}30` : `${cat.color}18`,
                 borderColor: active ? cat.color : `${cat.color}50`,
@@ -208,7 +212,7 @@ const FreeTrainingsPage = () => {
               }}
             >
               {cat.label}
-            </span>
+            </button>
           )
         })}
       </div>
@@ -226,7 +230,7 @@ const FreeTrainingsPage = () => {
           </div>
         )}
         {filtered.map(training => {
-          const cat = CATEGORIES.find(c => c.key === training.category)
+          const cat = CATEGORY_MAP[training.category]
           return (
             <div key={training.id} className="col-12 col-md-6 col-lg-4">
               <div className="training-card">
@@ -269,7 +273,7 @@ const FreeTrainingsPage = () => {
                   className="training-cta"
                   style={{ background: training.color }}
                 >
-                  Eğitime Başla <i className="fas fa-external-link-alt" style={{ fontSize: '0.75rem', marginLeft: '6px' }} />
+                  Eğitime Başla <i className="fas fa-external-link-alt" aria-hidden="true" style={{ fontSize: '0.75rem', marginLeft: '6px' }} />
                 </a>
               </div>
             </div>
