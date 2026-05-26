@@ -8,6 +8,7 @@ class EventRequestBase(BaseModel):
     event_title: str
     event_date: Optional[date] = None
     event_description: Optional[str] = None
+    contact_email: Optional[str] = None
 
 
 class EventRequestCreate(EventRequestBase):
