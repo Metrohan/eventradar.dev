@@ -30,7 +30,7 @@ TechEventRadar bu dağınıklığı azaltmak için geliştirildi.
 
 **🌐 Canlı Demo:** [eventradar.dev](https://eventradar.dev)
 
-![Etkinlik Kartı Placeholder](frontend/public/placeholder-image-colored.jpeg)
+![TechEventRadar ana sayfa ekran görüntüsü](docs/assets/eventradar-homepage.png)
 
 ## Mimari
 
