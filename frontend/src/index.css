@@ -980,6 +980,30 @@ h1, h2, h3, h4, h5, h6 {
 .modal-footer { border-top: 1px solid var(--border-color); }
 .modal-title { color: var(--text-primary); }
 
+.support-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(10, 15, 30, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.support-modal-dialog {
+  width: min(100%, 500px);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+.support-modal-content {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
 .btn-close {
   filter: invert(1) grayscale(100%) brightness(200%);
 }

@@ -15,9 +15,9 @@ const SupportModal = ({ show, handleClose }) => {
     if (!show) return null
 
     return (
-        <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(15, 23, 42, 0.7)' }} tabIndex="-1">
-            <div className="modal-dialog modal-dialog-centered">
-                <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '1rem', overflow: 'hidden' }}>
+        <div className="support-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="support-modal-title" tabIndex="-1">
+            <div className="support-modal-dialog">
+                <div className="modal-content border-0 shadow-lg support-modal-content">
                     <div className="modal-header border-0 pb-0 justify-content-end">
                         <button
                             type="button"
@@ -32,7 +32,7 @@ const SupportModal = ({ show, handleClose }) => {
                                 style={{ width: '80px', height: '80px', backgroundColor: '#F0F9FF', border: '2px solid #38BDF8' }}>
                                 <i className="fas fa-heart fa-2x" style={{ color: '#38BDF8' }}></i>
                             </div>
-                            <h3 className="fw-bold mb-3 text-muted">Projeye Destek Ol</h3>
+                            <h3 id="support-modal-title" className="fw-bold mb-3">Projeye Destek Ol</h3>
                             <p className="text-muted">
                                 TechEventRadar tamamen gönüllülük esasıyla geliştirilen açık kaynaklı bir projedir.
                                 Geliştirmemize katkıda bulunmak için bize bir kahve ısmarlayabilir veya projemizi çevrenizle paylaşabilirsiniz.
