@@ -14,7 +14,7 @@ const SOURCES = [
   {
     name: 'Kodluyoruz',
     url: 'https://www.kodluyoruz.org',
-    desc: 'Frontend, backend ve mobil geliştirme odaklı ücretsiz bootcamp'ler. Mezunlara iş imkânı.',
+    desc: 'Frontend, backend ve mobil geliştirme odaklı ücretsiz bootcamp programları. Mezunlara iş imkânı.',
   },
   {
     name: 'Coderspace',
@@ -50,7 +50,7 @@ const SOURCES = [
 
 const STEPS = [
   { icon: 'fa-search', title: 'Platforma kaydol', desc: 'Kodluyoruz, Patika.dev veya TechCareer gibi platformlarda ücretsiz hesap aç.' },
-  { icon: 'fa-calendar-check', title: 'Başvuru tarihini takip et', desc: 'Bootcamp'ler genellikle 2-4 haftada bir açılır; başvuru süreleri kısadır.' },
+  { icon: 'fa-calendar-check', title: 'Başvuru tarihini takip et', desc: 'Bootcamp programları genellikle 2-4 haftada bir açılır; başvuru süreleri kısadır.' },
   { icon: 'fa-file-alt', title: 'Başvuru formunu doldur', desc: 'Motivasyon mektubu ve teknik seviyeni anlatan kısa form.' },
   { icon: 'fa-laptop-code', title: 'Programa katıl', desc: 'Çoğu program online ve ücretsiz; sadece düzenli katılım beklenir.' },
 ]
