@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import TagBadge from './TagBadge'
@@ -29,6 +30,10 @@ const EventCard = ({ event }) => {
   const isActive = event.is_active
 
   return (
+    <Link
+      to={`/etkinlik/${event.id}`}
+      style={{ textDecoration: 'none', color: 'inherit', display: 'block', height: '100%' }}
+    >
     <div className="event-card h-100">
       {/* Image */}
       <div className="event-image-wrapper">
@@ -100,6 +105,7 @@ const EventCard = ({ event }) => {
             target="_blank"
             rel="noopener noreferrer"
             className="btn-event"
+            onClick={e => e.stopPropagation()}
           >
             Başvur
             <i className="fas fa-arrow-right" style={{ fontSize: '0.7rem' }}></i>
@@ -107,6 +113,7 @@ const EventCard = ({ event }) => {
         </div>
       </div>
     </div>
+    </Link>
   )
 }
 

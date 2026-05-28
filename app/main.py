@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from .core.config import settings
 from .core.database import engine, Base
 from .api import api_router
@@ -113,6 +113,61 @@ async def health_check():
     Health check endpoint
     """
     return {"status": "healthy", "message": "API is running successfully"}
+
+
+@app.get("/sitemap.xml", response_class=Response)
+async def sitemap():
+    from .core.database import SessionLocal
+    from .models.event import Event
+
+    BASE_URL = "https://eventradar.dev"
+
+    db = SessionLocal()
+    try:
+        events = db.query(Event.id, Event.scraped_at).filter(Event.is_active == True).all()  # noqa: E712
+    finally:
+        db.close()
+
+    urls = [
+        f"""  <url>
+    <loc>{BASE_URL}/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>""",
+        f"""  <url>
+    <loc>{BASE_URL}/hakkinda</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>""",
+        f"""  <url>
+    <loc>{BASE_URL}/iletisim</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>""",
+        f"""  <url>
+    <loc>{BASE_URL}/bootcamp-rehberi</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>""",
+    ]
+
+    for event_id, scraped_at in events:
+        lastmod = scraped_at.strftime("%Y-%m-%d") if scraped_at else ""
+        lastmod_tag = f"\n    <lastmod>{lastmod}</lastmod>" if lastmod else ""
+        urls.append(
+            f"""  <url>
+    <loc>{BASE_URL}/etkinlik/{event_id}</loc>{lastmod_tag}
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>"""
+        )
+
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    xml += "\n".join(urls)
+    xml += "\n</urlset>"
+
+    return Response(content=xml, media_type="application/xml")
 
 
 if __name__ == "__main__":

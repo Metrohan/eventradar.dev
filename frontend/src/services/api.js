@@ -42,6 +42,10 @@ export const publicAPI = {
   getEvents: (activeOnly = true) =>
     api.get(`/events?active_only=${activeOnly}`),
 
+  // Get single event by id
+  getEventById: (id) =>
+    api.get(`/events/${id}`),
+
   // Get all announcements (converted from /api/announcements)
   getAnnouncements: () =>
     api.get('/announcements'),

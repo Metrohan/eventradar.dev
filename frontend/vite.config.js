@@ -14,12 +14,27 @@ export default defineConfig({
         target: 'http://backend:8000',
         changeOrigin: true,
         secure: false,
+      },
+      '/sitemap.xml': {
+        target: 'http://backend:8000',
+        changeOrigin: true,
+        secure: false,
       }
     }
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: false,
+    chunkSizeWarningLimit: 500,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          query: ['react-query'],
+          ui: ['date-fns', 'react-hot-toast'],
+        },
+      },
+    },
   }
 })
 

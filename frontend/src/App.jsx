@@ -16,6 +16,8 @@ const ScraperControlPage = lazy(() => import('./pages/ScraperControlPage'))
 const NotificationPage = lazy(() => import('./pages/NotificationPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const FreeTrainingsPage = lazy(() => import('./pages/FreeTrainingsPage'))
+const EventDetailPage = lazy(() => import('./pages/EventDetailPage'))
+const BootcampRehberi = lazy(() => import('./pages/BootcampRehberi'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const ServerErrorPage = lazy(() => import('./pages/ServerErrorPage'))
 const RedirectPage = lazy(() => import('./pages/RedirectPage'))
@@ -49,6 +51,8 @@ function App() {
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/etkinlik/:id" element={<EventDetailPage />} />
+                  <Route path="/bootcamp-rehberi" element={<BootcampRehberi />} />
                   <Route path="/etkinlik-talep" element={<EventRequestPage />} />
                   <Route path="/oneri-sikayet" element={<SuggestionPage />} />
                   <Route path="/egitim-kaynaklari" element={<FreeTrainingsPage />} />

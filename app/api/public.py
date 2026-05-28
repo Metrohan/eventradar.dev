@@ -77,6 +77,15 @@ async def get_latest_announcement(db: Session = Depends(get_db)):
         return None  # Silently return null instead of 404
 
 
+@router.get("/events/{event_id}", response_model=EventResponse)
+async def get_event(event_id: int, db: Session = Depends(get_db)):
+    event_service = EventService(db)
+    event = event_service.get_event_by_id(event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Etkinlik bulunamadı")
+    return event
+
+
 @router.post("/suggestions", response_model=SuggestionResponse)
 async def submit_suggestion(
     suggestion: SuggestionCreate, db: Session = Depends(get_db)

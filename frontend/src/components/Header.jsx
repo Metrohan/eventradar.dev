@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle'
 
 const NAV_LINKS = [
   { to: '/', label: 'Anasayfa' },
+  { to: '/bootcamp-rehberi', label: 'Rehber' },
   { to: '/egitim-kaynaklari', label: 'Ücretsiz Eğitimler' },
   { to: '/oneri-sikayet', label: 'Öneri / Şikayet' },
 ]
