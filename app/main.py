@@ -124,7 +124,9 @@ async def sitemap():
 
     db = SessionLocal()
     try:
-        events = db.query(Event.id, Event.scraped_at).filter(Event.is_active == True).all()  # noqa: E712
+        events = (
+            db.query(Event.id, Event.scraped_at).filter(Event.is_active == True).all()
+        )  # noqa: E712
     finally:
         db.close()
 
@@ -154,13 +156,11 @@ async def sitemap():
     for event_id, scraped_at in events:
         lastmod = scraped_at.strftime("%Y-%m-%d") if scraped_at else ""
         lastmod_tag = f"\n    <lastmod>{lastmod}</lastmod>" if lastmod else ""
-        urls.append(
-            f"""  <url>
+        urls.append(f"""  <url>
     <loc>{BASE_URL}/etkinlik/{event_id}</loc>{lastmod_tag}
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
-  </url>"""
-        )
+  </url>""")
 
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
