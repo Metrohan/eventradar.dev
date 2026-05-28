@@ -17,6 +17,8 @@ const SOURCE_STYLES = {
 const DEFAULT_SOURCE_STYLE = { bg: 'rgba(56,189,248,0.18)', color: '#38BDF8', border: 'rgba(56,189,248,0.35)' }
 
 const EventCard = ({ event }) => {
+  const safeUrl = /^https?:\/\//i.test(event.url) ? event.url : '#'
+
   const formatDate = (dateString) => {
     if (!dateString) return 'Tarih belirtilmemiş'
     try {
@@ -101,7 +103,7 @@ const EventCard = ({ event }) => {
             {isActive ? 'Açık' : 'Kapalı'}
           </span>
           <a
-            href={event.url}
+            href={safeUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-event"

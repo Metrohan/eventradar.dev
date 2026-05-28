@@ -88,6 +88,9 @@ const EventDetailPage = () => {
   if (isLoading) return <LoadingSpinner />
   if (error || !event) return <ErrorMessage message="Etkinlik bulunamadı veya yüklenirken hata oluştu." />
 
+  const safeUrl = /^https?:\/\//i.test(event.url) ? event.url : '#'
+  const safeImageUrl = event.image_url && /^https?:\/\//i.test(event.image_url) ? event.image_url : null
+
   const formatDate = (dateString) => {
     if (!dateString) return 'Tarih belirtilmemiş'
     try {
@@ -113,10 +116,10 @@ const EventDetailPage = () => {
           </Link>
 
           {/* Görsel */}
-          {event.image_url && (
+          {safeImageUrl && (
             <div className="mb-4" style={{ borderRadius: '12px', overflow: 'hidden', maxHeight: '320px' }}>
               <img
-                src={event.image_url}
+                src={safeImageUrl}
                 alt={event.title}
                 style={{ width: '100%', height: '320px', objectFit: 'cover' }}
                 onError={(e) => { e.target.style.display = 'none' }}
@@ -175,7 +178,7 @@ const EventDetailPage = () => {
 
           {/* CTA butonu */}
           <a
-            href={event.url}
+            href={safeUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-event"
