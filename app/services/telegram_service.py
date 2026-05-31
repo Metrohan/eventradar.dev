@@ -169,9 +169,13 @@ def send_daily_digest(events: list[dict], date_label: str) -> None:
     lines.append("")
 
     for event in events[:10]:
-        title = event.get("title", "")
-        url = event.get("url", "")
-        lines.append(f'• <a href="{url}">{title}</a>')
+        title = html_lib.escape(event.get("title", ""))
+        raw_url = event.get("url", "")
+        safe_url = raw_url if urlparse(raw_url).scheme in ("http", "https") else ""
+        if safe_url:
+            lines.append(f'• <a href="{html_lib.escape(safe_url, quote=True)}">{title}</a>')
+        else:
+            lines.append(f"• {title}")
 
     if len(events) > 10:
         lines.append(f"  … ve {len(events) - 10} etkinlik daha")
