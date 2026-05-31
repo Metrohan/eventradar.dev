@@ -7,9 +7,6 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-TELEGRAM_BOT_TOKEN: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TELEGRAM_CHANNEL_ID: str = os.getenv("TELEGRAM_CHANNEL_ID", "")
-
 _TYPE_EMOJIS = {
     "hackathon": "🏆",
     "bootcamp": "🎓",
@@ -23,7 +20,7 @@ _TYPE_EMOJIS = {
 
 def _is_configured() -> bool:
     """Bot token ve kanal ID'si tanımlanmışsa True döner."""
-    return bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHANNEL_ID)
+    return bool(os.getenv("TELEGRAM_BOT_TOKEN") and os.getenv("TELEGRAM_CHANNEL_ID"))
 
 
 def _detect_type(title: str) -> str:
@@ -75,14 +72,16 @@ def _format_event_message(event: dict) -> str:
 
 def _send_message(text: str) -> bool:
     """Kanala metin mesajı gönderir. Başarılıysa True döner."""
-    if not _is_configured():
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    channel = os.getenv("TELEGRAM_CHANNEL_ID", "")
+    if not (token and channel):
         return False
-    api_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    api_url = f"https://api.telegram.org/bot{token}/sendMessage"
     try:
         resp = requests.post(
             api_url,
             json={
-                "chat_id": TELEGRAM_CHANNEL_ID,
+                "chat_id": channel,
                 "text": text,
                 "parse_mode": "HTML",
                 "disable_web_page_preview": False,
@@ -98,14 +97,16 @@ def _send_message(text: str) -> bool:
 
 def _send_photo(image_url: str, caption: str) -> bool:
     """Kanala görsel + açıklama gönderir. Başarısız olursa False döner."""
-    if not _is_configured():
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    channel = os.getenv("TELEGRAM_CHANNEL_ID", "")
+    if not (token and channel):
         return False
-    api_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto"
+    api_url = f"https://api.telegram.org/bot{token}/sendPhoto"
     try:
         resp = requests.post(
             api_url,
             json={
-                "chat_id": TELEGRAM_CHANNEL_ID,
+                "chat_id": channel,
                 "photo": image_url,
                 "caption": caption,
                 "parse_mode": "HTML",
