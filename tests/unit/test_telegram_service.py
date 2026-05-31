@@ -73,3 +73,90 @@ def test_detect_type():
     assert ts._detect_type("Vodafone Staj Programı") == "staj"
     assert ts._detect_type("AI Webinar Serisi") == "seminer"
     assert ts._detect_type("Teknoloji Zirvesi") == "diğer"
+
+
+def test_send_message_calls_requests_post(monkeypatch):
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:ABC")
+    monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
+    import importlib
+    import app.services.telegram_service as ts
+    importlib.reload(ts)
+
+    mock_resp = MagicMock()
+    mock_resp.raise_for_status.return_value = None
+
+    with patch("app.services.telegram_service.requests.post", return_value=mock_resp) as mock_post:
+        result = ts._send_message("test mesajı")
+
+    assert result is True
+    mock_post.assert_called_once()
+    call_kwargs = mock_post.call_args
+    assert "test mesajı" in str(call_kwargs)
+    assert "HTML" in str(call_kwargs)
+
+
+def test_send_message_returns_false_when_not_configured(monkeypatch):
+    monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
+    monkeypatch.delenv("TELEGRAM_CHANNEL_ID", raising=False)
+    import importlib
+    import app.services.telegram_service as ts
+    importlib.reload(ts)
+    result = ts._send_message("test")
+    assert result is False
+
+
+def test_notify_new_events_noop_when_empty(monkeypatch):
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:ABC")
+    monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
+    import importlib
+    import app.services.telegram_service as ts
+    importlib.reload(ts)
+
+    with patch("app.services.telegram_service._send_message") as mock_send:
+        ts.notify_new_events([])
+    mock_send.assert_not_called()
+
+
+def test_notify_new_events_sends_per_event(monkeypatch):
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:ABC")
+    monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
+    import importlib
+    import app.services.telegram_service as ts
+    importlib.reload(ts)
+
+    events = [
+        {"title": "A", "url": "https://a.com", "source": "S", "date": "", "description": "", "image_url": ""},
+        {"title": "B", "url": "https://b.com", "source": "S", "date": "", "description": "", "image_url": ""},
+    ]
+    with patch("app.services.telegram_service._send_message") as mock_send, \
+         patch("app.services.telegram_service.time.sleep") as mock_sleep:
+        ts.notify_new_events(events)
+
+    assert mock_send.call_count == 2
+    mock_sleep.assert_called_once_with(0.5)
+
+
+def test_send_daily_digest_noop_when_empty(monkeypatch):
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:ABC")
+    monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
+    import importlib
+    import app.services.telegram_service as ts
+    importlib.reload(ts)
+
+    with patch("app.services.telegram_service._send_message") as mock_send:
+        ts.send_daily_digest([], "1 Haziran 2026")
+    mock_send.assert_not_called()
+
+
+def test_send_weekly_digest_sends_even_when_empty(monkeypatch):
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:ABC")
+    monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
+    import importlib
+    import app.services.telegram_service as ts
+    importlib.reload(ts)
+
+    with patch("app.services.telegram_service._send_message") as mock_send:
+        ts.send_weekly_digest([], "26 Mayıs – 1 Haziran")
+
+    mock_send.assert_called_once()
+    assert "yeni etkinlik eklenmedi" in mock_send.call_args[0][0]
