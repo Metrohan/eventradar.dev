@@ -1,7 +1,9 @@
 # app/services/telegram_service.py
+import html as html_lib
 import logging
 import os
 import time
+from urllib.parse import urlparse
 
 import requests
 
@@ -52,6 +54,13 @@ def _format_event_message(event: dict) -> str:
     if description and len(description) > 200:
         description = description[:197] + "..."
 
+    # Escape tüm kullanıcı verilerini HTML injection'a karşı
+    title = html_lib.escape(title)
+    source = html_lib.escape(source)
+    date_str = html_lib.escape(date_str)
+    description = html_lib.escape(description)
+    safe_url = url if urlparse(url).scheme in ("http", "https") else ""
+
     event_type = _detect_type(title)
     type_emoji = _TYPE_EMOJIS.get(event_type, "📌")
 
@@ -65,7 +74,10 @@ def _format_event_message(event: dict) -> str:
         lines.append(f"📅 {date_str}")
     if description:
         lines.append(f"📝 {description}")
-    lines.extend(["", f'🔗 <a href="{url}">Detaylar →</a>'])
+    if safe_url:
+        lines.extend(["", f'🔗 <a href="{html_lib.escape(safe_url, quote=True)}">Detaylar →</a>'])
+    else:
+        lines.extend(["", "🔗 (link mevcut değil)"])
 
     return "\n".join(lines)
 
