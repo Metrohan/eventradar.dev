@@ -192,6 +192,8 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
         all_tags: dict[str, Tag] = {str(t.name): t for t in db.query(Tag).all()}
 
         now = datetime.now()
+        skipped_irrelevant = 0
+        new_event_data: list[dict] = []
         for data in events_data:
             url = data.get("url")
             if not url:
@@ -241,12 +243,21 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
                     )
                     new_event.tags = [all_tags[n] for n in tag_names if n in all_tags]
                     new_count += 1
+                    new_event_data.append(data)
             except Exception as e_event:
                 print(f"Error processing single event ({url}): {e_event}")
                 failed_urls.append(url)
                 continue
 
         db.commit()
+
+        if new_event_data:
+            try:
+                from .telegram_service import notify_new_events
+                notify_new_events(new_event_data)
+            except Exception as tg_err:
+                print(f"Telegram bildirimi gönderilemedi (non-fatal): {tg_err}")
+
         result = f"New: {new_count}, Updated: {updated_count}"
         if failed_urls:
             result += f", Failed: {len(failed_urls)}"
