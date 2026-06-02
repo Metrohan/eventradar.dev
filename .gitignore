@@ -18,6 +18,22 @@ instance/
 *.iml
 *.sublime-project
 *.sublime-workspace
+.cursor/
+.claude/
+
+# Local tool indexes & artifacts
+.codegraph/
+.superpowers/
+.audit-venv/
+.mypy_cache/
+.pytest_cache/
+
+# CI/test artifacts
+coverage.xml
+
+# Dev notes (not project docs)
+EVENTRADAR_COMPLETE_PROMPTS.md
+docs/superpowers/
 
 .DS_Store
 Thumbs.db
