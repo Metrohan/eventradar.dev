@@ -109,7 +109,19 @@ def test_parse_iso_with_slash_separator():
 
 def test_parse_turkish_month_variants():
     """Turkish month name variants"""
-    for month_name in ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-                        "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]:
+    for month_name in [
+        "Ocak",
+        "Şubat",
+        "Mart",
+        "Nisan",
+        "Mayıs",
+        "Haziran",
+        "Temmuz",
+        "Ağustos",
+        "Eylül",
+        "Ekim",
+        "Kasım",
+        "Aralık",
+    ]:
         dt = parse_event_date(f"01 {month_name} 2026")
         assert isinstance(dt, datetime), f"Failed for month: {month_name}"

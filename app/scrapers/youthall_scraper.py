@@ -90,7 +90,11 @@ def scrape_youthall_events():
                     {
                         "title": title,
                         "url": url,
-                        "date": event_date.strftime("%Y-%m-%d %H:%M:%S") if event_date else date_str,
+                        "date": (
+                            event_date.strftime("%Y-%m-%d %H:%M:%S")
+                            if event_date
+                            else date_str
+                        ),
                         "description": description,
                         "image_url": image_url,
                         "source": "Youthall",

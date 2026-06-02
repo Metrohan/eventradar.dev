@@ -1,5 +1,6 @@
 # tests/unit/test_telegram_service.py
 import os
+
 os.environ.setdefault("ALLOW_INSECURE_DEFAULTS", "true")
 os.environ.setdefault("SECRET_KEY", "test-secret-key-that-is-at-least-32-chars")
 os.environ.setdefault("ADMIN_USERNAME", "testadmin")
@@ -14,6 +15,7 @@ def test_not_configured_when_env_missing(monkeypatch):
     monkeypatch.delenv("TELEGRAM_CHANNEL_ID", raising=False)
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
     assert ts._is_configured() is False
 
@@ -23,6 +25,7 @@ def test_configured_when_both_env_set(monkeypatch):
     monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@testchannel")
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
     assert ts._is_configured() is True
 
@@ -30,6 +33,7 @@ def test_configured_when_both_env_set(monkeypatch):
 def test_format_event_message_contains_title():
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
     event = {
         "title": "KKB Hackathon",
@@ -48,6 +52,7 @@ def test_format_event_message_contains_title():
 def test_format_event_message_truncates_long_description():
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
     event = {
         "title": "Test Event",
@@ -67,6 +72,7 @@ def test_format_event_message_truncates_long_description():
 def test_detect_type():
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
     assert ts._detect_type("KKB Hackathon 2026") == "hackathon"
     assert ts._detect_type("Python Bootcamp Istanbul") == "bootcamp"
@@ -80,12 +86,15 @@ def test_send_message_calls_requests_post(monkeypatch):
     monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
 
     mock_resp = MagicMock()
     mock_resp.raise_for_status.return_value = None
 
-    with patch("app.services.telegram_service.requests.post", return_value=mock_resp) as mock_post:
+    with patch(
+        "app.services.telegram_service.requests.post", return_value=mock_resp
+    ) as mock_post:
         result = ts._send_message("test mesajı")
 
     assert result is True
@@ -100,6 +109,7 @@ def test_send_message_returns_false_when_not_configured(monkeypatch):
     monkeypatch.delenv("TELEGRAM_CHANNEL_ID", raising=False)
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
     result = ts._send_message("test")
     assert result is False
@@ -110,6 +120,7 @@ def test_notify_new_events_noop_when_empty(monkeypatch):
     monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
 
     with patch("app.services.telegram_service._send_message") as mock_send:
@@ -122,14 +133,30 @@ def test_notify_new_events_sends_per_event(monkeypatch):
     monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
 
     events = [
-        {"title": "A", "url": "https://a.com", "source": "S", "date": "", "description": "", "image_url": ""},
-        {"title": "B", "url": "https://b.com", "source": "S", "date": "", "description": "", "image_url": ""},
+        {
+            "title": "A",
+            "url": "https://a.com",
+            "source": "S",
+            "date": "",
+            "description": "",
+            "image_url": "",
+        },
+        {
+            "title": "B",
+            "url": "https://b.com",
+            "source": "S",
+            "date": "",
+            "description": "",
+            "image_url": "",
+        },
     ]
-    with patch("app.services.telegram_service._send_message") as mock_send, \
-         patch("app.services.telegram_service.time.sleep") as mock_sleep:
+    with patch("app.services.telegram_service._send_message") as mock_send, patch(
+        "app.services.telegram_service.time.sleep"
+    ) as mock_sleep:
         ts.notify_new_events(events)
 
     assert mock_send.call_count == 2
@@ -141,6 +168,7 @@ def test_send_daily_digest_noop_when_empty(monkeypatch):
     monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
 
     with patch("app.services.telegram_service._send_message") as mock_send:
@@ -153,6 +181,7 @@ def test_send_weekly_digest_sends_even_when_empty(monkeypatch):
     monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
     import importlib
     import app.services.telegram_service as ts
+
     importlib.reload(ts)
 
     with patch("app.services.telegram_service._send_message") as mock_send:

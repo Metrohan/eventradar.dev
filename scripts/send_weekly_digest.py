@@ -5,6 +5,7 @@ Etkinlik olmasa bile her Pazartesi gönderilir.
 Cron: her Pazartesi 09:00
   0 9 * * 1 cd ~/TechEventRadar && docker compose exec -T backend python scripts/send_weekly_digest.py >> ~/scrape.log 2>&1
 """
+
 import os
 import sys
 from datetime import datetime, timedelta
@@ -36,13 +37,10 @@ def main() -> None:
         )
 
         event_dicts = [
-            {"title": e.title, "url": e.url, "source": e.source}
-            for e in events
+            {"title": e.title, "url": e.url, "source": e.source} for e in events
         ]
 
-        week_label = (
-            f"{week_start.strftime('%-d %B')} – {(today - timedelta(days=1)).strftime('%-d %B')}"
-        )
+        week_label = f"{week_start.strftime('%-d %B')} – {(today - timedelta(days=1)).strftime('%-d %B')}"
         send_weekly_digest(event_dicts, week_label)
 
         print(f"Haftalık özet gönderildi: {len(event_dicts)} etkinlik ({week_label})")

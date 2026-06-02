@@ -75,7 +75,9 @@ def _format_event_message(event: dict) -> str:
     if description:
         lines.append(f"📝 {description}")
     if safe_url:
-        lines.extend(["", f'🔗 <a href="{html_lib.escape(safe_url, quote=True)}">Detaylar →</a>'])
+        lines.extend(
+            ["", f'🔗 <a href="{html_lib.escape(safe_url, quote=True)}">Detaylar →</a>']
+        )
     else:
         lines.extend(["", "🔗 (link mevcut değil)"])
 
@@ -173,7 +175,9 @@ def send_daily_digest(events: list[dict], date_label: str) -> None:
         raw_url = event.get("url", "")
         safe_url = raw_url if urlparse(raw_url).scheme in ("http", "https") else ""
         if safe_url:
-            lines.append(f'• <a href="{html_lib.escape(safe_url, quote=True)}">{title}</a>')
+            lines.append(
+                f'• <a href="{html_lib.escape(safe_url, quote=True)}">{title}</a>'
+            )
         else:
             lines.append(f"• {title}")
 
@@ -201,6 +205,7 @@ def send_weekly_digest(events: list[dict], week_label: str) -> None:
         return
 
     from collections import Counter
+
     type_counts: Counter = Counter(_detect_type(e.get("title", "")) for e in events)
 
     lines = [f"📅 <b>Haftalık Özet · {week_label}</b>", ""]

@@ -4,6 +4,7 @@ Bir önceki günde eklenen etkinliklerin özetini Telegram kanalına gönderir.
 Cron: her sabah 09:00
   0 9 * * * cd ~/TechEventRadar && docker compose exec -T backend python scripts/send_daily_digest.py >> ~/scrape.log 2>&1
 """
+
 import os
 import sys
 from datetime import datetime, timedelta
@@ -37,8 +38,7 @@ def main() -> None:
         )
 
         event_dicts = [
-            {"title": e.title, "url": e.url, "source": e.source}
-            for e in events
+            {"title": e.title, "url": e.url, "source": e.source} for e in events
         ]
 
         date_label = yesterday_start.strftime("%-d %B %Y")

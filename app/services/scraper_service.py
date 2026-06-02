@@ -249,6 +249,7 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
         if new_event_data:
             try:
                 from .telegram_service import notify_new_events
+
                 notify_new_events(new_event_data)
             except Exception as tg_err:
                 print(f"Telegram bildirimi gönderilemedi (non-fatal): {tg_err}")
