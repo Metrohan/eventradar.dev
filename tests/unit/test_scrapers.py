@@ -254,9 +254,7 @@ def test_cs_scraper_returns_list(mock_chrome):
     mock_driver = _make_selenium_driver(_html("cs_scraper.html"))
     mock_chrome.return_value = mock_driver
 
-    with patch(
-        "app.scrapers.driver_utils.get_chrome_major_version", return_value=148
-    ), patch("app.scrapers.cs_scraper.time.sleep"):
+    with patch("app.scrapers.cs_scraper.time.sleep"):
         result = scrape_coderspace_events()
 
     assert isinstance(result, list)
