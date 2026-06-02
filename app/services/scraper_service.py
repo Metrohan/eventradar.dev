@@ -152,7 +152,7 @@ def deactivate_past_events() -> int:
 
 
 def normalize_date(date_val) -> Optional[datetime]:
-    from dateparser import parse as parse_date
+    from app.services.date_extractor import parse_event_date
 
     if not date_val:
         return None
@@ -163,12 +163,7 @@ def normalize_date(date_val) -> Optional[datetime]:
         invalid_texts = ["tarih belirtilmemiş", "belirtilmemiş", "-", ""]
         if date_val.strip().lower() in invalid_texts:
             return None
-
-        try:
-            parsed_dt = parse_date(date_val, languages=["tr"])
-            return parsed_dt
-        except Exception:
-            return None
+        return parse_event_date(date_val)
     return None
 
 

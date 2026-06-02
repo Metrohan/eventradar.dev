@@ -3,10 +3,10 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
-import re
 import os
 
 from .driver_utils import ensure_chromedriver
+from app.services.date_extractor import parse_event_date
 
 
 def scrape_youthall_events():
@@ -58,19 +58,15 @@ def scrape_youthall_events():
                 raw_details = desc_elem.text.strip() if desc_elem else ""
                 clean_details = " ".join(raw_details.split())
 
-                date_str = date_str or "Tarih belirtilmemiş"
+                if not date_str:
+                    date_str = "Tarih belirtilmemiş"
                 location = "Online"
 
-                match = re.search(
-                    r"^(\d{1,2}\s+\w+\s+\w+),\s*(\d{1,2}:\d{2})\s*(.*)$", clean_details
-                )
-                if match:
-                    parsed_date = match.group(1)
-                    parsed_time = match.group(2)
-                    parsed_loc = match.group(3).strip()
-                    date_str = f"{parsed_date}, {parsed_time}"
-                    location = parsed_loc if parsed_loc else "Online"
-                elif "Online" in clean_details:
+                # Parse date using shared helper
+                event_date = parse_event_date(date_str)
+
+                # Try to extract location from details if date has no time
+                if "Online" in clean_details:
                     location = "Online"
 
                 description = (
@@ -88,7 +84,7 @@ def scrape_youthall_events():
                     {
                         "title": title,
                         "url": url,
-                        "date": date_str,
+                        "date": event_date.strftime("%Y-%m-%d %H:%M:%S") if event_date else date_str,
                         "description": description,
                         "image_url": image_url,
                         "source": "Youthall",

@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from app.services.date_extractor import parse_event_date
 
 
 def _opts():
@@ -49,14 +50,12 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
 
             raw_start = c.get("data-startdate")
             date_text = ""
-            if raw_start:
-                try:
-                    dt = datetime.fromisoformat(raw_start.replace("Z", "+00:00"))
-                    date_text = dt.strftime("%d.%m.%Y")
-                except Exception:
-                    date_text = ""
+            if isinstance(raw_start, str):
+                dt = parse_event_date(raw_start.replace("Z", "+00:00"))
+                if dt:
+                    date_text = dt.strftime("%Y-%m-%d")
             if not date_text:
-                date_text = "31.12.2099"
+                date_text = "2099-12-31"
 
             events.append(
                 {

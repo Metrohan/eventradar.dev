@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from urllib.parse import urljoin
 import re
-import dateparser
+from app.services.date_extractor import parse_event_date
 
 try:
     from dateparser.search import search_dates  # optional, improves robustness
@@ -66,89 +66,9 @@ def scrape_anbean_events():
                     last_application_date_str = spans[1].text.strip()
                     break
 
-        MONTHS_TR = {
-            "Ocak": 1,
-            "Şubat": 2,
-            "Subat": 2,
-            "Mart": 3,
-            "Nisan": 4,
-            "Mayıs": 5,
-            "Mayis": 5,
-            "Haziran": 6,
-            "Temmuz": 7,
-            "Ağustos": 8,
-            "Agustos": 8,
-            "Eylül": 9,
-            "Eylul": 9,
-            "Ekim": 10,
-            "Kasım": 11,
-            "Kasim": 11,
-            "Aralık": 12,
-            "Aralik": 12,
-        }
-
-        def parse_turkish_datetime(text: str):
-            if not text:
-                return None
-            # Normalize separators like 16.00 -> 16:00 for better parsing
-            norm = re.sub(r"(\d{1,2})\.(\d{2})(?!\d)", r"\1:\2", text)
-            norm = (
-                norm.replace("Ã‡", "Ç")
-                .replace("Ã¼", "ü")
-                .replace("Ã–", "Ö")
-                .replace("Ä°", "İ")
-                .replace("Ã¶", "ö")
-                .replace("ÃŸ", "ß")
-                .replace("Ã§", "ç")
-                .replace("ÄŸ", "ğ")
-                .replace("Ã¶", "ö")
-                .replace("ÅŸ", "ş")
-                .replace("Ä±", "ı")
-            )
-
-            # Explicit month name pattern e.g. 12 Kasım 2025 16:00
-            m = re.search(
-                r"(\d{1,2})\s+(Ocak|Şubat|Subat|Mart|Nisan|Mayıs|Mayis|Haziran|Temmuz|Ağustos|Agustos|Eylül|Eylul|Ekim|Kasım|Kasim|Aralık|Aralik)\s+(\d{4})(?:\s+(\d{1,2})[:\.](\d{2}))?",
-                norm,
-                flags=re.IGNORECASE,
-            )
-            if m:
-                day = int(m.group(1))
-                month_name = m.group(2)
-                year = int(m.group(3))
-                hour = int(m.group(4)) if m.group(4) else 0
-                minute = int(m.group(5)) if m.group(5) else 0
-                # Normalize key without accents fallback
-                key_norm = month_name.capitalize()
-                month_num = MONTHS_TR.get(key_norm) or MONTHS_TR.get(month_name)
-                if month_num:
-                    try:
-                        return datetime(year, month_num, day, hour, minute)
-                    except ValueError:
-                        pass
-            # Primary: use dateparser with Turkish
-            dt = dateparser.parse(
-                norm,
-                languages=["tr"],
-                settings={
-                    "DATE_ORDER": "DMY",
-                    "TIMEZONE": "UTC",
-                    "RETURN_AS_TIMEZONE_AWARE": False,
-                },
-            )
-            if dt:
-                return dt
-            # Fallback common numeric formats
-            for fmt in ("%d.%m.%Y %H:%M", "%d/%m/%Y %H:%M", "%d.%m.%Y", "%d/%m/%Y"):
-                try:
-                    return datetime.strptime(norm, fmt)
-                except ValueError:
-                    continue
-            return None
-
         event_date_obj = None
         if last_application_date_str != "Tarih Bulunamadı":
-            event_date_obj = parse_turkish_datetime(last_application_date_str)
+            event_date_obj = parse_event_date(last_application_date_str)
 
         # If time component missing or date not found, try detail page
         need_detail_lookup = (event_date_obj is None) or (
@@ -176,7 +96,7 @@ def scrape_anbean_events():
                             k in label
                             for k in ["Son Kayıt", "Son Başvuru", "Son Kayıt Tarihi"]
                         ):
-                            dd = parse_turkish_datetime(value)
+                            dd = parse_event_date(value)
                             if dd:
                                 detail_date = dd
                                 found_from_spans = True
@@ -190,7 +110,7 @@ def scrape_anbean_events():
                         title_text,
                     )
                     if m:
-                        dd = parse_turkish_datetime(m.group(0))
+                        dd = parse_event_date(m.group(0))
                         if dd:
                             detail_date = dd
 
@@ -208,7 +128,7 @@ def scrape_anbean_events():
                             if label_match.lastindex and label_match.lastindex >= 2
                             else label_match.group(0)
                         )
-                        detail_date = parse_turkish_datetime(captured)
+                        detail_date = parse_event_date(captured)
 
                 # Last resort: generic date search
                 if not detail_date and search_dates:
