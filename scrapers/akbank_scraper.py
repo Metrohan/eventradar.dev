@@ -51,7 +51,7 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
             raw_start = c.get("data-startdate")
             date_text = ""
             if isinstance(raw_start, str):
-                dt = parse_event_date(raw_start.replace("Z", "+00:00"))
+                dt = parse_event_date(raw_start.replace("Z", "").replace("+00:00", ""))
                 if dt:
                     date_text = dt.strftime("%Y-%m-%d")
             if not date_text:

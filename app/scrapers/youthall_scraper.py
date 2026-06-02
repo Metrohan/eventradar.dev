@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
+import re
 import time
 import os
 
@@ -65,8 +66,13 @@ def scrape_youthall_events():
                 # Parse date using shared helper
                 event_date = parse_event_date(date_str)
 
-                # Try to extract location from details if date has no time
-                if "Online" in clean_details:
+                # Extract location from details
+                loc_match = re.search(
+                    r"^(?:\d{1,2}\s+\w+\s+\w+),\s*\d{1,2}:\d{2}\s*(.*)$", clean_details
+                )
+                if loc_match and loc_match.group(1).strip():
+                    location = loc_match.group(1).strip()
+                elif "Online" in clean_details:
                     location = "Online"
 
                 description = (
