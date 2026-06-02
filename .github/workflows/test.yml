@@ -31,8 +31,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Check formatting (black)
-        run: black --check .
+      - name: Auto-format (black)
+        run: |
+          black .
+          git diff --exit-code || (git config user.name "github-actions[bot]" && git config user.email "github-actions[bot]@users.noreply.github.com" && git commit -am "style: auto-format with black" && git push)
 
       - name: Lint (pylint)
         run: pylint app/ --disable=C0114,C0115,C0116,R0903,W0611 --fail-under=7.0
