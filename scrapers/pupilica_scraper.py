@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 import requests
+from app.services.date_extractor import parse_event_date
 
 API_URL = "https://pupilica.com/api/v2/generic/web_search_read"
 DEFAULT_IMAGE = "https://dummyimage.com/1200x630/0b1220/ffffff&text=Pupilica"
@@ -48,9 +49,8 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
         if not date_begin:
             continue
 
-        try:
-            dt = datetime.strptime(date_begin, "%Y-%m-%d %H:%M:%S")
-        except Exception:
+        dt = parse_event_date(date_begin)
+        if dt is None:
             continue
 
         # Geçmişleri at
