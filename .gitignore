@@ -18,8 +18,8 @@ instance/
 *.iml
 *.sublime-project
 *.sublime-workspace
-.cursor/
-.claude/
+.cursor/rules/local_*
+.claude/settings.local.json
 
 # Local tool indexes & artifacts
 .codegraph/
