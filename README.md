@@ -207,3 +207,44 @@ Sürekli izleme için cron örneği (her 2 dakikada bir):
 ```bash
 */2 * * * * cd /path/to/eventradar.dev && TELEGRAM_BOT_TOKEN=<BOT_TOKEN> TELEGRAM_CHAT_ID=<CHAT_ID> /usr/bin/python3 scripts/monitor_alerts.py >> /var/log/eventradar-alerts.log 2>&1
 ```
+
+---
+
+## Katkıda Bulunanlar
+
+Projeye katkıda bulunan herkese teşekkürler!
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Metrohan">
+        <img src="https://github.com/Metrohan.png" width="64" alt="Metrohan"/><br/>
+        <sub><b>Metrohan</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/4ykutG">
+        <img src="https://github.com/4ykutG.png" width="64" alt="4ykutG"/><br/>
+        <sub><b>4ykutG</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/onurege3467">
+        <img src="https://github.com/onurege3467.png" width="64" alt="onurege3467"/><br/>
+        <sub><b>onurege3467</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/aqilaziz">
+        <img src="https://github.com/aqilaziz.png" width="64" alt="aqilaziz"/><br/>
+        <sub><b>aqilaziz</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/rashmitha-j">
+        <img src="https://github.com/rashmitha-j.png" width="64" alt="rashmitha-j"/><br/>
+        <sub><b>rashmitha-j</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
