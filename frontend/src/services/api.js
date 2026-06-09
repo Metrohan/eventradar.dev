@@ -53,6 +53,10 @@ export const publicAPI = {
   // Get latest announcement
   getLatestAnnouncement: () =>
     api.get('/announcements/latest'),
+
+  // Platform status
+  getStatus: () =>
+    api.get('/status'),
 }
 
 // Admin API endpoints (converted from Flask admin routes)

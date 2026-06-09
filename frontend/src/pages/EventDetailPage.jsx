@@ -44,10 +44,35 @@ const EventDetailPage = () => {
     if (event.location) parts.push(event.location)
     const description = parts.join(' — ') + '. Ücretsiz kariyer etkinliği.'
 
+    const canonicalUrl = `https://eventradar.dev/etkinlik/${id}`
+    const ogImage = (event.image_url && /^https?:\/\//i.test(event.image_url))
+      ? event.image_url
+      : 'https://eventradar.dev/banner.png'
+
     document.title = `${event.title} | TechEventRadar`
     setMeta('description', description)
+
+    // Open Graph
     setMeta('og:title', `${event.title} | TechEventRadar`, true)
     setMeta('og:description', description, true)
+    setMeta('og:image', ogImage, true)
+    setMeta('og:url', canonicalUrl, true)
+    setMeta('og:type', 'website', true)
+
+    // Twitter Card
+    setMeta('twitter:card', 'summary_large_image')
+    setMeta('twitter:title', `${event.title} | TechEventRadar`)
+    setMeta('twitter:description', description)
+    setMeta('twitter:image', ogImage)
+
+    // Canonical
+    let canonical = document.querySelector('link[rel="canonical"]')
+    if (!canonical) {
+      canonical = document.createElement('link')
+      canonical.setAttribute('rel', 'canonical')
+      document.head.appendChild(canonical)
+    }
+    canonical.setAttribute('href', canonicalUrl)
 
     // JSON-LD Event schema
     const schema = {
@@ -65,6 +90,7 @@ const EventDetailPage = () => {
       }),
       organizer: { '@type': 'Organization', name: event.source },
     }
+    document.getElementById('event-jsonld')?.remove()
     const script = document.createElement('script')
     script.id = 'event-jsonld'
     script.type = 'application/ld+json'
@@ -81,6 +107,12 @@ const EventDetailPage = () => {
       setMeta('description', DEFAULT_DESC)
       setMeta('og:title', 'TechEventRadar', true)
       setMeta('og:description', DEFAULT_DESC, true)
+      setMeta('og:image', 'https://eventradar.dev/banner.png', true)
+      setMeta('og:url', 'https://eventradar.dev', true)
+      setMeta('twitter:title', 'TechEventRadar')
+      setMeta('twitter:description', DEFAULT_DESC)
+      setMeta('twitter:image', 'https://eventradar.dev/banner.png')
+      document.querySelector('link[rel="canonical"]')?.setAttribute('href', 'https://eventradar.dev')
       document.getElementById('event-jsonld')?.remove()
     }
   }, [event, id])

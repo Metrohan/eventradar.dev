@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from typing import List, Optional
+from datetime import datetime, timezone
 from ..core.database import get_db
 from ..services.event_service import EventService
 from ..services.announcement_service import AnnouncementService
@@ -10,6 +12,8 @@ from ..schemas.event import EventResponse, EventListResponse
 from ..schemas.announcement import AnnouncementResponse, AnnouncementListResponse
 from ..schemas.suggestion import SuggestionCreate, SuggestionResponse
 from ..schemas.event_request import EventRequestCreate, EventRequestResponse
+from ..models.scraper_log import ScraperLog
+from ..models.event import Event
 
 router = APIRouter()
 
@@ -84,6 +88,45 @@ async def get_event(event_id: int, db: Session = Depends(get_db)):
     if not event:
         raise HTTPException(status_code=404, detail="Etkinlik bulunamadı")
     return event
+
+
+@router.get("/status")
+async def get_status(db: Session = Depends(get_db)):
+    """Platform sağlık durumu — scraper kayıtları, aktif etkinlik sayısı."""
+    try:
+        active_count = db.query(Event).filter(Event.is_active == True).count()
+        total_count = db.query(Event).count()
+
+        sources = db.query(ScraperLog.source).distinct().all()
+        scrapers = []
+        for (source,) in sources:
+            latest: Optional[ScraperLog] = (
+                db.query(ScraperLog)
+                .filter(ScraperLog.source == source)
+                .order_by(desc(ScraperLog.created_at))
+                .first()
+            )
+            if latest:
+                scrapers.append({
+                    "source": latest.source,
+                    "status": latest.status,
+                    "events_found": latest.events_found,
+                    "new_events": latest.new_events,
+                    "duration_seconds": round(latest.duration_seconds or 0, 1),
+                    "last_run": latest.created_at.isoformat() if latest.created_at else None,
+                    "error": (latest.error_message[:120] if latest.error_message else None),
+                })
+
+        scrapers.sort(key=lambda s: s["last_run"] or "", reverse=True)
+
+        return {
+            "active_events": active_count,
+            "total_events": total_count,
+            "scrapers": scrapers,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Status check failed: {str(e)}")
 
 
 @router.post("/suggestions", response_model=SuggestionResponse)

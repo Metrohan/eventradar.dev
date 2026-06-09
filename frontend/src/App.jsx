@@ -19,6 +19,7 @@ const FreeTrainingsPage = lazy(() => import('./pages/FreeTrainingsPage'))
 const EventDetailPage = lazy(() => import('./pages/EventDetailPage'))
 const BootcampRehberi = lazy(() => import('./pages/BootcampRehberi'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+const StatusPage = lazy(() => import('./pages/StatusPage'))
 const ServerErrorPage = lazy(() => import('./pages/ServerErrorPage'))
 const RedirectPage = lazy(() => import('./pages/RedirectPage'))
 import { AuthProvider } from './contexts/AuthContext'
@@ -56,6 +57,7 @@ function App() {
                   <Route path="/etkinlik-talep" element={<EventRequestPage />} />
                   <Route path="/oneri-sikayet" element={<SuggestionPage />} />
                   <Route path="/egitim-kaynaklari" element={<FreeTrainingsPage />} />
+                  <Route path="/status" element={<StatusPage />} />
 
                   {/* Admin Routes */}
                   <Route path="/admin/login" element={<AdminLoginPage />} />

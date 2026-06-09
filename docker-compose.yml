@@ -65,14 +65,10 @@ services:
       dockerfile: Dockerfile
     container_name: techeventradar_frontend
     ports:
-      - "127.0.0.1:3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_URL=/api
+      - "127.0.0.1:3000:80"
     depends_on:
       - backend
+    restart: unless-stopped
 
 volumes:
   postgres_data:

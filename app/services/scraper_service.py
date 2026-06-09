@@ -187,12 +187,13 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
         all_tags: dict[str, Tag] = {str(t.name): t for t in db.query(Tag).all()}
 
         now = datetime.now()
-        skipped_irrelevant = 0
+        seen_urls: set[str] = set()
         new_event_data: list[dict] = []
         for data in events_data:
             url = data.get("url")
-            if not url:
+            if not url or url in seen_urls:
                 continue
+            seen_urls.add(url)
             try:
                 date_val = normalize_date(data.get("date"))
                 existing_event = existing_map.get(url)

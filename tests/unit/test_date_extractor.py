@@ -125,3 +125,33 @@ def test_parse_turkish_month_variants():
     ]:
         dt = parse_event_date(f"01 {month_name} 2026")
         assert isinstance(dt, datetime), f"Failed for month: {month_name}"
+
+
+def test_no_digit_returns_none():
+    """Rakam içermeyen metin dateparser'a ulaşmadan None döner."""
+    assert parse_event_date("Kayıt Açık") is None
+    assert parse_event_date("Başvuru devam ediyor") is None
+    assert parse_event_date("Yakında") is None
+
+
+def test_insane_year_returns_none():
+    """Geçmişte veya çok uzakta tarihler kabul edilmez."""
+    assert parse_event_date("01.01.1990") is None
+    assert parse_event_date("01.01.2099") is None
+
+
+def test_duplicate_url_in_batch_does_not_crash(test_db):
+    """Aynı URL batch içinde iki kez gelirse ikincisi sessizce atlanır."""
+    import os
+    os.environ.setdefault("ALLOW_INSECURE_DEFAULTS", "true")
+    from unittest.mock import patch
+    from app.services.scraper_service import process_scraped_events
+
+    events = [
+        {"title": "Test", "url": "https://example.com/dup", "date": "01 Ocak 2027", "source": "test"},
+        {"title": "Test Dup", "url": "https://example.com/dup", "date": "01 Ocak 2027", "source": "test"},
+    ]
+    with patch("app.core.database.SessionLocal", return_value=test_db):
+        result = process_scraped_events(events, "test")
+
+    assert "New: 1" in result

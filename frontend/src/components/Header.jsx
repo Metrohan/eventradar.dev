@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { to: '/bootcamp-rehberi', label: 'Rehber' },
   { to: '/egitim-kaynaklari', label: 'Ücretsiz Eğitimler' },
   { to: '/oneri-sikayet', label: 'Öneri / Şikayet' },
+  { to: '/status', label: 'Durum' },
 ]
 
 const Header = () => {

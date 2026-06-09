@@ -3,6 +3,13 @@ from datetime import datetime, date
 from dateparser import parse as dateparser_parse
 from typing import Optional
 
+_MIN_YEAR = 2015
+_MAX_YEAR_OFFSET = 4  # now + 4 years
+
+
+def _in_sane_range(dt: datetime) -> bool:
+    return _MIN_YEAR <= dt.year <= datetime.now().year + _MAX_YEAR_OFFSET
+
 
 def extract_date_from_text(text: str) -> Optional[datetime]:
     """
@@ -45,6 +52,10 @@ def parse_event_date(raw: str) -> Optional[datetime]:
     if not text:
         return None
 
+    # Rakam içermeyen metin gerçek tarih olamaz; dateparser'a verme
+    if not re.search(r"\d", text):
+        return None
+
     # ISO format: 2026-05-15 veya 2026-05-15 14:30:00
     iso_match = re.match(
         r"^(\d{4})[-\/](\d{2})[-\/](\d{2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$",
@@ -52,7 +63,7 @@ def parse_event_date(raw: str) -> Optional[datetime]:
     )
     if iso_match:
         try:
-            return datetime(
+            dt = datetime(
                 int(iso_match.group(1)),
                 int(iso_match.group(2)),
                 int(iso_match.group(3)),
@@ -60,6 +71,8 @@ def parse_event_date(raw: str) -> Optional[datetime]:
                 int(iso_match.group(5) or 0),
                 int(iso_match.group(6) or 0),
             )
+            if _in_sane_range(dt):
+                return dt
         except ValueError:
             pass
 
@@ -70,7 +83,7 @@ def parse_event_date(raw: str) -> Optional[datetime]:
     )
     if dmy_match:
         try:
-            return datetime(
+            dt = datetime(
                 int(dmy_match.group(3)),
                 int(dmy_match.group(2)),
                 int(dmy_match.group(1)),
@@ -78,6 +91,8 @@ def parse_event_date(raw: str) -> Optional[datetime]:
                 int(dmy_match.group(5) or 0),
                 int(dmy_match.group(6) or 0),
             )
+            if _in_sane_range(dt):
+                return dt
         except ValueError:
             pass
 
@@ -91,9 +106,10 @@ def parse_event_date(raw: str) -> Optional[datetime]:
                 "DATE_ORDER": "DMY",
                 "TIMEZONE": "UTC",
                 "RETURN_AS_TIMEZONE_AWARE": False,
+                "PREFER_DAY_OF_MONTH": "first",
             },
         )
-        if dt:
+        if dt and _in_sane_range(dt):
             return dt
     except Exception:
         pass
@@ -111,7 +127,9 @@ def parse_event_date(raw: str) -> Optional[datetime]:
         "%Y-%m-%d",
     ):
         try:
-            return datetime.strptime(text, fmt)
+            dt = datetime.strptime(text, fmt)
+            if _in_sane_range(dt):
+                return dt
         except ValueError:
             continue
 
