@@ -107,15 +107,21 @@ async def get_status(db: Session = Depends(get_db)):
                 .first()
             )
             if latest:
-                scrapers.append({
-                    "source": latest.source,
-                    "status": latest.status,
-                    "events_found": latest.events_found,
-                    "new_events": latest.new_events,
-                    "duration_seconds": round(latest.duration_seconds or 0, 1),
-                    "last_run": latest.created_at.isoformat() if latest.created_at else None,
-                    "error": (latest.error_message[:120] if latest.error_message else None),
-                })
+                scrapers.append(
+                    {
+                        "source": latest.source,
+                        "status": latest.status,
+                        "events_found": latest.events_found,
+                        "new_events": latest.new_events,
+                        "duration_seconds": round(latest.duration_seconds or 0, 1),
+                        "last_run": (
+                            latest.created_at.isoformat() if latest.created_at else None
+                        ),
+                        "error": (
+                            latest.error_message[:120] if latest.error_message else None
+                        ),
+                    }
+                )
 
         scrapers.sort(key=lambda s: s["last_run"] or "", reverse=True)
 
