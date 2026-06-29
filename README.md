@@ -171,10 +171,35 @@ Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güve
 
 ## Yol Haritası
 
-- Kaynak sayısını artırmak
-- Daha sağlam tarih normalizasyonu
-- Kalite metrikleri (kaynak bazlı başarı oranı)
-- Öğrenci dostu kişiselleştirilmiş öneri sistemi
+> **Uzun vadeli hedef:** TechEventRadar'ı yalnızca Türkiye'ye değil, dünyanın her ülkesinden teknoloji etkinliklerini çekebilen, geliştiricilerin küresel fırsatları tek yerden keşfedebildiği bir platforma dönüştürmek.
+
+### Faz 1 — Temel ✅ (Tamamlandı)
+- [x] Çoklu kaynaklardan otomatik etkinlik toplama (7 kaynak)
+- [x] Kategori tag sistemi (Hackathon, Bootcamp, Seminer…)
+- [x] Admin paneli ve içerik yönetimi
+- [x] Telegram bildirim sistemi
+- [x] CI/CD pipeline ve test altyapısı
+
+### Faz 2 — Kalite & Güvenilirlik 🔧 (Devam ediyor)
+- [ ] Yeni Türkçe kaynaklar: Skillcamp/Patika, Komunite
+- [ ] Scraper'lara retry mekanizması ve hata yönetimi
+- [ ] Kaynak bazlı kalite metrikleri (başarı oranı, veri tamlığı)
+- [ ] Konum verisi normalizasyonu (Online / şehir bazlı)
+- [ ] Geçmiş etkinliklerin otomatik arşivlenmesi
+
+### Faz 3 — Ürün Büyümesi 🚀 (Yakın dönem)
+- [ ] Kullanıcı hesabı ve kişiselleştirilmiş etkinlik önerileri
+- [ ] E-posta / tarayıcı bildirim abonelikleri
+- [ ] Gelişmiş arama ve filtreleme (şehir, tarih aralığı, ücret)
+- [ ] Etkinlik takvimi görünümü
+- [ ] Mobil uyumlu PWA
+
+### Faz 4 — Uluslararasılaşma 🌍 (Uzun dönem)
+- [ ] Çok dilli arayüz (TR / EN)
+- [ ] Ülke ve bölge bazlı filtreleme
+- [ ] Uluslararası kaynak entegrasyonları (Eventbrite, Luma, Devpost…)
+- [ ] Herhangi bir ülkenin tech etkinliklerini çekebilen adaptör mimarisi
+- [ ] Global etkinlik haritası
 
 ## Lisans
 

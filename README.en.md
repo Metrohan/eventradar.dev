@@ -182,10 +182,35 @@ The open-source version of this project does not include secrets or credentials.
 
 ## Roadmap
 
-- Add more event sources.
-- Improve date normalization.
-- Add quality metrics by source.
-- Build a student-friendly personalized recommendation system.
+> **Long-term vision:** Transform TechEventRadar from a Turkey-focused aggregator into a global platform — one place where developers worldwide can discover tech events from any country.
+
+### Phase 1 — Foundation ✅ (Done)
+- [x] Automated event aggregation from multiple sources (7 scrapers)
+- [x] Category tag system (Hackathon, Bootcamp, Seminar…)
+- [x] Admin panel and content management
+- [x] Telegram notification system
+- [x] CI/CD pipeline and test infrastructure
+
+### Phase 2 — Quality & Reliability 🔧 (In progress)
+- [ ] New Turkish sources: Skillcamp/Patika, Komunite
+- [ ] Retry mechanism and error handling for scrapers
+- [ ] Per-source quality metrics (success rate, data completeness)
+- [ ] Location normalization (Online / city-based)
+- [ ] Auto-archiving of past events
+
+### Phase 3 — Product Growth 🚀 (Near-term)
+- [ ] User accounts and personalized event recommendations
+- [ ] Email / browser push notification subscriptions
+- [ ] Advanced search and filtering (city, date range, price)
+- [ ] Calendar view
+- [ ] Mobile-friendly PWA
+
+### Phase 4 — Internationalization 🌍 (Long-term)
+- [ ] Multi-language UI (TR / EN)
+- [ ] Country and region filtering
+- [ ] International source integrations (Eventbrite, Luma, Devpost…)
+- [ ] Adapter architecture that can pull events from any country
+- [ ] Global event map
 
 ## License
 
