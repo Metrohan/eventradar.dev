@@ -210,6 +210,21 @@ Sürekli izleme için cron örneği (her 2 dakikada bir):
 
 ---
 
+## Destek / Sponsorship
+
+TechEventRadar tamamen ücretsiz ve açık kaynak. Domain ve sunucu maliyetlerini karşılamak için desteğine ihtiyacımız var.
+
+> Bu projeyi faydalı buluyorsan, bir kahve ısmarlayarak sürdürülebilirliğine katkıda bulunabilirsin.
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/metehangnn)
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/Metrohan)
+
+**Nereye gidiyor?**
+- `eventradar.dev` domain yenileme (~1.000 TL/yıl)
+- Sunucu barındırma maliyetleri
+
+---
+
 ## Katkıda Bulunanlar
 
 Projeye katkıda bulunan herkese teşekkürler!
