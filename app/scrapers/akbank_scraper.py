@@ -7,13 +7,13 @@ from app.services.date_extractor import extract_date_from_text
 
 def scrape_akbank_events() -> List[Dict[str, Any]]:
     # Selenium/UC imports are needed now
-    import undetected_chromedriver as uc
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
     from app.scrapers.cs_scraper import (
         get_chrome_options,
     )  # Reuse options if possible or copy them
+    from app.scrapers.driver_utils import create_uc_driver
 
     url = "https://www.akbankgenclikakademisi.com/etkinlik-takvimi"
     base_url = "https://www.akbankgenclikakademisi.com"
@@ -24,7 +24,7 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
     try:
         # Use UC compatible options
         options = get_chrome_options()
-        driver = uc.Chrome(options=options, use_subprocess=True, version_main=144)
+        driver = create_uc_driver(options=options)
 
         driver.get(url)
 

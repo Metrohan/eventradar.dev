@@ -1,174 +1,161 @@
 import logging
 import time
+from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 from bs4 import BeautifulSoup
 import undetected_chromedriver as uc
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-# Configure module-level logger
 logger = logging.getLogger(__name__)
+
+_MONTH_TR = {
+    "ocak": 1,
+    "subat": 2,
+    "mart": 3,
+    "nisan": 4,
+    "mayis": 5,
+    "haziran": 6,
+    "temmuz": 7,
+    "agustos": 8,
+    "eylul": 9,
+    "ekim": 10,
+    "kasim": 11,
+    "aralik": 12,
+    "şubat": 2,
+    "mayıs": 5,
+    "ağustos": 8,
+    "eylül": 9,
+    "kasım": 11,
+    "aralık": 12,
+}
+
+
+def _parse_tr_date(date_str: str, prefer_future: bool = False) -> Optional[datetime]:
+    """
+    '12 Temmuz' veya '12 Temmuz 2026' gibi Türkçe tarihi parse eder.
+    prefer_future=True: yil yoksa ve tarih gecmisteyse bir sonraki yila atar.
+    prefer_future=False: yil yoksa her zaman mevcut yili kullanir (deadline filtresi icin).
+    """
+    if not date_str:
+        return None
+    parts = date_str.strip().lower().split()
+    if len(parts) < 2:
+        return None
+    try:
+        day = int(parts[0])
+        month = _MONTH_TR.get(parts[1])
+        if not month:
+            return None
+        year = int(parts[2]) if len(parts) >= 3 else datetime.now().year
+        dt = datetime(year, month, day)
+        if prefer_future and len(parts) < 3 and dt < datetime.now():
+            dt = dt.replace(year=dt.year + 1)
+        return dt
+    except (ValueError, TypeError):
+        return None
 
 
 def get_chrome_options() -> uc.ChromeOptions:
-    """Configures optimized Chrome options for headless execution with UC."""
     options = uc.ChromeOptions()
-    options.add_argument("--headless=new")
+    options.add_argument("--headless=old")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920,1080")
-
-    # Block unnecessary resources to save bandwidth/memory
     options.add_argument("--blink-settings=imagesEnabled=false")
-
     return options
 
 
 def scrape_coderspace_events() -> List[Dict[str, Any]]:
-    """
-    Optimized Coderspace scraper using undetected-chromedriver to bypass Cloudflare.
-    """
     driver = None
     events = []
+    now = datetime.now()
 
     try:
-        # Initializing undetected-chromedriver
-        # Specify version_main to match installed Chrome 144
-        driver = uc.Chrome(
-            options=get_chrome_options(), use_subprocess=True, version_main=144
-        )
+        from app.scrapers.driver_utils import create_uc_driver
 
-        url = "https://coderspace.io/etkinlikler"
-        driver.get(url)
+        driver = create_uc_driver(options=get_chrome_options())
 
-        # Cloudflare Bypass Strategy: Check for iframe and click
-        try:
-            # Wait a bit for initial load
-            time.sleep(3)
+        driver.get("https://coderspace.io/etkinlikler")
+        time.sleep(6)
 
-            # Check for Cloudflare challenge iframe
-            cf_frames = driver.find_elements(
-                By.XPATH,
-                "//iframe[contains(@src, 'cloudflare') or contains(@title, 'Widget containing a Cloudflare security challenge')]",
-            )
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+        cards = soup.select("div.event-card")
+        logger.info(f"Coderspace: {len(cards)} kart bulundu")
 
-            if cf_frames:
-                logger.info(
-                    "Coderspace: Cloudflare challenge found. Attempting to click..."
-                )
-                driver.switch_to.frame(cf_frames[0])
-
-                # Try to find the checkbox/button
-                # Usually it's a checkbox or a div inside the iframe
-                checkbox = WebDriverWait(driver, 5).until(
-                    EC.presence_of_element_located(
-                        (
-                            By.XPATH,
-                            "//label[@class='ctp-checkbox-label'] | //div[@class='ctp-checkbox-container'] | //input[@type='checkbox']",
-                        )
-                    )
-                )
-
-                if checkbox:
-                    checkbox.click()
-                    logger.info("Coderspace: Clicked Cloudflare checkbox.")
-
-                # Switch back to main content
-                driver.switch_to.default_content()
-
-        except Exception as e:
-            logger.warning(f"Coderspace: Cloudflare click attempt failed: {e}")
-            driver.switch_to.default_content()
-
-        # Smart Wait: Wait for either event cards OR cloudflare challenge
-        try:
-            WebDriverWait(driver, 15).until(
-                lambda d: len(
-                    d.find_elements(
-                        By.CSS_SELECTOR, "div.event-card, div.card, article"
-                    )
-                )
-                > 0
-            )
-        except Exception:
-            # Timeout is acceptable, we proceed to parse what we have (or fail gracefully)
-            logger.warning("Coderspace: Timeout while waiting for page content.")
-            pass
-
-        # Parse Content
-        page_source = driver.page_source
-
-        # Cloudflare Check (UC usually bypasses this, but good to check)
-        if "Verify you are human" in page_source or "cloudflare" in page_source.lower():
-            logger.error("Coderspace: Cloudflare challenge still active despite UC!")
-            # We might return empty or try to wait longer
-
-        soup = BeautifulSoup(page_source, "html.parser")
-
-        # Parsing Optimization: Single pass selector
-        event_cards = soup.select("div.event-card, div.card, article")
-
-        if not event_cards:
-            # Fallback: Check for links if no cards (rare structure change)
-            all_links = soup.find_all(
-                "a", href=lambda x: x and "etkinlik" in str(x).lower()
-            )
-            logger.warning(
-                f"Coderspace: No cards found. Found {len(all_links)} potential event links."
-            )
-            return []
-
-        # Data Extraction
-        for card in event_cards:
+        skipped = 0
+        for card in cards:
             try:
-                # Optimized Selector: Determine title element in one go
-                title_elem = card.select_one("h3, h2, h4")
-                if not title_elem:
+                link_elem = card.select_one(".event-card-image a")
+                href = link_elem.get("href", "") if link_elem else ""
+                if not href or "/etkinlikler/" not in href or "/pro/" in href:
                     continue
-                title = title_elem.get_text(strip=True)
 
-                # Link Extraction
-                link_elem = card.select_one("a[href]")
-                if not link_elem:
-                    continue
-                href = str(link_elem["href"])
-                # Fast string concatenation
-                link_url = (
+                url = (
                     href if href.startswith("http") else f"https://coderspace.io{href}"
                 )
 
-                # Date
-                date_elem = card.select_one("span.event-date, time")
-                date_str = date_elem.get_text(strip=True) if date_elem else None
+                title_elem = card.select_one("h5.mt-3 a") or card.select_one("h5 a")
+                if title_elem:
+                    title = title_elem.get_text(strip=True)
+                else:
+                    img = link_elem.find("img") if link_elem else None
+                    title = img.get("alt", "").strip() if img else ""
+                if not title:
+                    continue
 
-                # Description
-                desc_elem = card.select_one("p.event-description, p")
-                description = (
-                    desc_elem.get_text(strip=True)
-                    if desc_elem
-                    else "Etkinlik açıklaması mevcut değil."
+                date_map: Dict[str, str] = {}
+                for li in card.select("ul.event-card-info li"):
+                    span = li.find("span")
+                    strong = li.find("strong")
+                    if span and strong:
+                        date_map[span.get_text(strip=True)] = strong.get_text(
+                            strip=True
+                        )
+
+                # Filtreleme: prefer_future=False — yil rollover yapma, mevcut yili kullan.
+                # Gecmis yildaki "Aralik" gibi durumlar da dogru sekilde gecmis sayilir.
+                deadline_str = date_map.get("Son Başvuru") or date_map.get("Bitiş")
+                if deadline_str:
+                    deadline_dt = _parse_tr_date(deadline_str, prefer_future=False)
+                    if deadline_dt and deadline_dt < now:
+                        skipped += 1
+                        continue
+
+                # DB icin en anlamli tarih: Bitis > Baslangic > Son Basvuru
+                # prefer_future=True: gelecekteki Aralik/Ocak etkinlikleri icin dogru yili tahmin et
+                date_val = None
+                for label in ("Bitiş", "Başlangıç", "Son Başvuru"):
+                    if label in date_map:
+                        date_val = _parse_tr_date(date_map[label], prefer_future=True)
+                        if date_val:
+                            break
+
+                date_str_out = date_val.strftime("%-d %B %Y") if date_val else None
+
+                desc_elem = card.select_one("p")
+                description = desc_elem.get_text(strip=True) if desc_elem else ""
+
+                event_type_elem = card.select_one(".event-card-type")
+                event_type = (
+                    event_type_elem.get_text(strip=True) if event_type_elem else ""
                 )
 
-                # Image
-                img_elem = card.find("img")
-                image_src = str(img_elem.get("src")) if img_elem else ""
+                img_elem = card.select_one(".event-card-image img")
                 image_url = ""
-                if image_src:
+                if img_elem:
+                    src = img_elem.get("src", "")
                     image_url = (
-                        image_src
-                        if image_src.startswith("http")
-                        else f"https://coderspace.io{image_src}"
+                        src if src.startswith("http") else f"https://coderspace.io{src}"
                     )
 
                 events.append(
                     {
                         "title": title,
-                        "url": link_url,
-                        "date": date_str,
-                        "description": description,
+                        "url": url,
+                        "date": date_str_out,
+                        "description": description
+                        or f"Coderspace {event_type} etkinligi.",
                         "image_url": image_url,
                         "source": "Coderspace",
                         "location": "Online",
@@ -177,18 +164,19 @@ def scrape_coderspace_events() -> List[Dict[str, Any]]:
                 )
 
             except Exception as e:
-                # Resilience: Log error but continue loop (don't fail batch)
-                logger.error(f"Coderspace card parsing error: {e}", exc_info=False)
+                logger.error(f"Coderspace kart hatasi: {e}", exc_info=False)
                 continue
 
+        logger.info(
+            f"Coderspace: {skipped} gecmis etkinlik atlandi, {len(events)} aktif kaldi"
+        )
         return events
 
     except Exception as e:
-        logger.error(f"Coderspace general error: {e}", exc_info=True)
+        logger.error(f"Coderspace genel hata: {e}", exc_info=True)
         return []
 
     finally:
-        # Resource Management: Ensure driver is released
         if driver:
             try:
                 driver.quit()

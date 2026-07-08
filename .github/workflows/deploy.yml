@@ -45,10 +45,15 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || '22' }}
           script: |
+            set -euo pipefail
             cd /home/${{ secrets.SSH_USERNAME }}/TechEventRadar/
             git fetch --all
             git checkout main
-            git pull --rebase origin main
+            if ! git pull --rebase origin main; then
+              echo "::error::git pull --rebase failed (local changes or conflict on server) — aborting deploy without rebuilding stale containers."
+              git rebase --abort || true
+              exit 1
+            fi
             docker compose up -d --build --force-recreate
 
             echo "--- Deploy tamamlandi ---"
