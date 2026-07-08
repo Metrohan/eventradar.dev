@@ -124,7 +124,7 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
                             location = city
                             break
                 else:
-                    location = "Online"
+                    location = None
 
             # Description
             desc_text = f"Başvuru Bitiş: {card.get('data-applicationenddate')}"
