@@ -239,8 +239,9 @@ TechEventRadar is completely free and open source. We rely on community support 
 
 ## Contributors
 
-Thanks to everyone who contributed to this project!
+Thanks to everyone who contributed to this project! This list is auto-updated on every push to main by [contributors-readme-action](https://github.com/akhilmhdh/contributors-readme-action).
 
+<!-- readme: contributors -start -->
 <table>
   <tr>
     <td align="center">
@@ -275,3 +276,4 @@ Thanks to everyone who contributed to this project!
     </td>
   </tr>
 </table>
+<!-- readme: contributors -end -->

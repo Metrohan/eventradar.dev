@@ -252,8 +252,9 @@ TechEventRadar tamamen ücretsiz ve açık kaynak. Domain ve sunucu maliyetlerin
 
 ## Katkıda Bulunanlar
 
-Projeye katkıda bulunan herkese teşekkürler!
+Projeye katkıda bulunan herkese teşekkürler! Bu liste her main push'unda [contributors-readme-action](https://github.com/akhilmhdh/contributors-readme-action) tarafından otomatik güncellenir.
 
+<!-- readme: contributors -start -->
 <table>
   <tr>
     <td align="center">
@@ -288,3 +289,4 @@ Projeye katkıda bulunan herkese teşekkürler!
     </td>
   </tr>
 </table>
+<!-- readme: contributors -end -->
