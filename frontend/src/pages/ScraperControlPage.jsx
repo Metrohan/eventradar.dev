@@ -40,11 +40,15 @@ const ScraperControlPage = () => {
     const handleTrigger = async (source) => {
         setTriggering(true)
         try {
-            await adminAPI.triggerScraper(source)
-            toast.success(`${source} taraması başlatıldı. Arka planda çalışıyor.`)
-            // Refresh logs immediately to show 'running' if we had that state, 
-            // but for now just wait for next poll or manual refresh
-            setTimeout(fetchData, 2000)
+            const res = await adminAPI.triggerScraper(source)
+            if (res.data?.already_running) {
+                toast.error(res.data.message)
+            } else {
+                toast.success(`${source} taraması başlatıldı. Arka planda çalışıyor.`)
+                // Refresh logs immediately to show 'running' if we had that state,
+                // but for now just wait for next poll or manual refresh
+                setTimeout(fetchData, 2000)
+            }
         } catch {
             toast.error("Tetikleme başarısız")
         } finally {
@@ -67,26 +71,34 @@ const ScraperControlPage = () => {
         return statusData.find(s => s.source.toLowerCase() === source.toLowerCase())
     }
 
-    const sources = ['All', 'Youthall', 'Kodluyoruz', 'Akbank']
+    // `key` is what's sent to the backend and matched against scraper_logs.source
+    // (must match ScraperService.SCRAPER_FUNCS keys exactly); `label` is just the
+    // short display name on the card.
+    const sources = [
+        { label: 'All', key: 'All' },
+        { label: 'Youthall', key: 'Youthall' },
+        { label: 'Kodluyoruz', key: 'Kodluyoruz' },
+        { label: 'Akbank', key: 'Akbank Gençlik Akademisi' },
+    ]
 
     return (
         <div className="container py-4">
-            <h1 className="h3 mb-4 text-white">
+            <h1 className="h3 mb-4">
                 <i className="fas fa-robot me-2 text-primary"></i>
                 Scraper Kontrol Merkezi (The Heart)
             </h1>
 
             {/* Status Cards */}
             <div className="row g-4 mb-5">
-                {sources.map(source => {
-                    const status = getSourceStatus(source)
+                {sources.map(({ label, key }) => {
+                    const status = getSourceStatus(key)
                     const isHealthy = status?.status === 'success'
 
                     return (
-                        <div key={source} className="col-md-3">
+                        <div key={key} className="col-md-3">
                             <div className="card bg-card border-secondary h-100 shadow-sm">
                                 <div className="card-body text-center">
-                                    <h5 className="card-title text-white mb-3">{source}</h5>
+                                    <h5 className="card-title mb-3">{label}</h5>
 
                                     <div className="mb-3">
                                         <div
@@ -103,7 +115,7 @@ const ScraperControlPage = () => {
 
                                     <button
                                         className="btn btn-outline-primary w-100 btn-sm"
-                                        onClick={() => handleTrigger(source)}
+                                        onClick={() => handleTrigger(key)}
                                         disabled={triggering}
                                     >
                                         {triggering ? <i className="fas fa-spinner fa-spin"></i> : 'Tetikle'}
@@ -118,7 +130,7 @@ const ScraperControlPage = () => {
             {/* Logs Table */}
             <div className="card bg-card border-secondary">
                 <div className="card-header border-secondary bg-transparent">
-                    <h5 className="mb-0 text-white">Son İşlem Kayıtları</h5>
+                    <h5 className="mb-0">Son İşlem Kayıtları</h5>
                 </div>
                 <div className="table-responsive">
                     <table className="table table-dark table-hover mb-0 align-middle">

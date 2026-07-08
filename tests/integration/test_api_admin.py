@@ -123,3 +123,34 @@ def test_delete_announcement_with_auth(client, auth_headers, test_db):
 def test_delete_announcement_not_found(client, auth_headers):
     resp = client.delete("/api/admin/announcements/99999", headers=auth_headers)
     assert resp.status_code == 404
+
+
+# ── notifications ────────────────────────────────────────────────────────────
+
+
+def test_broadcast_rejects_empty_message(client, auth_headers):
+    resp = client.post(
+        "/api/admin/notifications/broadcast",
+        json={"message": "", "target_channel": "all"},
+        headers=auth_headers,
+    )
+    assert resp.status_code == 422
+
+
+def test_broadcast_rejects_too_short_message(client, auth_headers):
+    resp = client.post(
+        "/api/admin/notifications/broadcast",
+        json={"message": "short", "target_channel": "all"},
+        headers=auth_headers,
+    )
+    assert resp.status_code == 422
+
+
+def test_broadcast_accepts_valid_message(client, auth_headers):
+    resp = client.post(
+        "/api/admin/notifications/broadcast",
+        json={"message": "This is a valid broadcast message.", "target_channel": "all"},
+        headers=auth_headers,
+    )
+    assert resp.status_code == 200
+    assert resp.json()["recipient_count"] == 0

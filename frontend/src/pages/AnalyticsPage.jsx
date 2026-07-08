@@ -38,7 +38,7 @@ const AnalyticsPage = () => {
 
     return (
         <div className="container py-4">
-            <h1 className="h3 mb-4 text-white">
+            <h1 className="h3 mb-4">
                 <i className="fas fa-chart-line me-2 text-info"></i>
                 Site Trafik Analizi
             </h1>
@@ -56,7 +56,7 @@ const AnalyticsPage = () => {
                 <div className="col-md-6">
                     <div className="card bg-card border-secondary h-100">
                         <div className="card-body text-center">
-                            <h2 className="display-4 fw-bold text-white mb-0">{stats?.total_visitors}</h2>
+                            <h2 className="display-4 fw-bold mb-0">{stats?.total_visitors}</h2>
                             <p className="text-secondary">Toplam Görüntülenme (Tüm Zamanlar)</p>
                         </div>
                     </div>
@@ -66,7 +66,7 @@ const AnalyticsPage = () => {
             {/* Main Graph */}
             <div className="card bg-card border-secondary mb-5">
                 <div className="card-header border-secondary bg-transparent">
-                    <h5 className="mb-0 text-white">Son 30 Gün Ziyaretçi Grafiği</h5>
+                    <h5 className="mb-0">Son 30 Gün Ziyaretçi Grafiği</h5>
                 </div>
                 <div className="card-body" style={{ height: '400px' }}>
                     <ResponsiveContainer width="100%" height="100%">
@@ -93,7 +93,7 @@ const AnalyticsPage = () => {
             {/* Top Pages */}
             <div className="card bg-card border-secondary">
                 <div className="card-header border-secondary bg-transparent">
-                    <h5 className="mb-0 text-white">En Çok Ziyaret Edilen Sayfalar</h5>
+                    <h5 className="mb-0">En Çok Ziyaret Edilen Sayfalar</h5>
                 </div>
                 <div className="table-responsive">
                     <table className="table table-dark table-hover mb-0 align-middle">

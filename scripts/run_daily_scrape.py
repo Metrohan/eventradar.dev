@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import time
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -37,15 +38,46 @@ SCRAPERS = {
 
 
 def scrape_source(scraper_func, source_name):
-    """Tek bir kaynaktan scrape yap"""
+    """Tek bir kaynaktan scrape yap ve sonucu scraper_logs'a kaydet"""
     logging.info(f"--- {source_name} Scraper Başlatılıyor ---")
+    start_time = time.time()
     try:
         events = scraper_func()
+        duration = time.time() - start_time
         logging.info(f"{source_name}'ten {len(events)} etkinlik çekildi")
+        _log_scraper_run(source_name, "success", len(events), duration, None)
         return events
     except Exception as e:
+        duration = time.time() - start_time
         logging.error(f"{source_name} hatası: {e}", exc_info=True)
+        _log_scraper_run(source_name, "failed", 0, duration, str(e))
         return []
+
+
+def _log_scraper_run(source_name, status, events_found, duration, error_message):
+    """Tek bir kaynağın sonucunu scraper_logs tablosuna yazar (admin panelin
+    Scraper Kontrol Merkezi'nin cron ile yapılan günlük taramaları da
+    görebilmesi için — manuel tetikleme dışında hiçbir yer log yazmıyordu)."""
+    from app.core.database import SessionLocal
+    from app.services.scraper_service import ScraperService
+    from app.schemas.scraper_log import ScraperLogCreate
+
+    db = SessionLocal()
+    try:
+        ScraperService(db).create_log(
+            ScraperLogCreate(
+                source=source_name,
+                status=status,
+                events_found=events_found,
+                new_events=0,
+                error_message=error_message,
+                duration_seconds=duration,
+            )
+        )
+    except Exception as log_err:
+        logging.error(f"Scraper log kaydedilemedi ({source_name}): {log_err}")
+    finally:
+        db.close()
 
 
 def run_scraper_and_save_to_db():

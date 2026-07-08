@@ -54,11 +54,11 @@ def test_broadcast_email_calls_send_email(test_db):
 
     service = NotificationService(test_db)
     with patch.object(service, "_send_email") as mock_send:
-        req = BroadcastRequest(message="Hello!", target_channel="email")
+        req = BroadcastRequest(message="Hello there!", target_channel="email")
         result = service.broadcast_message(req)
 
     mock_send.assert_called_once_with(
-        "test@example.com", "EventRadar Bildirimi", "Hello!"
+        "test@example.com", "EventRadar Bildirimi", "Hello there!"
     )
     assert result["recipient_count"] == 1
     assert result["failed_count"] == 0
@@ -70,10 +70,10 @@ def test_broadcast_telegram_calls_send_telegram(test_db):
 
     service = NotificationService(test_db)
     with patch.object(service, "_send_telegram") as mock_send:
-        req = BroadcastRequest(message="Hello!", target_channel="telegram")
+        req = BroadcastRequest(message="Hello there!", target_channel="telegram")
         result = service.broadcast_message(req)
 
-    mock_send.assert_called_once_with("987654", "Hello!")
+    mock_send.assert_called_once_with("987654", "Hello there!")
     assert result["recipient_count"] == 1
 
 
@@ -83,7 +83,7 @@ def test_broadcast_failed_subscriber_counted(test_db):
 
     service = NotificationService(test_db)
     with patch.object(service, "_send_email", side_effect=Exception("SMTP error")):
-        req = BroadcastRequest(message="Hello!", target_channel="all")
+        req = BroadcastRequest(message="Hello there!", target_channel="all")
         result = service.broadcast_message(req)
 
     assert result["failed_count"] == 1

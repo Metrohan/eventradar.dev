@@ -16,7 +16,7 @@ const EventForm = ({ event, onClose, onSuccess }) => {
       image_url: event.image_url || '',
       source: event.source,
       is_active: event.is_active
-    } : {}
+    } : { is_active: true }
   })
 
   // Create/Update event mutation

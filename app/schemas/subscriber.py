@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
 from datetime import datetime
 
@@ -23,6 +23,6 @@ class SubscriberResponse(SubscriberBase):
 
 
 class BroadcastRequest(BaseModel):
-    message: str
+    message: str = Field(min_length=10, max_length=4096)
     target_channel: str = "all"  # 'all', 'telegram', 'email'
     target_interest: Optional[str] = None  # Filter by tag

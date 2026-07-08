@@ -39,11 +39,18 @@ const NotificationPage = () => {
     const onSubmit = async (data) => {
         setSending(true)
         try {
-            await adminAPI.broadcastMessage({
+            const res = await adminAPI.broadcastMessage({
                 message: data.message,
                 target_channel: data.target_channel
             })
-            toast.success("Mesaj başarıyla gönderildi!")
+            const { recipient_count, failed_count } = res.data
+            if (recipient_count === 0) {
+                toast.error("Mesaj kimseye gönderilmedi: hedef kitlede aktif abone yok.")
+            } else if (failed_count > 0) {
+                toast.success(`Mesaj ${recipient_count} aboneye gönderildi (${failed_count} başarısız).`)
+            } else {
+                toast.success(`Mesaj ${recipient_count} aboneye başarıyla gönderildi.`)
+            }
             reset()
         } catch (error) {
             toast.error("Mesaj gönderilemedi.")
@@ -56,7 +63,7 @@ const NotificationPage = () => {
 
     return (
         <div className="container py-4">
-            <h1 className="h3 mb-4 text-white">
+            <h1 className="h3 mb-4">
                 <i className="fas fa-bullhorn me-2 text-warning"></i>
                 Akıllı Bildirim Yönetimi
             </h1>
@@ -66,7 +73,7 @@ const NotificationPage = () => {
                 <div className="col-md-3">
                     <div className="card bg-card border-secondary h-100">
                         <div className="card-body text-center">
-                            <h2 className="display-4 fw-bold text-white mb-0">{stats?.total_subscribers}</h2>
+                            <h2 className="display-4 fw-bold mb-0">{stats?.total_subscribers}</h2>
                             <p className="text-secondary">Toplam Abone</p>
                         </div>
                     </div>
@@ -102,13 +109,13 @@ const NotificationPage = () => {
             {/* Broadcast Form */}
             <div className="card bg-card border-secondary">
                 <div className="card-header border-secondary bg-transparent">
-                    <h5 className="mb-0 text-white">Broadcast Mesaj Gönder</h5>
+                    <h5 className="mb-0">Broadcast Mesaj Gönder</h5>
                 </div>
                 <div className="card-body">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="row">
                             <div className="col-md-4 mb-3">
-                                <label className="form-label text-white">Hedef Kitle</label>
+                                <label className="form-label">Hedef Kitle</label>
                                 <select
                                     className="form-select bg-dark text-white border-secondary"
                                     {...register('target_channel')}
@@ -121,7 +128,7 @@ const NotificationPage = () => {
                         </div>
 
                         <div className="mb-3">
-                            <label className="form-label text-white">Mesaj İçeriği</label>
+                            <label className="form-label">Mesaj İçeriği</label>
                             <textarea
                                 className={`form-control bg-dark text-white border-secondary ${errors.message ? 'is-invalid' : ''}`}
                                 rows="4"
