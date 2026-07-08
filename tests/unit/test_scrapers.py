@@ -64,6 +64,26 @@ def test_youthall_no_chromedriver_returns_empty():
     assert events == []
 
 
+def test_youthall_defaults_location_to_none_when_venue_unknown():
+    from app.scrapers.youthall_scraper import scrape_youthall_events
+
+    mock_driver = _make_selenium_driver(_html("youthall.html"))
+
+    with patch(
+        "app.scrapers.youthall_scraper.ensure_chromedriver",
+        return_value="/usr/bin/chromedriver",
+    ), patch(
+        "app.scrapers.youthall_scraper.webdriver.Chrome", return_value=mock_driver
+    ), patch(
+        "app.scrapers.youthall_scraper.time.sleep"
+    ):
+        events = scrape_youthall_events()
+
+    # Neither fixture card matches the "<date>, <time> <venue>" pattern nor
+    # mentions "Online" explicitly, so venue extraction genuinely fails here.
+    assert all(e["location"] is None for e in events)
+
+
 # ── TechCareer ────────────────────────────────────────────────────────────────
 
 
@@ -162,10 +182,11 @@ def test_akbank_parses_event_titles():
     container = soup.find("div", id="event-list-all")
     assert container is not None
     cards = container.find_all("div", class_="event-item")
-    assert len(cards) == 2
+    assert len(cards) == 3
     titles = [c.find("h6", class_="text-primary").get_text(strip=True) for c in cards]
     assert "Python Bootcamp İstanbul" in titles
     assert "UI/UX Tasarım Atölyesi" in titles
+    assert "Yazılım Kariyeri Semineri" in titles
 
 
 def test_akbank_parses_date_from_data_attribute():
@@ -206,6 +227,22 @@ def test_akbank_scraper_returns_list(mock_chrome):
         result = scrape_akbank_events()
 
     assert isinstance(result, list)
+
+
+@patch("undetected_chromedriver.Chrome")
+def test_akbank_defaults_location_to_none_when_venue_unknown(mock_chrome):
+    from app.scrapers.akbank_scraper import scrape_akbank_events
+
+    mock_driver = _make_selenium_driver(_html("akbank.html"))
+    mock_chrome.return_value = mock_driver
+
+    with patch(
+        "app.scrapers.cs_scraper.get_chrome_options", return_value=MagicMock()
+    ), patch("selenium.webdriver.support.ui.WebDriverWait"):
+        result = scrape_akbank_events()
+
+    event = next(e for e in result if e["title"] == "Yazılım Kariyeri Semineri")
+    assert event["location"] is None
 
 
 # ── Coderspace ────────────────────────────────────────────────────────────────

@@ -61,7 +61,7 @@ def scrape_youthall_events():
 
                 if not date_str:
                     date_str = "Tarih belirtilmemiş"
-                location = "Online"
+                location = None
 
                 # Parse date using shared helper
                 event_date = parse_event_date(date_str)

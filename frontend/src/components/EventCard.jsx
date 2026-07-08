@@ -90,12 +90,10 @@ const EventCard = ({ event }) => {
             <i className="fas fa-calendar-alt"></i>
             <span>{formatDate(event.date)}</span>
           </div>
-          {event.location && (
-            <div className="event-meta-item">
-              <i className="fas fa-map-marker-alt"></i>
-              <span>{event.location}</span>
-            </div>
-          )}
+          <div className="event-meta-item">
+            <i className="fas fa-map-marker-alt"></i>
+            <span>{event.location || 'Konum belirtilmemiş'}</span>
+          </div>
         </div>
 
         <div className="event-footer">

@@ -170,12 +170,10 @@ const EventDetailPage = () => {
               <i className="fas fa-calendar-alt me-2" style={{ color: 'var(--action-primary)' }}></i>
               {formatDate(event.date)}
             </span>
-            {event.location && (
-              <span>
-                <i className="fas fa-map-marker-alt me-2" style={{ color: 'var(--action-primary)' }}></i>
-                {event.location}
-              </span>
-            )}
+            <span>
+              <i className="fas fa-map-marker-alt me-2" style={{ color: 'var(--action-primary)' }}></i>
+              {event.location || 'Konum belirtilmemiş'}
+            </span>
             <span>
               <i className="fas fa-globe me-2" style={{ color: 'var(--action-primary)' }}></i>
               {event.source}
