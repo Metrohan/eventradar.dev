@@ -87,7 +87,7 @@ def scrape_coderspace_events() -> List[Dict[str, Any]]:
         for card in cards:
             try:
                 link_elem = card.select_one(".event-card-image a")
-                href = link_elem.get("href", "") if link_elem else ""
+                href = str(link_elem.get("href", "")) if link_elem else ""
                 if not href or "/etkinlikler/" not in href or "/pro/" in href:
                     continue
 
@@ -100,7 +100,7 @@ def scrape_coderspace_events() -> List[Dict[str, Any]]:
                     title = title_elem.get_text(strip=True)
                 else:
                     img = link_elem.find("img") if link_elem else None
-                    title = img.get("alt", "").strip() if img else ""
+                    title = str(img.get("alt", "")).strip() if img else ""
                 if not title:
                     continue
 
@@ -144,7 +144,7 @@ def scrape_coderspace_events() -> List[Dict[str, Any]]:
                 img_elem = card.select_one(".event-card-image img")
                 image_url = ""
                 if img_elem:
-                    src = img_elem.get("src", "")
+                    src = str(img_elem.get("src", ""))
                     image_url = (
                         src if src.startswith("http") else f"https://coderspace.io{src}"
                     )
