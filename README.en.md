@@ -274,6 +274,13 @@ Thanks to everyone who contributed to this project! This list is auto-updated on
                 </a>
             </td>
             <td align="center">
+                <a href="https://github.com/blut-agent">
+                    <img src="https://avatars.githubusercontent.com/u/278569635?v=4" width="64;" alt="blut-agent"/>
+                    <br />
+                    <sub><b>Blut-agent</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/rashmitha-j">
                     <img src="https://avatars.githubusercontent.com/u/223723538?v=4" width="64;" alt="rashmitha-j"/>
                     <br />
