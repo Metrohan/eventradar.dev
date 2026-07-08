@@ -1,11 +1,25 @@
 import requests
 from bs4 import BeautifulSoup
+from typing import List, Dict, Any
 
 BASE_URL = "https://kodluyoruz.org"
 URL = f"{BASE_URL}/programlar"  # Kodluyoruz etkinlik sayfası
 
 
-def scrape_kodluyoruz_events():
+def scrape_kodluyoruz_events() -> List[Dict[str, Any]]:
+    """Scrape active programs/events from Kodluyoruz.
+
+    Returns a list of dicts, one per program, with the following keys:
+
+    - ``title`` (str): Program name (e.g. "Python ile Veri Bilimi")
+    - ``description`` (str): Program format label (e.g. "Ücretsiz", "Ücretli")
+    - ``date`` (str | None): Program start date (``başlangıç``)
+    - ``location`` (None): Not available from this page
+    - ``url`` (str | None): Absolute URL to the program detail page
+    - ``source`` (str): Always ``"Kodluyoruz"``
+    - ``is_active`` (bool): Always ``True``
+    - ``image_url`` (str | None): URL of the program thumbnail image
+    """
     try:
         response = requests.get(URL, timeout=30)
         response.raise_for_status()
