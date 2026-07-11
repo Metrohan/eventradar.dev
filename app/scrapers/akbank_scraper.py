@@ -1,5 +1,5 @@
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from datetime import datetime
 from typing import List, Dict, Any
 from app.services.date_extractor import extract_date_from_text
@@ -57,7 +57,7 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
         # Find active tab pane (usually 'Tümü' #nav-all)
         # The events are likely in #nav-all > #event-list-all
         container = soup.find("div", id="event-list-all")
-        if container:
+        if isinstance(container, Tag):
             cards = container.find_all("div", class_="event-item")
         else:
             cards = soup.find_all("div", class_="event-item")
@@ -144,7 +144,7 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
             # Description: gerçek açıklama metni sitede bulunmuyor (bkz.
             # _build_description docstring'i), okunaklı bir cümle üretiyoruz.
             desc_text = _build_description(
-                title, location, card.get("data-applicationenddate")
+                title, location, str(card.get("data-applicationenddate") or "")
             )
 
             events.append(

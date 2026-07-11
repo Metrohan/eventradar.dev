@@ -22,7 +22,7 @@ def _fetch_event_details(detail_url: str) -> dict:
     sayfasındaki "Tarih:" satırında bulunur, örn: "19 Temmuz Pazar | 11.00 - 12.00".
     Açıklama ise "event-section-content-about" ("... Hakkında") bloğunda yer alır.
     """
-    result = {"date": None, "description": None}
+    result: dict = {"date": None, "description": None}
     try:
         response = requests.get(detail_url, timeout=15)
         response.raise_for_status()
@@ -37,7 +37,7 @@ def _fetch_event_details(detail_url: str) -> dict:
         raw_text = raw_text.replace("Tarih:", "", 1).strip()
         result["date"] = parse_relative_turkish_datetime(raw_text)
 
-    about_elem = soup.find(attrs={"data-test": "event-section-content-about"})
+    about_elem = soup.find(True, attrs={"data-test": "event-section-content-about"})
     if about_elem:
         description = about_elem.get_text("\n", strip=True)
         result["description"] = description or None

@@ -1,5 +1,5 @@
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from datetime import datetime
 from typing import List, Dict, Any
 from app.services.date_extractor import extract_date_from_text
@@ -59,7 +59,11 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
         for card in cards:
             # Image
             img_tag = card.find("img")
-            image_url = img_tag["src"] if img_tag and img_tag.has_attr("src") else None
+            image_url = (
+                img_tag["src"]
+                if isinstance(img_tag, Tag) and img_tag.has_attr("src")
+                else None
+            )
 
             # Title
             # Look for h3 inside the card
@@ -95,11 +99,10 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
             # Link
             # Try to find a link (a tag) inside the card or parent
             a_tag = card.find("a", href=True)
-            if not a_tag:
+            if not isinstance(a_tag, Tag):
                 # Check parent
                 parent = card.find_parent("a", href=True)
-                if parent:
-                    a_tag = parent
+                a_tag = parent if isinstance(parent, Tag) else None
 
             if a_tag:
                 url_ = base_url + str(a_tag["href"])

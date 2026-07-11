@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 import undetected_chromedriver as uc
 
 logger = logging.getLogger(__name__)
@@ -100,7 +100,9 @@ def scrape_coderspace_events() -> List[Dict[str, Any]]:
                     title = title_elem.get_text(strip=True)
                 else:
                     img = link_elem.find("img") if link_elem else None
-                    title = str(img.get("alt", "")).strip() if img else ""
+                    title = (
+                        str(img.get("alt", "")).strip() if isinstance(img, Tag) else ""
+                    )
                 if not title:
                     continue
 
