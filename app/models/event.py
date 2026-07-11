@@ -11,6 +11,7 @@ class Event(Base):
     title = Column(String(500), nullable=False)
     description = Column(Text)
     date = Column(DateTime)
+    application_deadline = Column(DateTime)
     location = Column(String(255))
     url = Column(String(500), unique=True, nullable=False, index=True)
     image_url = Column(String(500))

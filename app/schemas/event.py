@@ -7,6 +7,7 @@ class EventBase(BaseModel):
     title: str
     description: Optional[str] = None
     date: Optional[datetime] = None
+    application_deadline: Optional[datetime] = None
     location: Optional[str] = None
     url: str
     image_url: Optional[str] = None
@@ -22,6 +23,7 @@ class EventUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     date: Optional[datetime] = None
+    application_deadline: Optional[datetime] = None
     location: Optional[str] = None
     url: Optional[str] = None
     image_url: Optional[str] = None

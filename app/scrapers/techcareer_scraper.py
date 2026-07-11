@@ -5,9 +5,44 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
+import re
+import requests
 import time
 
 from .driver_utils import ensure_chromedriver
+from ..services.date_extractor import parse_relative_turkish_datetime
+
+
+def _fetch_event_details(detail_url: str) -> dict:
+    """
+    Etkinlik detay sayfasından gerçek tarih/saati ve açıklamayı çeker.
+
+    Liste sayfasındaki "single-event-date" alanı aslında başvuru son tarihidir
+    (bkz. "Son Başvuru: " etiketi); gerçek etkinlik tarihi/saati sadece detay
+    sayfasındaki "Tarih:" satırında bulunur, örn: "19 Temmuz Pazar | 11.00 - 12.00".
+    Açıklama ise "event-section-content-about" ("... Hakkında") bloğunda yer alır.
+    """
+    result = {"date": None, "description": None}
+    try:
+        response = requests.get(detail_url, timeout=15)
+        response.raise_for_status()
+    except requests.exceptions.RequestException:
+        return result
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    tarih_label = soup.find("strong", string=re.compile(r"^\s*Tarih:\s*$"))
+    if tarih_label and tarih_label.parent:
+        raw_text = tarih_label.parent.get_text(" ", strip=True)
+        raw_text = raw_text.replace("Tarih:", "", 1).strip()
+        result["date"] = parse_relative_turkish_datetime(raw_text)
+
+    about_elem = soup.find(attrs={"data-test": "event-section-content-about"})
+    if about_elem:
+        description = about_elem.get_text("\n", strip=True)
+        result["description"] = description or None
+
+    return result
 
 
 def scrape_techcareer_events():
@@ -51,8 +86,12 @@ def scrape_techcareer_events():
                 title_elem = card.find("h3", attrs={"data-test": "single-event-title"})
                 title = title_elem.text.strip() if title_elem else None
 
-                date_elem = card.find("div", attrs={"data-test": "single-event-date"})
-                date_str = date_elem.text.strip() if date_elem else None
+                # Bu alan aslında başvuru son tarihidir, etkinlik tarihi değil
+                # (bkz. modülün başındaki _fetch_event_datetime docstring'i).
+                deadline_elem = card.find(
+                    "div", attrs={"data-test": "single-event-date"}
+                )
+                deadline_str = deadline_elem.text.strip() if deadline_elem else None
 
                 img_elem = card.find("img", attrs={"data-test": "single-event-image"})
                 image_url = img_elem.get("src") if img_elem else None
@@ -64,11 +103,14 @@ def scrape_techcareer_events():
                 )
 
                 if is_active and link and title:
+                    details = _fetch_event_details(link)
                     all_events.append(
                         {
                             "title": title,
-                            "description": "TechCareer.net etkinliği",
-                            "date": date_str,
+                            "description": details["description"]
+                            or "TechCareer.net etkinliği",
+                            "date": details["date"],
+                            "application_deadline": deadline_str,
                             "location": "Online",
                             "url": link,
                             "image_url": image_url,

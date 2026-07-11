@@ -226,6 +226,7 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
             seen_urls.add(url)
             try:
                 date_val = normalize_date(data.get("date"))
+                deadline_val = normalize_date(data.get("application_deadline"))
                 existing_event = existing_map.get(url)
 
                 if existing_event:
@@ -235,6 +236,8 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
                     )
                     if date_val is not None:
                         existing_event.date = date_val  # type: ignore[assignment]
+                    if deadline_val is not None:
+                        existing_event.application_deadline = deadline_val  # type: ignore[assignment]
                     existing_event.location = data.get(
                         "location", existing_event.location
                     )
@@ -255,6 +258,7 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
                         title=data.get("title"),
                         description=data.get("description"),
                         date=date_val,
+                        application_deadline=deadline_val,
                         location=data.get("location"),
                         url=url,
                         image_url=data.get("image_url"),

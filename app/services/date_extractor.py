@@ -134,3 +134,39 @@ def parse_event_date(raw: str) -> Optional[datetime]:
             continue
 
     return None
+
+
+_RELATIVE_DATE_TIME_RE = re.compile(
+    r"(\d{1,2})\s+([A-Za-zÇĞİÖŞÜçğıöşü]+)(?:\s+[A-Za-zÇĞİÖŞÜçğıöşü]+)?"
+    r"\s*\|?\s*(\d{1,2})[.:](\d{2})"
+)
+
+
+def parse_relative_turkish_datetime(
+    raw: str, reference: Optional[datetime] = None
+) -> Optional[datetime]:
+    """
+    Yıl içermeyen ama gün, ay ve saat içeren metinleri parse eder.
+
+    Örnek: "19 Temmuz Pazar | 11.00 - 12.00" (TechCareer etkinlik detay sayfası).
+    Yıl belirtilmediği için `reference` tarihine göre atanır; eğer gün/ay
+    referans tarihinden önceyse bir sonraki yıla kaydırılır (yıl sonu geçişi).
+    """
+    if not raw or not isinstance(raw, str):
+        return None
+
+    reference = reference or datetime.now()
+    match = _RELATIVE_DATE_TIME_RE.search(raw)
+    if not match:
+        return None
+
+    day, month_name, hour, minute = match.groups()
+
+    for year in (reference.year, reference.year + 1):
+        candidate = parse_event_date(f"{day} {month_name} {year} {hour}.{minute}")
+        if candidate and candidate.date() >= reference.date():
+            return candidate
+
+    # İki yıl denemesi de referanstan önceyse (örn. geçmişe dönük veri), yine
+    # de referans yılıyla döndür — None dönmek daha az bilgi verir.
+    return parse_event_date(f"{day} {month_name} {reference.year} {hour}.{minute}")

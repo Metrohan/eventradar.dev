@@ -40,6 +40,7 @@ class EventService:
                 title=event_data.title,
                 description=event_data.description,
                 date=date_val,
+                application_deadline=event_data.application_deadline,
                 location=event_data.location,
                 url=str(event_data.url),
                 image_url=str(event_data.image_url) if event_data.image_url else None,

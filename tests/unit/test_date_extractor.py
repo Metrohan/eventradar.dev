@@ -6,7 +6,11 @@ os.environ.setdefault("ADMIN_USERNAME", "testadmin")
 os.environ.setdefault("ADMIN_PASSWORD", "testpassword")
 
 from datetime import datetime, date
-from app.services.date_extractor import extract_date_from_text, parse_event_date
+from app.services.date_extractor import (
+    extract_date_from_text,
+    parse_event_date,
+    parse_relative_turkish_datetime,
+)
 
 
 def test_returns_none_for_empty_string():
@@ -98,6 +102,17 @@ def test_parse_unparseable_returns_none():
     assert parse_event_date(12345) is None
 
 
+def test_parse_iso_with_t_separator():
+    """ISO 8601 'T' ayracı: 2026-06-19T13:00:00 (API'lerden gelen standart format)"""
+    dt = parse_event_date("2026-06-19T13:00:00")
+    assert isinstance(dt, datetime)
+    assert dt.year == 2026
+    assert dt.month == 6
+    assert dt.day == 19
+    assert dt.hour == 13
+    assert dt.minute == 0
+
+
 def test_parse_iso_with_slash_separator():
     """ISO-like with slashes: 2026/05/15"""
     dt = parse_event_date("2026/05/15")
@@ -138,6 +153,50 @@ def test_insane_year_returns_none():
     """Geçmişte veya çok uzakta tarihler kabul edilmez."""
     assert parse_event_date("01.01.1990") is None
     assert parse_event_date("01.01.2099") is None
+
+
+# ─── parse_relative_turkish_datetime tests ─────────────────────────────────
+
+
+def test_parses_day_month_weekday_and_time():
+    """TechCareer detay formatı: '19 Temmuz Pazar | 11.00 - 12.00' (yıl yok)"""
+    reference = datetime(2026, 7, 1)
+    dt = parse_relative_turkish_datetime(
+        "19 Temmuz Pazar | 11.00 - 12.00", reference=reference
+    )
+    assert isinstance(dt, datetime)
+    assert dt.day == 19
+    assert dt.month == 7
+    assert dt.year == 2026
+    assert dt.hour == 11
+    assert dt.minute == 0
+
+
+def test_rolls_over_to_next_year_when_date_already_passed():
+    """Referans tarihinden önceki bir gün/ay ise bir sonraki yıla atanır."""
+    reference = datetime(2026, 12, 20)
+    dt = parse_relative_turkish_datetime(
+        "5 Ocak Salı | 10.00 - 11.00", reference=reference
+    )
+    assert isinstance(dt, datetime)
+    assert dt.day == 5
+    assert dt.month == 1
+    assert dt.year == 2027
+
+
+def test_parses_without_weekday_name():
+    reference = datetime(2026, 7, 1)
+    dt = parse_relative_turkish_datetime("19 Temmuz | 11.00", reference=reference)
+    assert isinstance(dt, datetime)
+    assert dt.day == 19
+    assert dt.month == 7
+    assert dt.hour == 11
+
+
+def test_returns_none_for_unparseable_text():
+    assert parse_relative_turkish_datetime("") is None
+    assert parse_relative_turkish_datetime(None) is None
+    assert parse_relative_turkish_datetime("Herkese açık") is None
 
 
 def test_duplicate_url_in_batch_does_not_crash(test_db):
