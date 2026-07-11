@@ -1,25 +1,18 @@
 import React from 'react'
 import { useQuery } from 'react-query'
 import { publicAPI } from '../services/api'
-import EventCard from '../components/EventCard'
 import AnnouncementModal from '../components/AnnouncementModal'
-import LoadingSpinner from '../components/LoadingSpinner'
-import ErrorMessage from '../components/ErrorMessage'
-import TagBadge, { TAG_STYLES } from '../components/TagBadge'
+import EventListing from '../components/EventListing'
 
 const SOURCES = [
   'TechCareer.net', 'Kodluyoruz', 'Youthall',
-  'Anbean', 'Coderspace', 'Akbank Gençlik Akademisi', 'Pupilica',
+  'Anbean', 'Coderspace', 'Akbank Gençlik Akademisi', 'Pupilica', 'Tech Istanbul',
 ]
 
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = React.useState('')
-  const [selectedSource, setSelectedSource] = React.useState('')
-  const [selectedLocation, setSelectedLocation] = React.useState('')
-  const [showPastEvents, setShowPastEvents] = React.useState(false)
-  const [selectedTags, setSelectedTags] = React.useState([])
 
-  const { data: eventsData, isLoading, error } = useQuery(
+  const { data: eventsData } = useQuery(
     'events',
     () => publicAPI.getEvents(true)
   )
@@ -30,55 +23,7 @@ const HomePage = () => {
     { retry: false }
   )
 
-  const filterOptions = React.useMemo(() => {
-    if (!eventsData?.data?.events) return { locations: [], sources: [] }
-    const events = eventsData.data.events
-    const locations = [...new Set(events.map(e => e.location).filter(Boolean))].sort()
-    const sources = [...new Set(events.map(e => e.source).filter(Boolean))].sort()
-    return { locations, sources }
-  }, [eventsData])
-
-  if (isLoading) return <LoadingSpinner />
-  if (error) return <ErrorMessage message="Etkinlikler yüklenirken bir sorun oluştu." />
-
-  const now = new Date()
-  const allEvents = eventsData?.data?.events || []
   const totalCount = eventsData?.data?.total_count || 0
-
-  const filteredEvents = allEvents.filter(event => {
-    if (!showPastEvents && event.date && new Date(event.date) < now) return false
-    if (searchTerm) {
-      const s = searchTerm.toLowerCase()
-      if (!event.title?.toLowerCase().includes(s) && !event.description?.toLowerCase().includes(s)) return false
-    }
-    if (selectedSource && event.source !== selectedSource) return false
-    if (selectedLocation && event.location !== selectedLocation) return false
-    if (selectedTags.length > 0) {
-      const eventTags = event.tags || []
-      if (!selectedTags.some(t => eventTags.includes(t))) return false
-    }
-    return true
-  }).sort((a, b) => {
-    if (!a.date) return 1
-    if (!b.date) return -1
-    return new Date(a.date) - new Date(b.date)
-  })
-
-  const clearFilters = () => {
-    setSearchTerm('')
-    setSelectedSource('')
-    setSelectedLocation('')
-    setShowPastEvents(false)
-    setSelectedTags([])
-  }
-
-  const toggleTag = (name) => {
-    setSelectedTags(prev =>
-      prev.includes(name) ? prev.filter(t => t !== name) : [...prev, name]
-    )
-  }
-
-  const hasFilters = searchTerm || selectedSource || selectedLocation || showPastEvents || selectedTags.length > 0
   const announcement = announcementData?.data
 
   return (
@@ -140,160 +85,7 @@ const HomePage = () => {
       </section>
 
       {/* ── Main content ─────────────────────────────────── */}
-      <div className="container py-4">
-
-        {/* Filters */}
-        <div className="filters-section mb-4">
-          <div className="filter-row">
-            {/* Source filter */}
-            <div className="filter-select-wrap">
-              <select
-                className="filter-select"
-                value={selectedSource}
-                onChange={e => setSelectedSource(e.target.value)}
-                aria-label="Platform seçin"
-              >
-                <option value="">Tüm Platformlar</option>
-                {filterOptions.sources.map(src => (
-                  <option key={src} value={src}>{src}</option>
-                ))}
-              </select>
-              <i className="fas fa-chevron-down filter-select-arrow"></i>
-            </div>
-
-            {/* Location filter */}
-            {filterOptions.locations.length > 0 && (
-              <div className="filter-select-wrap">
-                <select
-                  className="filter-select"
-                  value={selectedLocation}
-                  onChange={e => setSelectedLocation(e.target.value)}
-                  aria-label="Konum seçin"
-                >
-                  <option value="">Tüm Konumlar</option>
-                  {filterOptions.locations.map(loc => (
-                    <option key={loc} value={loc}>{loc}</option>
-                  ))}
-                </select>
-                <i className="fas fa-chevron-down filter-select-arrow"></i>
-              </div>
-            )}
-
-            {/* Past events toggle */}
-            <label className={`filter-toggle ${showPastEvents ? 'active' : ''}`}>
-              <input
-                type="checkbox"
-                checked={showPastEvents}
-                onChange={e => setShowPastEvents(e.target.checked)}
-              />
-              <i className="fas fa-history"></i>
-              Geçmişleri Göster
-            </label>
-
-            {/* Clear */}
-            {hasFilters && (
-              <button
-                className="filter-toggle"
-                onClick={clearFilters}
-                style={{ marginLeft: 'auto', color: 'var(--danger)', borderColor: 'rgba(239,68,68,0.3)' }}
-              >
-                <i className="fas fa-times"></i>
-                Temizle
-              </button>
-            )}
-          </div>
-
-          {/* Category tag filter */}
-          <div className="filter-row" style={{ marginTop: '10px', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.05em', flexShrink: 0 }}>
-              KATEGORİ:
-            </span>
-            {Object.keys(TAG_STYLES).map(name => (
-              <TagBadge
-                key={name}
-                name={name}
-                selected={selectedTags.includes(name)}
-                clickable
-                onClick={() => toggleTag(name)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Section header */}
-        <div className="section-header">
-          <div className="section-title">
-            <span className="section-title-icon">
-              <i className="fas fa-calendar-alt"></i>
-            </span>
-            Etkinlikler
-          </div>
-          <span className="results-count">
-            {filteredEvents.length} sonuç
-          </span>
-        </div>
-
-        {/* Events grid */}
-        {filteredEvents.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">
-              <i className="fas fa-search"></i>
-            </div>
-            <h4>Etkinlik bulunamadı</h4>
-            <p>Arama kriterlerinizi değiştirerek tekrar deneyin.</p>
-            {hasFilters && (
-              <button className="btn-outline-primary" onClick={clearFilters}>
-                <i className="fas fa-times me-1"></i>
-                Filtreleri Temizle
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="row g-4">
-            {filteredEvents.map(event => (
-              <div key={event.id} className="col-lg-6 col-xl-4">
-                <EventCard event={event} />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Etkinlik ekleme CTA */}
-        <div
-          className="text-center cta-block"
-          style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '20px',
-            marginTop: '3rem',
-            padding: '3rem 2rem',
-          }}
-        >
-          <div
-            style={{
-              width: 56, height: 56,
-              borderRadius: '14px',
-              background: 'rgba(56,189,248,0.1)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 1rem',
-              fontSize: '1.4rem',
-              color: 'var(--action-primary)',
-            }}
-          >
-            <i className="fas fa-plus"></i>
-          </div>
-          <h5 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>
-            Bir etkinlik mi kaçırdık?
-          </h5>
-          <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '1.25rem' }}>
-            Eklenmesini istediğiniz bir etkinlik varsa bize bildirin.
-          </p>
-          <a href="/etkinlik-talep" className="btn-primary">
-            Etkinlik Ekle
-            <i className="fas fa-arrow-right" style={{ fontSize: '0.8rem' }}></i>
-          </a>
-        </div>
-      </div>
+      <EventListing searchTerm={searchTerm} onSearchTermChange={setSearchTerm} />
 
       {announcement && <AnnouncementModal announcement={announcement} />}
     </>

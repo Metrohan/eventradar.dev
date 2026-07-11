@@ -22,6 +22,11 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const StatusPage = lazy(() => import('./pages/StatusPage'))
 const ServerErrorPage = lazy(() => import('./pages/ServerErrorPage'))
 const RedirectPage = lazy(() => import('./pages/RedirectPage'))
+const HackathonlarPage = lazy(() => import('./pages/landing/HackathonlarPage'))
+const BootcamplarPage = lazy(() => import('./pages/landing/BootcamplarPage'))
+const OnlineEtkinliklerPage = lazy(() => import('./pages/landing/OnlineEtkinliklerPage'))
+const BuHaftakiEtkinliklerPage = lazy(() => import('./pages/landing/BuHaftakiEtkinliklerPage'))
+const SonBasvurularPage = lazy(() => import('./pages/landing/SonBasvurularPage'))
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { Toaster } from 'react-hot-toast'
@@ -58,6 +63,11 @@ function App() {
                   <Route path="/oneri-sikayet" element={<SuggestionPage />} />
                   <Route path="/egitim-kaynaklari" element={<FreeTrainingsPage />} />
                   <Route path="/status" element={<StatusPage />} />
+                  <Route path="/hackathonlar" element={<HackathonlarPage />} />
+                  <Route path="/bootcamplar" element={<BootcamplarPage />} />
+                  <Route path="/online-etkinlikler" element={<OnlineEtkinliklerPage />} />
+                  <Route path="/bu-haftaki-etkinlikler" element={<BuHaftakiEtkinliklerPage />} />
+                  <Route path="/son-basvurular" element={<SonBasvurularPage />} />
 
                   {/* Admin Routes */}
                   <Route path="/admin/login" element={<AdminLoginPage />} />
