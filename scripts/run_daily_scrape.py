@@ -13,7 +13,7 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-from app.services.scraper_service import process_scraped_events, deactivate_past_events
+from app.services.event_ingestion import ScrapedEvent, build_event_ingestion
 from app.services.source_catalog import get_enabled_sources
 
 
@@ -63,10 +63,11 @@ def _log_scraper_run(source_name, status, events_found, duration, error_message)
 def run_scraper_and_save_to_db():
     """Tüm scraper'ları çalıştır ve kaydet"""
     logging.info(f"=== Scraping Başladı: {datetime.now():%Y-%m-%d %H:%M:%S} ===")
+    ingestion = build_event_ingestion()
 
     # Önce geçmiş etkinlikleri deaktive et
     logging.info("--- Geçmiş Etkinlikler Kontrol Ediliyor ---")
-    deactivated = deactivate_past_events()
+    deactivated = ingestion.deactivate_past()
     if deactivated > 0:
         logging.info(f"✓ {deactivated} geçmiş etkinlik deaktive edildi")
     else:
@@ -84,14 +85,17 @@ def run_scraper_and_save_to_db():
 
     if all_scraped_events:
         logging.info(f"\n--- {len(all_scraped_events)} Etkinlik Kaydediliyor ---")
-        result = process_scraped_events(all_scraped_events, "Tüm Kaynaklar")
-        logging.info(f"✓ Veritabanına kaydedildi: {result}")
+        result = ingestion.ingest(
+            ScrapedEvent.from_mapping(event, "Tüm Kaynaklar")
+            for event in all_scraped_events
+        )
+        logging.info(f"✓ Veritabanına kaydedildi: {result.summary()}")
     else:
         logging.warning("✗ Kaydedilecek etkinlik yok")
 
     # Scraper kaynakları geçmiş tarihli kayıtları hâlâ döndürebilir. Kayıt
     # işleminden sonra tekrar temizleyerek bu etkinliklerin aktif kalmasını önle.
-    deactivated_after_scrape = deactivate_past_events()
+    deactivated_after_scrape = ingestion.deactivate_past()
     if deactivated_after_scrape > 0:
         logging.info(
             f"✓ Tarama sonrası {deactivated_after_scrape} geçmiş etkinlik deaktive edildi"

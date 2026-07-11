@@ -10,3 +10,13 @@ The **Source Catalog** is the canonical registry of event-source integrations. A
 - Frontend colour is presentation data and is derived deterministically from the stable source key.
 
 Avoid maintaining independent source-name arrays in backend orchestration or frontend screens.
+
+## Event Ingestion
+
+**Event Ingestion** converts scraper payloads into canonical `ScrapedEvent` values, persists them, applies active-event lifecycle rules, classifies tags, and publishes post-commit notifications.
+
+- Scraper adapters own extraction only; they do not own persistence rules.
+- `EventIngestion.ingest()` returns a typed `IngestionResult` rather than a formatted status string.
+- A failed transaction raises `IngestionError`; individual invalid records are reported in the result.
+- Notifications run after commit and remain non-fatal.
+- Database sessions and notifications are adapters behind explicit seams.

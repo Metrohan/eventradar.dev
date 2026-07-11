@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
-from typing import List, Dict, Optional
+from typing import List
 import subprocess
 import threading
-from datetime import datetime
 import time
 
 from ..models.scraper_log import ScraperLog
 from ..schemas.scraper_log import ScraperLogCreate
+from .event_ingestion import ScrapedEvent, build_event_ingestion
 from .source_catalog import get_source
 
 
@@ -108,13 +108,12 @@ class ScraperService:
                 events = definition.runner()
                 events_found = len(events)
                 if events:
-                    result_str = process_scraped_events(events, definition.name)
-                    try:
-                        new_count = int(
-                            result_str.split("New:")[1].split(",")[0].strip()
-                        )
-                    except Exception:
-                        pass
+                    ingestion = build_event_ingestion()
+                    result = ingestion.ingest(
+                        ScrapedEvent.from_mapping(event, definition.name)
+                        for event in events
+                    )
+                    new_count = result.new
                 status = "success"
             else:
                 error_msg = f"Bilinmeyen kaynak: {source}"
@@ -140,154 +139,3 @@ class ScraperService:
             db.close()
             with ScraperService._lock:
                 ScraperService._running_sources.discard(key)
-
-
-def deactivate_past_events() -> int:
-    """Geçmiş etkinlikleri deaktive eder."""
-    from ..core.database import SessionLocal
-    from ..models.event import Event
-
-    db = SessionLocal()
-    try:
-        now = datetime.now()
-        # Tarihi geçmiş ve hala aktif olan etkinlikleri bul
-        past_events = (
-            db.query(Event).filter(Event.is_active == True, Event.date < now).all()
-        )
-
-        count = 0
-        for event in past_events:
-            event.is_active = False  # type: ignore[assignment]
-            count += 1
-
-        db.commit()
-        return count
-    except Exception as e:
-        print(f"Error deactivating past events: {e}")
-        db.rollback()
-        return 0
-    finally:
-        db.close()
-
-
-def normalize_date(date_val) -> Optional[datetime]:
-    from app.services.date_extractor import parse_event_date
-
-    if not date_val:
-        return None
-    if isinstance(date_val, datetime):
-        return date_val
-    if isinstance(date_val, str):
-        # Ortak geçersiz metinler kontrolü
-        invalid_texts = ["tarih belirtilmemiş", "belirtilmemiş", "-", ""]
-        if date_val.strip().lower() in invalid_texts:
-            return None
-        return parse_event_date(date_val)
-    return None
-
-
-def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
-    """Scrape edilen etkinlikleri veritabanına kaydeder."""
-    from ..core.database import SessionLocal
-    from ..models.event import Event
-    from ..models.tag import Tag
-    from .tag_service import classify_event
-
-    db = SessionLocal()
-    new_count = 0
-    updated_count = 0
-    failed_urls = []
-
-    try:
-        urls = [d.get("url") for d in events_data if d.get("url")]
-        existing_map = {
-            e.url: e for e in db.query(Event).filter(Event.url.in_(urls)).all()
-        }
-        all_tags: dict[str, Tag] = {str(t.name): t for t in db.query(Tag).all()}
-
-        now = datetime.now()
-        seen_urls: set[str] = set()
-        new_event_data: list[dict] = []
-        for data in events_data:
-            url = data.get("url")
-            if not url or url in seen_urls:
-                continue
-            seen_urls.add(url)
-            try:
-                date_val = normalize_date(data.get("date"))
-                deadline_val = normalize_date(data.get("application_deadline"))
-                existing_event = existing_map.get(url)
-
-                if existing_event:
-                    existing_event.title = data.get("title", existing_event.title)
-                    existing_event.description = data.get(
-                        "description", existing_event.description
-                    )
-                    if date_val is not None:
-                        existing_event.date = date_val  # type: ignore[assignment]
-                    effective_date = date_val or existing_event.date
-                    if effective_date is not None and effective_date < now:
-                        existing_event.is_active = False  # type: ignore[assignment]
-                    if deadline_val is not None:
-                        existing_event.application_deadline = deadline_val  # type: ignore[assignment]
-                    existing_event.location = data.get(
-                        "location", existing_event.location
-                    )
-                    existing_event.image_url = data.get(
-                        "image_url", existing_event.image_url
-                    )
-                    existing_event.scraped_at = now  # type: ignore[assignment]
-                    tag_names = classify_event(
-                        data.get("title", existing_event.title),
-                        data.get("description", existing_event.description),
-                    )
-                    existing_event.tags = [
-                        all_tags[n] for n in tag_names if n in all_tags
-                    ]
-                    updated_count += 1
-                else:
-                    new_event = Event(
-                        title=data.get("title"),
-                        description=data.get("description"),
-                        date=date_val,
-                        application_deadline=deadline_val,
-                        location=data.get("location"),
-                        url=url,
-                        image_url=data.get("image_url"),
-                        source=data.get("source", source_name),
-                        is_active=date_val is None or date_val >= now,
-                        scraped_at=now,
-                    )
-                    db.add(new_event)
-                    db.flush()
-                    tag_names = classify_event(
-                        data.get("title", ""), data.get("description")
-                    )
-                    new_event.tags = [all_tags[n] for n in tag_names if n in all_tags]
-                    new_count += 1
-                    new_event_data.append(data)
-            except Exception as e_event:
-                print(f"Error processing single event ({url}): {e_event}")
-                failed_urls.append(url)
-                continue
-
-        db.commit()
-
-        if new_event_data:
-            try:
-                from .telegram_service import notify_new_events
-
-                notify_new_events(new_event_data)
-            except Exception as tg_err:
-                print(f"Telegram bildirimi gönderilemedi (non-fatal): {tg_err}")
-
-        result = f"New: {new_count}, Updated: {updated_count}"
-        if failed_urls:
-            result += f", Failed: {len(failed_urls)}"
-        return result
-    except Exception as e:
-        db.rollback()
-        print(f"Error in process_scraped_events: {e}")
-        return f"Error: {str(e)}"
-    finally:
-        db.close()
