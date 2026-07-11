@@ -1,11 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
+from typing import List, Dict, Any
 
 BASE_URL = "https://kodluyoruz.org"
 URL = f"{BASE_URL}/programlar"  # Kodluyoruz etkinlik sayfası
 
 
-def _fetch_program_description(detail_url: str):
+def _fetch_program_description(detail_url: str) -> str | None:
     """Program detay sayfasındaki gerçek açıklamayı çeker (liste sayfasındaki
     '.program-format' alanı sadece 'Ücretsiz' gibi bir etikettir, açıklama değil)."""
     try:
@@ -21,7 +22,24 @@ def _fetch_program_description(detail_url: str):
     return desc_elem.get_text(" ", strip=True) or None
 
 
-def scrape_kodluyoruz_events():
+def scrape_kodluyoruz_events() -> List[Dict[str, Any]]:
+    """Scrape active programs/events from Kodluyoruz.
+
+    Returns a list of dicts, one per program, with the following keys:
+
+    - ``title`` (str): Program name (e.g. "Python ile Veri Bilimi")
+    - ``description`` (str): Real description fetched from the program's
+      detail page, falling back to the format label (e.g. "Ücretsiz") if
+      the detail page has none
+    - ``date`` (str | None): Program start date (``başlangıç``)
+    - ``application_deadline`` (str | None): Application deadline (``son
+      başvuru``)
+    - ``location`` (None): Not available from this page
+    - ``url`` (str | None): Absolute URL to the program detail page
+    - ``source`` (str): Always ``"Kodluyoruz"``
+    - ``is_active`` (bool): Always ``True``
+    - ``image_url`` (str | None): URL of the program thumbnail image
+    """
     try:
         response = requests.get(URL, timeout=30)
         response.raise_for_status()
