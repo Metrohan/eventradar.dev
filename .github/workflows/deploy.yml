@@ -54,6 +54,9 @@ jobs:
               git rebase --abort || true
               exit 1
             fi
-            docker compose up -d --build --force-recreate
+            docker compose up -d db
+            docker compose build backend frontend
+            docker compose run --rm backend alembic upgrade head
+            docker compose up -d --force-recreate
 
             echo "--- Deploy tamamlandi ---"

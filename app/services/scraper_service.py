@@ -8,6 +8,7 @@ import time
 
 from ..models.scraper_log import ScraperLog
 from ..schemas.scraper_log import ScraperLogCreate
+from .source_catalog import get_source
 
 
 class ScraperService:
@@ -58,7 +59,8 @@ class ScraperService:
         "all" is running, and vice versa) so double-clicking "Tetikle" or firing
         overlapping scrapes against the same source can't happen.
         """
-        key = source.lower()
+        definition = None if source.casefold() == "all" else get_source(source)
+        key = definition.key if definition else source.casefold()
         with ScraperService._lock:
             if key in ScraperService._running_sources or (
                 "all" in ScraperService._running_sources
@@ -74,30 +76,20 @@ class ScraperService:
                 }
             ScraperService._running_sources.add(key)
 
-        thread = threading.Thread(target=self._run_scraper_task, args=(source,))
+        target = definition.key if definition else source
+        thread = threading.Thread(target=self._run_scraper_task, args=(target,))
         thread.start()
         return {
             "message": f"Scraper {source} triggered locally",
             "already_running": False,
         }
 
-    # Kaynak adı → scraper fonksiyonu eşlemesi
-    SCRAPER_FUNCS = {
-        "techcareer.net": "app.scrapers.techcareer_scraper:scrape_techcareer_events",
-        "coderspace": "app.scrapers.cs_scraper:scrape_coderspace_events",
-        "anbean": "app.scrapers.anbean_scraper:scrape_anbean_events",
-        "kodluyoruz": "app.scrapers.kodluyoruz_scraper:scrape_kodluyoruz_events",
-        "youthall": "app.scrapers.youthall_scraper:scrape_youthall_events",
-        "akbank gençlik akademisi": "app.scrapers.akbank_scraper:scrape_akbank_events",
-        "pupilica": "app.scrapers.pupilica_scraper:scrape_pupilica_events",
-        "tech istanbul": "app.scrapers.techistanbul_scraper:scrape_techistanbul_events",
-    }
-
     def _run_scraper_task(self, source: str):
         from ..core.database import SessionLocal
-        import importlib
 
-        key = source.lower()
+        definition = None if source.casefold() == "all" else get_source(source)
+        key = definition.key if definition else source.casefold()
+        source_name = definition.name if definition else source
         status = "failed"
         error_msg = None
         events_found = 0
@@ -112,15 +104,11 @@ class ScraperService:
                 status = "success" if proc.returncode == 0 else "failed"
                 if proc.returncode != 0:
                     error_msg = proc.stderr
-            elif key in self.SCRAPER_FUNCS:
-                # İlgili scraper fonksiyonunu dinamik olarak çağır
-                module_path, func_name = self.SCRAPER_FUNCS[key].rsplit(":", 1)
-                module = importlib.import_module(module_path)
-                scraper_func = getattr(module, func_name)
-                events = scraper_func()
+            elif definition and definition.enabled:
+                events = definition.runner()
                 events_found = len(events)
                 if events:
-                    result_str = process_scraped_events(events, source)
+                    result_str = process_scraped_events(events, definition.name)
                     try:
                         new_count = int(
                             result_str.split("New:")[1].split(",")[0].strip()
@@ -139,7 +127,7 @@ class ScraperService:
         db = SessionLocal()
         try:
             log = ScraperLog(
-                source=source,
+                source=source_name,
                 status=status,
                 events_found=events_found,
                 new_events=new_count,

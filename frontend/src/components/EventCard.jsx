@@ -4,19 +4,7 @@ import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import TagBadge from './TagBadge'
 import ShareButtons from './ShareButtons'
-
-const SOURCE_STYLES = {
-  'TechCareer.net':           { bg: 'rgba(56,189,248,0.18)',  color: '#38BDF8',  border: 'rgba(56,189,248,0.35)' },
-  'Kodluyoruz':               { bg: 'rgba(168,85,247,0.18)',  color: '#A855F7',  border: 'rgba(168,85,247,0.35)' },
-  'Youthall':                 { bg: 'rgba(16,185,129,0.18)',  color: '#10B981',  border: 'rgba(16,185,129,0.35)' },
-  'Anbean':                   { bg: 'rgba(245,158,11,0.18)',  color: '#F59E0B',  border: 'rgba(245,158,11,0.35)' },
-  'Coderspace':               { bg: 'rgba(99,102,241,0.18)',  color: '#6366F1',  border: 'rgba(99,102,241,0.35)' },
-  'Akbank Gençlik Akademisi': { bg: 'rgba(239,68,68,0.18)',   color: '#EF4444',  border: 'rgba(239,68,68,0.35)'  },
-  'Pupilica':                 { bg: 'rgba(34,197,94,0.18)',   color: '#22C55E',  border: 'rgba(34,197,94,0.35)'  },
-  'Tech Istanbul':            { bg: 'rgba(236,72,153,0.18)',  color: '#EC4899',  border: 'rgba(236,72,153,0.35)' },
-}
-
-const DEFAULT_SOURCE_STYLE = { bg: 'rgba(56,189,248,0.18)', color: '#38BDF8', border: 'rgba(56,189,248,0.35)' }
+import { getSourceStyle } from '../utils/sourceColor'
 
 const EventCard = ({ event }) => {
   const safeUrl = /^https?:\/\//i.test(event.url) ? event.url : '#'
@@ -46,7 +34,7 @@ const EventCard = ({ event }) => {
     }
   }
 
-  const sourceStyle = SOURCE_STYLES[event.source] || DEFAULT_SOURCE_STYLE
+  const sourceStyle = getSourceStyle(event.source)
   const isActive = event.is_active
   const deadlineText = formatDeadline(event.application_deadline)
   const deadlineSoon =

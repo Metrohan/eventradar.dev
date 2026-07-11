@@ -71,6 +71,17 @@ def test_get_events_all_when_active_only_false(client, test_db):
     assert len(resp.json()["events"]) == 2
 
 
+def test_get_sources_returns_enabled_catalog_without_runners(client):
+    resp = client.get("/api/sources")
+
+    assert resp.status_code == 200
+    sources = resp.json()
+    assert len(sources) == 8
+    assert any(source["key"] == "tech-istanbul" for source in sources)
+    assert all(source["enabled"] is True for source in sources)
+    assert all("runner" not in source for source in sources)
+
+
 # ── /api/announcements ────────────────────────────────────────────────────────
 
 

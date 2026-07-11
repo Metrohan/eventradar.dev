@@ -3,14 +3,11 @@ import { useQuery } from 'react-query'
 import { publicAPI } from '../services/api'
 import AnnouncementModal from '../components/AnnouncementModal'
 import EventListing from '../components/EventListing'
-
-const SOURCES = [
-  'TechCareer.net', 'Kodluyoruz', 'Youthall',
-  'Anbean', 'Coderspace', 'Akbank Gençlik Akademisi', 'Pupilica', 'Tech Istanbul',
-]
+import useSources from '../hooks/useSources'
 
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = React.useState('')
+  const { sources } = useSources()
 
   const { data: eventsData } = useQuery(
     'events',
@@ -71,7 +68,7 @@ const HomePage = () => {
               </div>
               <div className="hero-stat-divider" />
               <div className="hero-stat">
-                <span className="hero-stat-number">{SOURCES.length}</span>
+                <span className="hero-stat-number">{sources.length}</span>
                 <span className="hero-stat-label">Platform</span>
               </div>
               <div className="hero-stat-divider" />
