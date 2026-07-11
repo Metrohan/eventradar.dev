@@ -1,6 +1,6 @@
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, cast
 
 from sqlalchemy.orm import Session
@@ -12,6 +12,7 @@ from .tag_service import classify_event
 
 SessionFactory = Callable[[], Session]
 NotificationAdapter = Callable[[list[dict[str, Any]]], None]
+Clock = Callable[[], datetime]
 
 
 class IngestionError(RuntimeError):
@@ -92,9 +93,11 @@ class EventIngestion:
         self,
         session_factory: SessionFactory,
         notification_adapter: NotificationAdapter | None = None,
+        clock: Clock = datetime.now,
     ):
         self._session_factory = session_factory
         self._notification_adapter = notification_adapter
+        self._clock = clock
 
     def ingest(self, events: Iterable[ScrapedEvent]) -> IngestionResult:
         items = list(events)
@@ -111,7 +114,7 @@ class EventIngestion:
             all_tags: dict[str, Tag] = {
                 str(tag.name): tag for tag in db.query(Tag).all()
             }
-            now = datetime.now()
+            now = self._clock()
             seen_urls: set[str] = set()
 
             for item in items:
@@ -171,13 +174,39 @@ class EventIngestion:
         try:
             past_events = (
                 db.query(Event)
-                .filter(Event.is_active == True, Event.date < datetime.now())
+                .filter(Event.is_active == True, Event.date < self._clock())
                 .all()
             )
             for event in past_events:
                 event.is_active = False  # type: ignore[assignment]
             db.commit()
             return len(past_events)
+        except Exception as exc:
+            db.rollback()
+            raise IngestionError(str(exc)) from exc
+        finally:
+            db.close()
+
+    def reconcile_source(
+        self, source: str, grace_period: timedelta = timedelta(days=3)
+    ) -> int:
+        """Deactivate source events not observed within the grace period."""
+        db = self._session_factory()
+        cutoff = self._clock() - grace_period
+        try:
+            stale_events = (
+                db.query(Event)
+                .filter(
+                    Event.source == source,
+                    Event.is_active == True,
+                    Event.last_seen_at < cutoff,
+                )
+                .all()
+            )
+            for event in stale_events:
+                event.is_active = False  # type: ignore[assignment]
+            db.commit()
+            return len(stale_events)
         except Exception as exc:
             db.rollback()
             raise IngestionError(str(exc)) from exc
@@ -211,6 +240,7 @@ class EventIngestion:
             str | None, event.image_url
         )
         event.scraped_at = now  # type: ignore[assignment]
+        event.last_seen_at = now  # type: ignore[assignment]
         tag_names = classify_event(
             item.title or cast(str, event.title), item.description
         )
@@ -236,6 +266,7 @@ class EventIngestion:
             source=item.source,
             is_active=date_value is None or date_value >= now,
             scraped_at=now,
+            last_seen_at=now,
         )
         db.add(event)
         db.flush()

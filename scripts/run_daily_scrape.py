@@ -31,7 +31,7 @@ def scrape_source(scraper_func, source_name):
         duration = time.time() - start_time
         logging.error(f"{source_name} hatası: {e}", exc_info=True)
         _log_scraper_run(source_name, "failed", 0, duration, str(e))
-        return []
+        return None
 
 
 def _log_scraper_run(source_name, status, events_found, duration, error_message):
@@ -73,24 +73,24 @@ def run_scraper_and_save_to_db():
     else:
         logging.info("✓ Deaktive edilecek geçmiş etkinlik yok")
 
-    all_scraped_events = []
+    total_events = 0
 
     # Selenium scraperları sırayla çalıştır (ChromeDriver çakışması önlemek için)
 
     # Önce static scraperlar (daha hızlı)
     for source in get_enabled_sources():
         events = scrape_source(source.runner, source.name)
-        if events:
-            all_scraped_events.extend(events)
+        if events is None:
+            continue
 
-    if all_scraped_events:
-        logging.info(f"\n--- {len(all_scraped_events)} Etkinlik Kaydediliyor ---")
+        total_events += len(events)
         result = ingestion.ingest(
-            ScrapedEvent.from_mapping(event, "Tüm Kaynaklar")
-            for event in all_scraped_events
+            ScrapedEvent.from_mapping(event, source.name) for event in events
         )
-        logging.info(f"✓ Veritabanına kaydedildi: {result.summary()}")
-    else:
+        reconciled = ingestion.reconcile_source(source.name)
+        logging.info(f"✓ {source.name}: {result.summary()}, Reconciled: {reconciled}")
+
+    if total_events == 0:
         logging.warning("✗ Kaydedilecek etkinlik yok")
 
     # Scraper kaynakları geçmiş tarihli kayıtları hâlâ döndürebilir. Kayıt

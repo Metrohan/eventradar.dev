@@ -42,7 +42,7 @@ def test_scrape_source_logs_failure(test_db):
     with patch("app.core.database.SessionLocal", return_value=test_db):
         events = scrape_source(failing_scraper, "Youthall")
 
-    assert events == []
+    assert events is None
     log = test_db.query(ScraperLog).filter(ScraperLog.source == "Youthall").first()
     assert log is not None
     assert log.status == "failed"
@@ -54,6 +54,7 @@ def test_daily_scrape_deactivates_past_events_after_processing():
     ingestion = MagicMock()
     ingestion.deactivate_past.side_effect = [0, 2]
     ingestion.ingest.return_value.summary.return_value = "New: 1, Updated: 0"
+    ingestion.reconcile_source.return_value = 0
 
     with patch(
         "scripts.run_daily_scrape.build_event_ingestion", return_value=ingestion
@@ -64,4 +65,5 @@ def test_daily_scrape_deactivates_past_events_after_processing():
         run_scraper_and_save_to_db()
 
     assert ingestion.deactivate_past.call_count == 2
-    ingestion.ingest.assert_called_once()
+    assert ingestion.ingest.call_count == 8
+    assert ingestion.reconcile_source.call_count == 8

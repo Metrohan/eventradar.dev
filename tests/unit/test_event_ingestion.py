@@ -20,7 +20,8 @@ def test_normalize_date_values():
 
 
 def test_ingest_returns_typed_counts_and_deduplicates_batch(test_db):
-    ingestion = EventIngestion(lambda: test_db)
+    now = datetime(2026, 7, 11, 12, 0)
+    ingestion = EventIngestion(lambda: test_db, clock=lambda: now)
     event = ScrapedEvent(
         title="Test",
         url="https://example.com/dup",
@@ -34,6 +35,8 @@ def test_ingest_returns_typed_counts_and_deduplicates_batch(test_db):
     assert result.updated == 0
     assert result.failed == 0
     assert result.summary() == "New: 1, Updated: 0"
+    stored = test_db.query(Event).filter(Event.url == event.url).one()
+    assert stored.last_seen_at == now
 
 
 def test_ingest_creates_past_event_as_inactive(test_db):
@@ -135,3 +138,44 @@ def test_deactivate_past_events(test_db):
     stored_future = test_db.query(Event).filter(Event.id == future_id).one()
     assert stored_past.is_active is False
     assert stored_future.is_active is True
+
+
+def test_reconcile_source_deactivates_only_stale_missing_events(test_db):
+    now = datetime(2026, 7, 11, 12, 0)
+    stale = Event(
+        title="Missing",
+        url="https://example.com/missing",
+        source="Tech Istanbul",
+        is_active=True,
+        scraped_at=now - timedelta(days=10),
+        last_seen_at=now - timedelta(days=4),
+    )
+    recent = Event(
+        title="Recent",
+        url="https://example.com/recent",
+        source="Tech Istanbul",
+        is_active=True,
+        scraped_at=now,
+        last_seen_at=now - timedelta(days=2),
+    )
+    other_source = Event(
+        title="Other",
+        url="https://example.com/other",
+        source="Youthall",
+        is_active=True,
+        scraped_at=now - timedelta(days=10),
+        last_seen_at=now - timedelta(days=10),
+    )
+    test_db.add_all([stale, recent, other_source])
+    test_db.commit()
+    ids = stale.id, recent.id, other_source.id
+    ingestion = EventIngestion(lambda: test_db, clock=lambda: now)
+
+    count = ingestion.reconcile_source("Tech Istanbul")
+
+    states = [
+        test_db.query(Event).filter(Event.id == event_id).one().is_active
+        for event_id in ids
+    ]
+    assert count == 1
+    assert states == [False, True, True]
