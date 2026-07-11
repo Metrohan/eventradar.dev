@@ -47,8 +47,8 @@ const HomePage = () => {
             </h1>
 
             <p className="hero-subtitle">
-              TechCareer, Kodluyoruz, Youthall ve daha fazla platformdan otomatik toplanan
-              hackathon, seminer ve atölye etkinlikleri burada.
+              Herkese açık farklı kaynaklarda yayımlanan hackathon, seminer ve atölye
+              duyurularını tek yerde keşfet.
             </p>
 
             {/* Quick search */}
