@@ -9,7 +9,7 @@ from app.scrapers import (
     scrape_kodluyoruz_events,
     scrape_youthall_events,
 )
-from app.services.scraper_service import process_scraped_events
+from app.services.event_ingestion import ScrapedEvent, build_event_ingestion
 
 print("=== SEQUENTIAL SCRAPER TEST ===\n")
 
@@ -41,5 +41,7 @@ print(f"\nTOTAL: {len(all_events)} events")
 
 if all_events:
     print("\nSaving to DB...")
-    result = process_scraped_events(all_events, "Test Run")
+    result = build_event_ingestion().ingest(
+        ScrapedEvent.from_mapping(event, "Test Run") for event in all_events
+    )
     print(f"Result: {result}")

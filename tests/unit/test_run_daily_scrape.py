@@ -51,14 +51,17 @@ def test_scrape_source_logs_failure(test_db):
 
 
 def test_daily_scrape_deactivates_past_events_after_processing():
+    ingestion = MagicMock()
+    ingestion.deactivate_past.side_effect = [0, 2]
+    ingestion.ingest.return_value.summary.return_value = "New: 1, Updated: 0"
+
     with patch(
-        "scripts.run_daily_scrape.deactivate_past_events", side_effect=[0, 2]
-    ) as deactivate, patch(
+        "scripts.run_daily_scrape.build_event_ingestion", return_value=ingestion
+    ), patch(
         "scripts.run_daily_scrape.scrape_source",
         return_value=[{"title": "Past", "url": "https://example.com/past"}],
-    ), patch(
-        "scripts.run_daily_scrape.process_scraped_events", return_value="New: 1"
     ):
         run_scraper_and_save_to_db()
 
-    assert deactivate.call_count == 2
+    assert ingestion.deactivate_past.call_count == 2
+    ingestion.ingest.assert_called_once()

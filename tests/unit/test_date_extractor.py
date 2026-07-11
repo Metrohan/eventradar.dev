@@ -204,8 +204,7 @@ def test_duplicate_url_in_batch_does_not_crash(test_db):
     import os
 
     os.environ.setdefault("ALLOW_INSECURE_DEFAULTS", "true")
-    from unittest.mock import patch
-    from app.services.scraper_service import process_scraped_events
+    from app.services.event_ingestion import EventIngestion, ScrapedEvent
 
     events = [
         {
@@ -221,7 +220,8 @@ def test_duplicate_url_in_batch_does_not_crash(test_db):
             "source": "test",
         },
     ]
-    with patch("app.core.database.SessionLocal", return_value=test_db):
-        result = process_scraped_events(events, "test")
+    result = EventIngestion(lambda: test_db).ingest(
+        ScrapedEvent.from_mapping(event, "test") for event in events
+    )
 
-    assert "New: 1" in result
+    assert result.new == 1

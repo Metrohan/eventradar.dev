@@ -5,7 +5,7 @@ from datetime import datetime
 # Add root project path to allow `app.` imports
 path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.services.scraper_service import process_scraped_events
+from app.services.event_ingestion import ScrapedEvent, build_event_ingestion
 from app.core.database import SessionLocal
 from app.models.event import Event
 
@@ -60,8 +60,10 @@ def test_scraper_fixes():
 
     try:
         print("\n--- Testing Insertion & Date Normalization ---")
-        result = process_scraped_events(mock_events, "TestScript")
-        print("process_scraped_events Result:", result)
+        result = build_event_ingestion().ingest(
+            ScrapedEvent.from_mapping(event, "TestScript") for event in mock_events
+        )
+        print("EventIngestion result:", result.summary())
 
         # Verify Invalid Date Event inserted as None
         invalid_evt = (
@@ -86,7 +88,9 @@ def test_scraper_fixes():
                 "url": "https://test.com/valid-date",
             }
         ]
-        process_scraped_events(update_events, "TestScript")
+        build_event_ingestion().ingest(
+            ScrapedEvent.from_mapping(event, "TestScript") for event in update_events
+        )
         valid_evt = (
             db.query(Event).filter(Event.url == "https://test.com/valid-date").first()
         )
@@ -100,7 +104,7 @@ def test_scraper_fixes():
 
         print("\n--- Testing Batch Resilience (Unique Constraint Violation Error) ---")
         # In this simulation, we insert a new record manually to test the try/except loop
-        # bypassing `process_scraped_events` 'url exists' check which usually updates.
+        # bypassing EventIngestion's URL update policy.
         print(
             "(In a real scenario, this happens if another scraper saves the exact same URL concurrently or bypassing python level checks.)"
         )

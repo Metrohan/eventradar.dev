@@ -539,7 +539,7 @@ def test_techistanbul_maps_location_and_online():
 
 def test_techistanbul_uses_real_dates_not_none():
     from app.scrapers.techistanbul_scraper import scrape_techistanbul_events
-    from app.services.scraper_service import normalize_date
+    from app.services.event_ingestion import normalize_date
 
     with patch(
         "app.scrapers.techistanbul_scraper.requests.get",
