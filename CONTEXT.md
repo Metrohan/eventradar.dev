@@ -20,3 +20,12 @@ Avoid maintaining independent source-name arrays in backend orchestration or fro
 - A failed transaction raises `IngestionError`; individual invalid records are reported in the result.
 - Notifications run after commit and remain non-fatal.
 - Database sessions and notifications are adapters behind explicit seams.
+
+## Source Reconciliation
+
+**Source Reconciliation** retires events that a successful source run has stopped observing.
+
+- `last_seen_at` records when Event Ingestion most recently observed an event.
+- Reconciliation runs only after a successful source run; failed runs never retire data.
+- A three-day grace period absorbs temporary empty or partial source responses.
+- Reconciliation is source-scoped and never affects another Source Catalog entry.

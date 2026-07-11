@@ -107,13 +107,14 @@ class ScraperService:
             elif definition and definition.enabled:
                 events = definition.runner()
                 events_found = len(events)
+                ingestion = build_event_ingestion()
                 if events:
-                    ingestion = build_event_ingestion()
                     result = ingestion.ingest(
                         ScrapedEvent.from_mapping(event, definition.name)
                         for event in events
                     )
                     new_count = result.new
+                ingestion.reconcile_source(definition.name)
                 status = "success"
             else:
                 error_msg = f"Bilinmeyen kaynak: {source}"
