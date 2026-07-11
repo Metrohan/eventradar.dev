@@ -237,6 +237,9 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
                     )
                     if date_val is not None:
                         existing_event.date = date_val  # type: ignore[assignment]
+                    effective_date = date_val or existing_event.date
+                    if effective_date is not None and effective_date < now:
+                        existing_event.is_active = False  # type: ignore[assignment]
                     if deadline_val is not None:
                         existing_event.application_deadline = deadline_val  # type: ignore[assignment]
                     existing_event.location = data.get(
@@ -264,7 +267,7 @@ def process_scraped_events(events_data: List[Dict], source_name: str) -> str:
                         url=url,
                         image_url=data.get("image_url"),
                         source=data.get("source", source_name),
-                        is_active=True,
+                        is_active=date_val is None or date_val >= now,
                         scraped_at=now,
                     )
                     db.add(new_event)

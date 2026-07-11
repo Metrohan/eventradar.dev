@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
@@ -18,7 +19,10 @@ class EventService:
         """Get all events, optionally filtered by active status and/or tag names."""
         query = self.db.query(Event)
         if active_only:
-            query = query.filter(Event.is_active == True)
+            query = query.filter(
+                Event.is_active == True,
+                or_(Event.date.is_(None), Event.date >= datetime.now()),
+            )
         if tags:
             query = query.filter(Event.tags.any(Tag.name.in_(tags)))
         return query.order_by(Event.date.desc()).all()
@@ -97,7 +101,14 @@ class EventService:
 
     def get_total_active_events(self) -> int:
         """Get count of active events"""
-        return self.db.query(Event).filter(Event.is_active == True).count()
+        return (
+            self.db.query(Event)
+            .filter(
+                Event.is_active == True,
+                or_(Event.date.is_(None), Event.date >= datetime.now()),
+            )
+            .count()
+        )
 
     def get_last_updated_event(self) -> Optional[Event]:
         """Get the most recently updated event"""

@@ -6,6 +6,7 @@ os.environ.setdefault("ADMIN_USERNAME", "testadmin")
 os.environ.setdefault("ADMIN_PASSWORD", "testpassword")
 
 import pytest
+from datetime import datetime, timedelta
 from app.services.event_service import EventService
 from app.schemas.event import EventCreate, EventUpdate
 from app.services.tag_service import seed_tags
@@ -52,6 +53,28 @@ def test_get_events_active_only(test_db):
     active = service.get_events(active_only=True)
     assert len(active) == 1
     assert all(e.is_active for e in active)
+
+
+def test_get_events_active_only_excludes_past_events(test_db):
+    service = EventService(test_db)
+    service.create_event(
+        _create_data(
+            url="https://example.com/past",
+            is_active=True,
+            date=datetime.now() - timedelta(days=30),
+        )
+    )
+    service.create_event(
+        _create_data(
+            url="https://example.com/future",
+            is_active=True,
+            date=datetime.now() + timedelta(days=30),
+        )
+    )
+
+    active = service.get_events(active_only=True)
+
+    assert [event.url for event in active] == ["https://example.com/future"]
 
 
 def test_get_events_all(test_db):
