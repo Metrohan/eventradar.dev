@@ -193,7 +193,7 @@ Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güve
 > **Uzun vadeli hedef:** TechEventRadar'ı yalnızca Türkiye'ye değil, dünyanın her ülkesinden teknoloji etkinliklerini çekebilen, geliştiricilerin küresel fırsatları tek yerden keşfedebildiği bir platforma dönüştürmek.
 
 ### Faz 1 — Temel ✅ (Tamamlandı)
-- [x] Çoklu kaynaklardan otomatik etkinlik toplama (7 kaynak)
+- [x] Çoklu kaynaklardan otomatik etkinlik toplama (8 kaynak)
 - [x] Kategori tag sistemi (Hackathon, Bootcamp, Seminer…)
 - [x] Admin paneli ve içerik yönetimi
 - [x] Telegram bildirim sistemi

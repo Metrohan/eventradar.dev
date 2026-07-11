@@ -31,7 +31,14 @@ def _fetch_event_details(detail_url: str) -> dict:
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    tarih_label = soup.find("strong", string=re.compile(r"^\s*Tarih:\s*$"))
+    tarih_label = next(
+        (
+            tag
+            for tag in soup.find_all("strong")
+            if re.fullmatch(r"\s*Tarih:\s*", tag.get_text())
+        ),
+        None,
+    )
     if tarih_label and tarih_label.parent:
         raw_text = tarih_label.parent.get_text(" ", strip=True)
         raw_text = raw_text.replace("Tarih:", "", 1).strip()

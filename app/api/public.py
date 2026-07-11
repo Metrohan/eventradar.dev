@@ -8,6 +8,7 @@ from ..services.event_service import EventService
 from ..services.announcement_service import AnnouncementService
 from ..services.suggestion_service import SuggestionService
 from ..services.event_request_service import EventRequestService
+from ..services.source_catalog import get_enabled_sources
 from ..schemas.event import EventResponse, EventListResponse
 from ..schemas.announcement import AnnouncementResponse, AnnouncementListResponse
 from ..schemas.suggestion import SuggestionCreate, SuggestionResponse
@@ -16,6 +17,12 @@ from ..models.scraper_log import ScraperLog
 from ..models.event import Event
 
 router = APIRouter()
+
+
+@router.get("/sources")
+async def get_sources():
+    """Return public metadata for enabled event-source integrations."""
+    return [source.public_dict() for source in get_enabled_sources()]
 
 
 @router.get("/events", response_model=EventListResponse)

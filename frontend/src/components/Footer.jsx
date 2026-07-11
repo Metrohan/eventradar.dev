@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import useSources from '../hooks/useSources'
 
 const QUICK_LINKS = [
   { to: '/', label: 'Anasayfa' },
@@ -8,12 +9,10 @@ const QUICK_LINKS = [
   { to: '/etkinlik-talep', label: 'Etkinlik Ekle' },
 ]
 
-const SOURCES = [
-  'TechCareer.net', 'Kodluyoruz', 'Youthall',
-  'Coderspace', 'Anbean', 'Akbank', 'Pupilica',
-]
+const Footer = () => {
+  const { sources } = useSources()
 
-const Footer = () => (
+  return (
   <footer style={{
     background: 'var(--bg-secondary, #0F172A)',
     borderTop: '1px solid var(--border-subtle)',
@@ -69,9 +68,11 @@ const Footer = () => (
         <div className="col-lg-2 col-md-3 col-6">
           <p style={sectionHeadStyle}>Kaynaklar</p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {SOURCES.map(src => (
-              <li key={src} style={{ marginBottom: '0.5rem' }}>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{src}</span>
+            {sources.map(source => (
+              <li key={source.key} style={{ marginBottom: '0.5rem' }}>
+                <a href={source.website} target="_blank" rel="noopener noreferrer" style={footerLinkStyle}>
+                  {source.name}
+                </a>
               </li>
             ))}
           </ul>
@@ -131,7 +132,8 @@ const Footer = () => (
       </div>
     </div>
   </footer>
-)
+  )
+}
 
 const sectionHeadStyle = {
   color: 'var(--text-primary)',

@@ -46,6 +46,11 @@ const SOURCES = [
     url: 'https://pupilica.com',
     desc: 'Üniversite öğrencilerine yönelik şirket mentörlüğünde bootcamp etkinlikleri.',
   },
+  {
+    name: 'Tech Istanbul',
+    url: 'https://tech.istanbul/etkinlikler',
+    desc: 'Teknoloji, girişimcilik ve dijital yetkinlik odaklı herkese açık etkinlikler.',
+  },
 ]
 
 const STEPS = [
@@ -106,7 +111,7 @@ const BootcampRehberi = () => {
             Türkiye'de Ücretsiz Bootcamp'lar — 2026 Rehberi
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '3rem' }}>
-            Son güncelleme: Mayıs 2026 · 8 kaynak · Ücretsiz
+            Son güncelleme: Temmuz 2026 · 9 kaynak · Ücretsiz
           </p>
 
           {/* Bölüm 1 */}

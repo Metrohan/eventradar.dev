@@ -43,7 +43,7 @@ Bu projeye katkıda bulunmak istediğin için teşekkürler! Her türlü katkı 
 2. `scrape_<name>_events() -> List[Dict]` fonksiyonunu implemente et
    - Her dict'te şunlar **zorunlu**: `title` (str), `url` (str, unique), `source` (str)
    - Opsiyonel: `description`, `date`, `location`, `image_url`
-3. `app/services/scraper_service.py` içindeki `ScraperService.SCRAPER_FUNCS`'a kaydet
+3. `app/services/source_catalog.py` içindeki `SOURCE_CATALOG`'a kaydet
 4. `tests/fixtures/<name>.html` dosyasına örnek HTML ekle
 5. `tests/unit/test_scrapers.py` dosyasına mock unit test ekle
 
@@ -98,7 +98,7 @@ docker compose down && docker compose up -d --build
 2. Implement `scrape_<name>_events() -> List[Dict]`
    - **Required** keys per event: `title` (str), `url` (str, unique), `source` (str)
    - Optional: `description`, `date`, `location`, `image_url`
-3. Register in `ScraperService.SCRAPER_FUNCS` in `app/services/scraper_service.py`
+3. Register it in `SOURCE_CATALOG` in `app/services/source_catalog.py`
 4. Add a sample HTML fixture at `tests/fixtures/<name>.html`
 5. Add a mock unit test in `tests/unit/test_scrapers.py`
 

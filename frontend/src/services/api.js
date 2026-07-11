@@ -42,6 +42,10 @@ export const publicAPI = {
   getEvents: (activeOnly = true) =>
     api.get(`/events?active_only=${activeOnly}`),
 
+  // Canonical event-source catalog
+  getSources: () =>
+    api.get('/sources'),
+
   // Get single event by id
   getEventById: (id) =>
     api.get(`/events/${id}`),

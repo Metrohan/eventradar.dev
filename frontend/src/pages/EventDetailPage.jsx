@@ -10,7 +10,7 @@ import TagBadge from '../components/TagBadge'
 import ShareButtons from '../components/ShareButtons'
 
 const DEFAULT_TITLE = 'TechEventRadar | Bootcamp, Hackathon & Kariyer Etkinlikleri'
-const DEFAULT_DESC = 'Türkiye\'deki bootcamp, hackathon ve kariyer etkinliklerini tek yerden ücretsiz takip et. 7 kaynaktan günlük güncellenen etkinlik platformu.'
+const DEFAULT_DESC = 'Türkiye\'deki bootcamp, hackathon ve kariyer etkinliklerini tek yerden ücretsiz takip et. 8 kaynaktan günlük güncellenen etkinlik platformu.'
 
 function setMeta(name, content, property = false) {
   const attr = property ? `[property="${name}"]` : `[name="${name}"]`

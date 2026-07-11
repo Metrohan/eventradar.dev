@@ -103,3 +103,17 @@ components/     — shared UI (Header, Footer, EventCard, etc.); admin sub-compo
 - `frontend/package.json` is listed in `.gitignore` (`*.json` rule) — it is not committed. Recreate from imports if missing.
 - Old `docker-compose` v1.29 has a `ContainerConfig` bug: always use `down && up`, never just `up` when recreating containers.
 - JSON responses use `UnicodeJSONResponse` (ensure_ascii=False) — do not replace with standard `JSONResponse`.
+
+## Agent skills
+
+### Issue tracker
+
+İşler `.scratch/<feature>/` altında yerel markdown dosyalarıyla takip edilir. GitHub Issues kullanılmaz. Ayrıntılar: `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Varsayılan yerel durumlar kullanılır: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. Ayrıntılar: `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Tek bağlam kullanılır: kökte `CONTEXT.md`, mimari kararlar için `docs/adr/`. Ayrıntılar: `docs/agents/domain.md`.

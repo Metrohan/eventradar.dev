@@ -6,6 +6,7 @@ import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { useAuth } from '../contexts/AuthContext'
 import { Navigate } from 'react-router-dom'
+import useSources from '../hooks/useSources'
 
 const ScraperControlPage = () => {
     const { isAuthenticated, loading: authLoading } = useAuth()
@@ -13,6 +14,7 @@ const ScraperControlPage = () => {
     const [logs, setLogs] = useState([])
     const [dataLoading, setDataLoading] = useState(true)
     const [triggering, setTriggering] = useState(false)
+    const { sources: catalogSources } = useSources()
 
     const fetchData = async () => {
         try {
@@ -71,14 +73,9 @@ const ScraperControlPage = () => {
         return statusData.find(s => s.source.toLowerCase() === source.toLowerCase())
     }
 
-    // `key` is what's sent to the backend and matched against scraper_logs.source
-    // (must match ScraperService.SCRAPER_FUNCS keys exactly); `label` is just the
-    // short display name on the card.
     const sources = [
         { label: 'All', key: 'All' },
-        { label: 'Youthall', key: 'Youthall' },
-        { label: 'Kodluyoruz', key: 'Kodluyoruz' },
-        { label: 'Akbank', key: 'Akbank Gençlik Akademisi' },
+        ...catalogSources.map(source => ({ label: source.name, key: source.key })),
     ]
 
     return (
@@ -91,11 +88,11 @@ const ScraperControlPage = () => {
             {/* Status Cards */}
             <div className="row g-4 mb-5">
                 {sources.map(({ label, key }) => {
-                    const status = getSourceStatus(key)
+                    const status = getSourceStatus(label)
                     const isHealthy = status?.status === 'success'
 
                     return (
-                        <div key={key} className="col-md-3">
+                        <div key={key} className="col-md-3 col-sm-6">
                             <div className="card bg-card border-secondary h-100 shadow-sm">
                                 <div className="card-body text-center">
                                     <h5 className="card-title mb-3">{label}</h5>
