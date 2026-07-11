@@ -65,8 +65,12 @@ def scrape_techistanbul_events():
 
             is_online = bool(item.get("isOnline"))
             location_slug = item.get("locationName")
-            location = "Online" if is_online else LOCATION_NAMES.get(
-                location_slug, (location_slug or "").capitalize() or None
+            location = (
+                "Online"
+                if is_online
+                else LOCATION_NAMES.get(
+                    location_slug, (location_slug or "").capitalize() or None
+                )
             )
 
             file_path = item.get("filePath")

@@ -87,7 +87,9 @@ def scrape_kodluyoruz_events() -> List[Dict[str, Any]]:
             format_tag = program.select_one(".program-format")
             format_text = format_tag.get_text(strip=True) if format_tag else None
 
-            description = (_fetch_program_description(link) if link else None) or format_text
+            description = (
+                _fetch_program_description(link) if link else None
+            ) or format_text
 
             # Standart format
             programlar.append(
