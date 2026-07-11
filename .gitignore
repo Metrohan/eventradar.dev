@@ -43,6 +43,7 @@ desktop.ini
 logs/
 output/
 *.json
+!tests/fixtures/*.json
 
 chromedriver/
 geckodriver/

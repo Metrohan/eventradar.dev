@@ -1,0 +1,48 @@
+{
+  "isSuccess": true,
+  "data": [
+    {
+      "id": "1",
+      "title": "Canva 101",
+      "categoryName": "Eğitim",
+      "description": "<p>Ücretsiz bir tasarım atölyesi.</p><p><br></p><p>İkinci paragraf.</p>",
+      "slug": "canva101",
+      "filePath": "2026/06/abc.png",
+      "locationName": "kucukcekmece",
+      "applicationEnd": "2026-06-16T14:00:00",
+      "isActive": true,
+      "isOnline": false,
+      "schedules": [
+        {"startTime": "2026-06-19T13:00:00", "endTime": "2026-06-19T15:00:00"}
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Online Webinar",
+      "categoryName": "Seminer",
+      "description": "<p>Evden katılabileceğin bir webinar.</p>",
+      "slug": "online-webinar",
+      "filePath": null,
+      "locationName": "online",
+      "applicationEnd": "2026-07-01T10:00:00",
+      "isActive": true,
+      "isOnline": true,
+      "schedules": [
+        {"startTime": "2026-07-02T18:00:00", "endTime": "2026-07-02T19:00:00"}
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Pasif Etkinlik",
+      "categoryName": "Atölye",
+      "description": "<p>Bu etkinlik artik pasif.</p>",
+      "slug": "pasif-etkinlik",
+      "filePath": null,
+      "locationName": "sisli",
+      "applicationEnd": "2026-01-01T10:00:00",
+      "isActive": false,
+      "isOnline": false,
+      "schedules": []
+    }
+  ]
+}
