@@ -90,6 +90,7 @@ class ScraperService:
         "youthall": "app.scrapers.youthall_scraper:scrape_youthall_events",
         "akbank gençlik akademisi": "app.scrapers.akbank_scraper:scrape_akbank_events",
         "pupilica": "app.scrapers.pupilica_scraper:scrape_pupilica_events",
+        "tech istanbul": "app.scrapers.techistanbul_scraper:scrape_techistanbul_events",
     }
 
     def _run_scraper_task(self, source: str):

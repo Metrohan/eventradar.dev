@@ -25,6 +25,7 @@ from app.scrapers import (
 )
 from app.scrapers.akbank_scraper import scrape_akbank_events
 from app.scrapers.pupilica_scraper import scrape_pupilica_events
+from app.scrapers.techistanbul_scraper import scrape_techistanbul_events
 
 SCRAPERS = {
     "TechCareer.net": scrape_techcareer_events,
@@ -34,6 +35,7 @@ SCRAPERS = {
     "Youthall": scrape_youthall_events,
     "Akbank Gençlik Akademisi": scrape_akbank_events,
     "Pupilica": scrape_pupilica_events,
+    "Tech Istanbul": scrape_techistanbul_events,
 }
 
 
@@ -102,6 +104,7 @@ def run_scraper_and_save_to_db():
         ("Anbean", scrape_anbean_events),
         ("Akbank Gençlik Akademisi", scrape_akbank_events),
         ("Pupilica", scrape_pupilica_events),
+        ("Tech Istanbul", scrape_techistanbul_events),
     ]
     for name, func in static_scrapers:
         events = scrape_source(func, name)

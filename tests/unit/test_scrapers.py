@@ -466,3 +466,91 @@ def test_pupilica_scraper_returns_list(mock_chrome):
         result = scrape_pupilica_events()
 
     assert isinstance(result, list)
+
+
+# ── Tech Istanbul ────────────────────────────────────────────────────────────
+
+
+def _techistanbul_mock_response():
+    mock_response = MagicMock()
+    mock_response.json.return_value = json.loads(_html("techistanbul.json"))
+    mock_response.raise_for_status = MagicMock()
+    return mock_response
+
+
+def test_techistanbul_returns_events():
+    from app.scrapers.techistanbul_scraper import scrape_techistanbul_events
+
+    with patch(
+        "app.scrapers.techistanbul_scraper.requests.get",
+        return_value=_techistanbul_mock_response(),
+    ):
+        events = scrape_techistanbul_events()
+
+    assert isinstance(events, list)
+    # 3 etkinlikten biri isActive=false, sadece 2 tanesi dönmeli
+    assert len(events) == 2
+    assert all("title" in e for e in events)
+    assert all("url" in e for e in events)
+
+
+def test_techistanbul_skips_inactive_events():
+    from app.scrapers.techistanbul_scraper import scrape_techistanbul_events
+
+    with patch(
+        "app.scrapers.techistanbul_scraper.requests.get",
+        return_value=_techistanbul_mock_response(),
+    ):
+        events = scrape_techistanbul_events()
+
+    titles = [e["title"] for e in events]
+    assert "Pasif Etkinlik" not in titles
+
+
+def test_techistanbul_strips_html_from_description():
+    from app.scrapers.techistanbul_scraper import scrape_techistanbul_events
+
+    with patch(
+        "app.scrapers.techistanbul_scraper.requests.get",
+        return_value=_techistanbul_mock_response(),
+    ):
+        events = scrape_techistanbul_events()
+
+    canva = next(e for e in events if e["title"] == "Canva 101")
+    assert "<p>" not in canva["description"]
+    assert "Ücretsiz bir tasarım atölyesi." in canva["description"]
+
+
+def test_techistanbul_maps_location_and_online():
+    from app.scrapers.techistanbul_scraper import scrape_techistanbul_events
+
+    with patch(
+        "app.scrapers.techistanbul_scraper.requests.get",
+        return_value=_techistanbul_mock_response(),
+    ):
+        events = scrape_techistanbul_events()
+
+    canva = next(e for e in events if e["title"] == "Canva 101")
+    assert canva["location"] == "Küçükçekmece"
+
+    webinar = next(e for e in events if e["title"] == "Online Webinar")
+    assert webinar["location"] == "Online"
+
+
+def test_techistanbul_uses_real_dates_not_none():
+    from app.scrapers.techistanbul_scraper import scrape_techistanbul_events
+    from app.services.scraper_service import normalize_date
+
+    with patch(
+        "app.scrapers.techistanbul_scraper.requests.get",
+        return_value=_techistanbul_mock_response(),
+    ):
+        events = scrape_techistanbul_events()
+
+    canva = next(e for e in events if e["title"] == "Canva 101")
+    parsed = normalize_date(canva["date"])
+    assert parsed is not None
+    assert parsed.year == 2026
+    assert parsed.month == 6
+    assert parsed.day == 19
+    assert parsed.hour == 13

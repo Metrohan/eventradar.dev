@@ -56,9 +56,10 @@ def parse_event_date(raw: str) -> Optional[datetime]:
     if not re.search(r"\d", text):
         return None
 
-    # ISO format: 2026-05-15 veya 2026-05-15 14:30:00
+    # ISO format: 2026-05-15, 2026-05-15 14:30:00 veya 2026-05-15T14:30:00
+    # ("T" ayracı API'lerin standart ISO 8601 çıktısıdır, örn. Tech Istanbul)
     iso_match = re.match(
-        r"^(\d{4})[-\/](\d{2})[-\/](\d{2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$",
+        r"^(\d{4})[-\/](\d{2})[-\/](\d{2})(?:[\sT](\d{1,2}):(\d{2})(?::(\d{2}))?)?$",
         text,
     )
     if iso_match:

@@ -3,6 +3,7 @@ from .cs_scraper import scrape_coderspace_events
 from .anbean_scraper import scrape_anbean_events
 from .kodluyoruz_scraper import scrape_kodluyoruz_events
 from .youthall_scraper import scrape_youthall_events
+from .techistanbul_scraper import scrape_techistanbul_events
 
 __all__ = [
     "scrape_techcareer_events",
@@ -10,4 +11,5 @@ __all__ = [
     "scrape_anbean_events",
     "scrape_kodluyoruz_events",
     "scrape_youthall_events",
+    "scrape_techistanbul_events",
 ]

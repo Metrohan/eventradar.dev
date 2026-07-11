@@ -14,6 +14,12 @@ TechEventRadar; bootcamp, webinar, hackathon, kariyer etkinliği ve topluluk bul
 
 ![TechEventRadar Logo](frontend/public/techeventradar_logo.png)
 
+<p>
+  <a href="https://eventradar.dev"><img src="https://img.shields.io/badge/🌐_Canlı_Siteyi_Ziyaret_Et-eventradar.dev-38BDF8?style=for-the-badge" alt="Canlı Site"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/🤝_Katkı_Sağla-Rehberi_Oku-22C55E?style=for-the-badge" alt="Katkı Sağla"></a>
+  <a href="https://github.com/Metrohan/eventradar.dev/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/Metrohan/eventradar.dev/good%20first%20issue?style=for-the-badge&label=Good%20First%20Issue&color=A855F7" alt="Good First Issue"></a>
+</p>
+
 ## Neden Bu Proje?
 
 Öğrenciler için en büyük problem bilgiden çok **dağınıklık**:
@@ -88,6 +94,7 @@ curl http://localhost:8000/health
 | Kodluyoruz | ✅ Aktif | ✗ |
 | Anbean | ✅ Aktif | ✗ |
 | Coderspace | ✅ Aktif | ✓ (UC) |
+| Tech Istanbul | ✅ Aktif | ✗ |
 
 ## API Docs
 
@@ -146,6 +153,18 @@ Katkıların proje için çok değerli. Küçük düzeltmeler bile büyük etki 
 - Frontend filtreleme ve UX iyileştirmeleri
 - Dokümantasyon ve test kapsamını geliştirmek
 
+### İlk Katkını Seç
+
+`good first issue` etiketli, kolay başlangıç için hazırlanmış açık işler:
+
+- [#46 Event detail page retries 404 responses unnecessarily](https://github.com/Metrohan/eventradar.dev/issues/46)
+- [#42 Login error message hardcoded in English while rest of app is Turkish](https://github.com/Metrohan/eventradar.dev/issues/42)
+- [#37 Expand AnalyticsService test coverage for get_stats edge cases](https://github.com/Metrohan/eventradar.dev/issues/37)
+- [#36 Fix redundant alt text on GitHub icon in Header](https://github.com/Metrohan/eventradar.dev/issues/36)
+- [#34 Add aria-label to theme toggle button](https://github.com/Metrohan/eventradar.dev/issues/34)
+
+Daha fazlası için: [tüm `good first issue` etiketli işler](https://github.com/Metrohan/eventradar.dev/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+
 ### Adım adım katkı akışı
 
 1. Bu repoyu fork et
@@ -190,7 +209,7 @@ Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güve
 ### Faz 3 — Ürün Büyümesi 🚀 (Yakın dönem)
 - [ ] Kullanıcı hesabı ve kişiselleştirilmiş etkinlik önerileri
 - [ ] E-posta / tarayıcı bildirim abonelikleri
-- [ ] Gelişmiş arama ve filtreleme (şehir, tarih aralığı, ücret)
+- [x] Gelişmiş arama ve filtreleme (şehir, tarih aralığı, ücret)
 - [ ] Etkinlik takvimi görünümü
 - [ ] Mobil uyumlu PWA
 

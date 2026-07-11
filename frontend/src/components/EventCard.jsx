@@ -13,12 +13,14 @@ const SOURCE_STYLES = {
   'Coderspace':               { bg: 'rgba(99,102,241,0.18)',  color: '#6366F1',  border: 'rgba(99,102,241,0.35)' },
   'Akbank Gençlik Akademisi': { bg: 'rgba(239,68,68,0.18)',   color: '#EF4444',  border: 'rgba(239,68,68,0.35)'  },
   'Pupilica':                 { bg: 'rgba(34,197,94,0.18)',   color: '#22C55E',  border: 'rgba(34,197,94,0.35)'  },
+  'Tech Istanbul':            { bg: 'rgba(236,72,153,0.18)',  color: '#EC4899',  border: 'rgba(236,72,153,0.35)' },
 }
 
 const DEFAULT_SOURCE_STYLE = { bg: 'rgba(56,189,248,0.18)', color: '#38BDF8', border: 'rgba(56,189,248,0.35)' }
 
 const EventCard = ({ event }) => {
   const safeUrl = /^https?:\/\//i.test(event.url) ? event.url : '#'
+  const canonicalUrl = `https://eventradar.dev/etkinlik/${event.id}`
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Tarih belirtilmemiş'
