@@ -5,6 +5,22 @@ BASE_URL = "https://kodluyoruz.org"
 URL = f"{BASE_URL}/programlar"  # Kodluyoruz etkinlik sayfası
 
 
+def _fetch_program_description(detail_url: str):
+    """Program detay sayfasındaki gerçek açıklamayı çeker (liste sayfasındaki
+    '.program-format' alanı sadece 'Ücretsiz' gibi bir etikettir, açıklama değil)."""
+    try:
+        response = requests.get(detail_url, timeout=15)
+        response.raise_for_status()
+    except requests.exceptions.RequestException:
+        return None
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    desc_elem = soup.select_one("p.single-course-details")
+    if not desc_elem:
+        return None
+    return desc_elem.get_text(" ", strip=True) or None
+
+
 def scrape_kodluyoruz_events():
     try:
         response = requests.get(URL, timeout=30)
@@ -53,12 +69,15 @@ def scrape_kodluyoruz_events():
             format_tag = program.select_one(".program-format")
             format_text = format_tag.get_text(strip=True) if format_tag else None
 
+            description = (_fetch_program_description(link) if link else None) or format_text
+
             # Standart format
             programlar.append(
                 {
                     "title": title,
-                    "description": format_text,
+                    "description": description,
                     "date": baslangic,  # Başlangıç tarihini kullan
+                    "application_deadline": son_basvuru,
                     "location": None,
                     "url": link,
                     "source": "Kodluyoruz",

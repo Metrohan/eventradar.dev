@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 from unittest.mock import MagicMock
@@ -87,6 +88,13 @@ def test_youthall_defaults_location_to_none_when_venue_unknown():
 # ── TechCareer ────────────────────────────────────────────────────────────────
 
 
+def _mock_detail_response():
+    mock_response = MagicMock()
+    mock_response.text = _html("techcareer_detail.html")
+    mock_response.raise_for_status = MagicMock()
+    return mock_response
+
+
 def test_techcareer_returns_events():
     from app.scrapers.techcareer_scraper import scrape_techcareer_events
 
@@ -101,6 +109,9 @@ def test_techcareer_returns_events():
         "app.scrapers.techcareer_scraper.WebDriverWait"
     ), patch(
         "app.scrapers.techcareer_scraper.time.sleep"
+    ), patch(
+        "app.scrapers.techcareer_scraper.requests.get",
+        return_value=_mock_detail_response(),
     ):
         events = scrape_techcareer_events()
 
@@ -108,6 +119,48 @@ def test_techcareer_returns_events():
     assert len(events) >= 1
     assert all("title" in e for e in events)
     assert all("url" in e for e in events)
+
+
+def test_techcareer_uses_detail_page_date_not_deadline():
+    """
+    Regression test: liste sayfasındaki "single-event-date" alanı başvuru son
+    tarihidir (10.05.2027), gerçek etkinlik tarihi/saati sadece detay
+    sayfasındaki "Tarih:" satırında bulunur (15 Mayıs Cumartesi | 14.00-16.00).
+    Scraper, "date" alanına deadline'ı değil gerçek etkinlik tarihini yazmalı.
+    """
+    from datetime import datetime
+    from app.scrapers.techcareer_scraper import scrape_techcareer_events
+
+    mock_driver = _make_selenium_driver(_html("techcareer.html"))
+
+    with patch(
+        "app.scrapers.techcareer_scraper.ensure_chromedriver",
+        return_value="/usr/bin/chromedriver",
+    ), patch(
+        "app.scrapers.techcareer_scraper.webdriver.Chrome", return_value=mock_driver
+    ), patch(
+        "app.scrapers.techcareer_scraper.WebDriverWait"
+    ), patch(
+        "app.scrapers.techcareer_scraper.time.sleep"
+    ), patch(
+        "app.scrapers.techcareer_scraper.requests.get",
+        return_value=_mock_detail_response(),
+    ):
+        events = scrape_techcareer_events()
+
+    assert len(events) >= 1
+    deadlines = {e["application_deadline"] for e in events}
+    assert deadlines == {"10.05.2027", "15.06.2027"}
+    for event in events:
+        assert isinstance(event["date"], datetime)
+        assert event["date"].day == 15
+        assert event["date"].hour == 14
+        # Kritik regresyon: "date" alanı deadline değerleriyle eşleşmemeli
+        assert event["date"].strftime("%d.%m.%Y") not in deadlines
+        # Açıklama artık detay sayfasındaki gerçek metinden geliyor,
+        # jenerik "TechCareer.net etkinliği" placeholder'ı değil
+        assert "Prompt Yazımı Atölyesi" in event["description"]
+        assert event["description"] != "TechCareer.net etkinliği"
 
 
 def test_techcareer_no_chromedriver_returns_empty():
@@ -124,21 +177,46 @@ def test_techcareer_no_chromedriver_returns_empty():
 # ── Kodluyoruz ────────────────────────────────────────────────────────────────
 
 
+def _kodluyoruz_get_side_effect(url, *args, **kwargs):
+    mock_response = MagicMock()
+    mock_response.encoding = "utf-8"
+    if url == "https://kodluyoruz.org/programlar":
+        mock_response.text = _html("kodluyoruz.html")
+    else:
+        mock_response.text = _html("kodluyoruz_detail.html")
+    return mock_response
+
+
 def test_kodluyoruz_returns_events():
     from app.scrapers.kodluyoruz_scraper import scrape_kodluyoruz_events
 
-    mock_response = MagicMock()
-    mock_response.text = _html("kodluyoruz.html")
-    mock_response.encoding = "utf-8"
-
     with patch(
-        "app.scrapers.kodluyoruz_scraper.requests.get", return_value=mock_response
+        "app.scrapers.kodluyoruz_scraper.requests.get",
+        side_effect=_kodluyoruz_get_side_effect,
     ):
         events = scrape_kodluyoruz_events()
 
     assert isinstance(events, list)
     assert len(events) >= 1
     assert all("title" in e for e in events)
+
+
+def test_kodluyoruz_uses_real_detail_page_description():
+    """
+    Regresyon: liste sayfasındaki '.program-format' alanı sadece 'Ücretsiz'
+    gibi bir etikettir; açıklama artık detay sayfasındaki gerçek metinden gelmeli.
+    """
+    from app.scrapers.kodluyoruz_scraper import scrape_kodluyoruz_events
+
+    with patch(
+        "app.scrapers.kodluyoruz_scraper.requests.get",
+        side_effect=_kodluyoruz_get_side_effect,
+    ):
+        events = scrape_kodluyoruz_events()
+
+    assert len(events) >= 1
+    for event in events:
+        assert "Programın amacı" in event["description"]
 
 
 def test_kodluyoruz_network_error_returns_empty():
@@ -157,19 +235,46 @@ def test_kodluyoruz_network_error_returns_empty():
 # ── Anbean ────────────────────────────────────────────────────────────────────
 
 
+def _anbean_get_side_effect(url, *args, **kwargs):
+    mock_response = MagicMock()
+    mock_response.encoding = "utf-8"
+    if url.rstrip("/").endswith("/etkinlikler"):
+        mock_response.content = _html("anbean.html").encode("utf-8")
+    else:
+        mock_response.content = _html("anbean_detail.html").encode("utf-8")
+    return mock_response
+
+
 def test_anbean_returns_events():
     from app.scrapers.anbean_scraper import scrape_anbean_events
 
-    mock_response = MagicMock()
-    mock_response.content = _html("anbean.html").encode("utf-8")
-    mock_response.encoding = "utf-8"
-
-    with patch("app.scrapers.anbean_scraper.requests.get", return_value=mock_response):
+    with patch(
+        "app.scrapers.anbean_scraper.requests.get",
+        side_effect=_anbean_get_side_effect,
+    ):
         events = scrape_anbean_events()
 
     assert isinstance(events, list)
     assert len(events) >= 1
     assert all("url" in e for e in events)
+
+
+def test_anbean_uses_real_detail_page_description():
+    """
+    Regresyon: description artık sabit 'Anbean Kampüs etkinliği.' placeholder'ı
+    değil, detay sayfasındaki gerçek 'Etkinlik Hakkında' metninden gelmeli.
+    """
+    from app.scrapers.anbean_scraper import scrape_anbean_events
+
+    with patch(
+        "app.scrapers.anbean_scraper.requests.get",
+        side_effect=_anbean_get_side_effect,
+    ):
+        events = scrape_anbean_events()
+
+    assert len(events) >= 1
+    for event in events:
+        assert "Üniversite öğrencileri" in event["description"]
 
 
 # ── Akbank ────────────────────────────────────────────────────────────────────

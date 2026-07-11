@@ -5,6 +5,21 @@ from typing import List, Dict, Any
 from app.services.date_extractor import extract_date_from_text
 
 
+def _build_description(title: str, egitmenler: str, application_deadline: str) -> str:
+    """
+    Pupilica'nın etkinlik kartlarında/detay sayfasında gerçek bir açıklama metni
+    bulunmuyor (site tamamen istemci tarafında render ediliyor ve bot korumalı
+    olduğu için detay sayfası da güvenilir şekilde çekilemiyor). Elimizdeki
+    alanlardan (başlık, eğitmen, son başvuru) okunaklı bir Türkçe cümle üretiyoruz.
+    """
+    parts = [f"{title} etkinliği Pupilica üzerinde düzenleniyor."]
+    if egitmenler:
+        parts.append(f"Eğitmen: {egitmenler}.")
+    if application_deadline:
+        parts.append(f"Son başvuru: {application_deadline}.")
+    return " ".join(parts)
+
+
 def scrape_pupilica_events() -> List[Dict[str, Any]]:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
@@ -73,12 +88,9 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
                 elif "Eğitmen" in text and i + 1 < len(all_spans):
                     egitmenler = all_spans[i + 1].get_text(strip=True)
 
-            # Description
-            desc_text = (
-                f"Son Başvuru: {application_deadline} | Eğitmenler: {egitmenler}".strip(
-                    " |"
-                )
-            )
+            # Description: gerçek açıklama metni sitede bulunmuyor (bkz.
+            # _build_description docstring'i), okunaklı bir cümle üretiyoruz.
+            desc_text = _build_description(title, egitmenler, application_deadline)
 
             # Link
             # Try to find a link (a tag) inside the card or parent

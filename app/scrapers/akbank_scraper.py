@@ -5,6 +5,21 @@ from typing import List, Dict, Any
 from app.services.date_extractor import extract_date_from_text
 
 
+def _build_description(title: str, location: str, application_end_date: str) -> str:
+    """
+    Akbank Gençlik Akademisi kart listesinde gerçek bir açıklama metni
+    bulunmuyor; site tamamen istemci tarafında render edildiği için detay
+    sayfası da güvenilir şekilde çekilemiyor. Elimizdeki alanlardan (başlık,
+    konum, başvuru bitiş tarihi) okunaklı bir Türkçe cümle üretiyoruz.
+    """
+    parts = [f"{title} etkinliği Akbank Gençlik Akademisi tarafından düzenleniyor."]
+    if location:
+        parts.append(f"Konum: {location}.")
+    if application_end_date:
+        parts.append(f"Başvuru bitiş: {application_end_date}.")
+    return " ".join(parts)
+
+
 def scrape_akbank_events() -> List[Dict[str, Any]]:
     # Selenium/UC imports are needed now
     from selenium.webdriver.common.by import By
@@ -126,8 +141,11 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
                 else:
                     location = None
 
-            # Description
-            desc_text = f"Başvuru Bitiş: {card.get('data-applicationenddate')}"
+            # Description: gerçek açıklama metni sitede bulunmuyor (bkz.
+            # _build_description docstring'i), okunaklı bir cümle üretiyoruz.
+            desc_text = _build_description(
+                title, location, card.get("data-applicationenddate")
+            )
 
             events.append(
                 {

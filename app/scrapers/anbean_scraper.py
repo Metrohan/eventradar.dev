@@ -11,6 +11,14 @@ except Exception:  # pragma: no cover
     search_dates = None
 
 
+def _fetch_anbean_description(detail_soup):
+    """Detay sayfasındaki 'Etkinlik Hakkında' bölümünden gerçek açıklamayı çeker."""
+    desc_elem = detail_soup.select_one("div.eventDetail-textContent")
+    if not desc_elem:
+        return None
+    return desc_elem.get_text(" ", strip=True) or None
+
+
 def scrape_anbean_events():
     url = "https://anbeankampus.co/etkinlikler/"
     print(f"Anbean Kampüs etkinlikleri çekiliyor: {url}")
@@ -70,19 +78,26 @@ def scrape_anbean_events():
         if last_application_date_str != "Tarih Bulunamadı":
             event_date_obj = parse_event_date(last_application_date_str)
 
-        # If time component missing or date not found, try detail page
-        need_detail_lookup = (event_date_obj is None) or (
+        # Saat bilgisi eksikse listeden gelen tarih daha az güvenilirdir;
+        # detay sayfasından gelen tarih bu durumda tercih edilir.
+        prefer_detail_date = (event_date_obj is None) or (
             event_date_obj and event_date_obj.hour == 0 and event_date_obj.minute == 0
         )
-        # Debug omitted in production
+
+        # Açıklama her zaman detay sayfasından çekildiği için artık her
+        # zaman detay sayfasına gidiyoruz (öncesinde sadece tarih/saat eksikse
+        # gidiliyordu).
         detail_date = None
-        if need_detail_lookup and link:
+        description = None
+        if link:
             try:
                 # Fetch detail page to get precise deadline with time
                 detail_resp = requests.get(link, timeout=20, headers=HEADERS)
                 detail_resp.raise_for_status()
                 detail_resp.encoding = "utf-8"
                 detail_soup = BeautifulSoup(detail_resp.content, "html.parser")
+
+                description = _fetch_anbean_description(detail_soup)
 
                 # Primary selector: right wrapper spans (label + value)
                 found_from_spans = False
@@ -141,12 +156,12 @@ def scrape_anbean_events():
                     if dates_found:
                         detail_date = dates_found[0][1]
 
-                if detail_date:
+                if detail_date and prefer_detail_date:
                     event_date_obj = detail_date
             except requests.exceptions.RequestException as de:
                 print(f"Anbean detay sayfası alınamadı ({title}): {de}")
 
-        description = "Anbean Kampüs etkinliği."
+        description = description or "Anbean Kampüs etkinliği."
         location = "Online"
 
         status_closed_badge = card.find(
