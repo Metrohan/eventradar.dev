@@ -95,6 +95,10 @@ const AdminDashboard = () => {
               <i className="fas fa-chart-line me-2"></i>
               Trafik
             </Link>
+            <Link to="/admin/quality" className="btn btn-outline-success ms-3">
+              <i className="fas fa-heartbeat me-2"></i>
+              Kaynak Kalitesi
+            </Link>
           </div>
         </div>
       </div>
