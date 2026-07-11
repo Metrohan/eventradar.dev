@@ -154,3 +154,12 @@ def test_broadcast_accepts_valid_message(client, auth_headers):
     )
     assert resp.status_code == 200
     assert resp.json()["recipient_count"] == 0
+
+
+def test_quality_returns_metric_for_every_enabled_source(client, auth_headers):
+    resp = client.get("/api/admin/quality", headers=auth_headers)
+
+    assert resp.status_code == 200
+    payload = resp.json()
+    assert len(payload["sources"]) == 8
+    assert any(source["key"] == "tech-istanbul" for source in payload["sources"])

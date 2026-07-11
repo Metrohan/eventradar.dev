@@ -15,6 +15,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
 const ScraperControlPage = lazy(() => import('./pages/ScraperControlPage'))
 const NotificationPage = lazy(() => import('./pages/NotificationPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
+const QualityPage = lazy(() => import('./pages/QualityPage'))
 const FreeTrainingsPage = lazy(() => import('./pages/FreeTrainingsPage'))
 const EventDetailPage = lazy(() => import('./pages/EventDetailPage'))
 const BootcampRehberi = lazy(() => import('./pages/BootcampRehberi'))
@@ -82,6 +83,9 @@ function App() {
                   } />
                   <Route path="/admin/analytics" element={
                     <ProtectedRoute><AnalyticsPage /></ProtectedRoute>
+                  } />
+                  <Route path="/admin/quality" element={
+                    <ProtectedRoute><QualityPage /></ProtectedRoute>
                   } />
 
                   {/* Error Routes */}

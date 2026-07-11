@@ -375,38 +375,15 @@ async def get_data_quality(
     db: Session = Depends(get_db),
     current_admin: str = Depends(get_current_admin),
 ):
-    """Data quality dashboard — event counts by source and recent scraper logs"""
-    from sqlalchemy import func as sqlfunc
+    """Data quality dashboard — source health and event completeness."""
     from ..models.event import Event
-    from ..models.scraper_log import ScraperLog
+    from ..services.source_quality import SourceQuality
 
     total_events = db.query(Event).count()
     active_events = db.query(Event).filter(Event.is_active == True).count()
 
-    by_source = (
-        db.query(Event.source, sqlfunc.count(Event.id).label("count"))
-        .group_by(Event.source)
-        .all()
-    )
-
-    recent_logs = (
-        db.query(ScraperLog).order_by(ScraperLog.created_at.desc()).limit(20).all()
-    )
-
     return {
         "total_events": total_events,
         "active_events": active_events,
-        "by_source": [{"source": s, "count": c} for s, c in by_source],
-        "recent_scraper_logs": [
-            {
-                "source": log.source,
-                "status": log.status,
-                "events_found": log.events_found,
-                "new_events": log.new_events,
-                "duration_seconds": log.duration_seconds,
-                "error_message": log.error_message,
-                "created_at": log.created_at.isoformat() if log.created_at else None,
-            }
-            for log in recent_logs
-        ],
+        "sources": SourceQuality(db).get_metrics(),
     }

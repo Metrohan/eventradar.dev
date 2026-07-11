@@ -29,3 +29,7 @@ Avoid maintaining independent source-name arrays in backend orchestration or fro
 - Reconciliation runs only after a successful source run; failed runs never retire data.
 - A three-day grace period absorbs temporary empty or partial source responses.
 - Reconciliation is source-scoped and never affects another Source Catalog entry.
+
+## Source Quality
+
+**Source Quality** combines recent run health with event-data completeness for each enabled Source Catalog entry. Success rate, consecutive failures, last error, and missing date/location/description counts are computed behind one interface and displayed in the admin area.

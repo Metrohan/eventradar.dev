@@ -129,6 +129,9 @@ export const adminAPI = {
   // Analytics
   getTrafficStats: (days = 30) =>
     api.get(`/admin/analytics/traffic?days=${days}`),
+
+  getDataQuality: () =>
+    api.get('/admin/quality'),
 }
 
 // Form submission endpoints (converted from Flask form routes)
