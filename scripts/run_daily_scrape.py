@@ -129,6 +129,14 @@ def run_scraper_and_save_to_db():
     else:
         logging.warning("✗ Kaydedilecek etkinlik yok")
 
+    # Scraper kaynakları geçmiş tarihli kayıtları hâlâ döndürebilir. Kayıt
+    # işleminden sonra tekrar temizleyerek bu etkinliklerin aktif kalmasını önle.
+    deactivated_after_scrape = deactivate_past_events()
+    if deactivated_after_scrape > 0:
+        logging.info(
+            f"✓ Tarama sonrası {deactivated_after_scrape} geçmiş etkinlik deaktive edildi"
+        )
+
     logging.info(f"=== Scraping Bitti: {datetime.now():%Y-%m-%d %H:%M:%S} ===")
 
 

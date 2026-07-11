@@ -16,7 +16,7 @@ sys.modules.setdefault("undetected_chromedriver", _uc_mock)
 
 from unittest.mock import patch
 
-from scripts.run_daily_scrape import scrape_source
+from scripts.run_daily_scrape import scrape_source, run_scraper_and_save_to_db
 from app.models.scraper_log import ScraperLog
 
 
@@ -48,3 +48,17 @@ def test_scrape_source_logs_failure(test_db):
     assert log.status == "failed"
     assert log.events_found == 0
     assert "boom" in log.error_message
+
+
+def test_daily_scrape_deactivates_past_events_after_processing():
+    with patch(
+        "scripts.run_daily_scrape.deactivate_past_events", side_effect=[0, 2]
+    ) as deactivate, patch(
+        "scripts.run_daily_scrape.scrape_source",
+        return_value=[{"title": "Past", "url": "https://example.com/past"}],
+    ), patch(
+        "scripts.run_daily_scrape.process_scraped_events", return_value="New: 1"
+    ):
+        run_scraper_and_save_to_db()
+
+    assert deactivate.call_count == 2

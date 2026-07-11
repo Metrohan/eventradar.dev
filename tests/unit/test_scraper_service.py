@@ -12,6 +12,7 @@ from app.services.scraper_service import (
     ScraperService,
     normalize_date,
     deactivate_past_events,
+    process_scraped_events,
 )
 from app.models.event import Event
 
@@ -83,6 +84,23 @@ def test_deactivate_past_events(test_db):
     future_after = test_db.query(EventModel).filter(EventModel.id == future_id).first()
     assert past_after.is_active is False
     assert future_after.is_active is True
+
+
+def test_process_scraped_events_creates_past_event_as_inactive(test_db):
+    events = [
+        {
+            "title": "Already Finished",
+            "url": "https://example.com/already-finished",
+            "source": "test",
+            "date": datetime.now() - timedelta(days=30),
+        }
+    ]
+
+    with patch("app.core.database.SessionLocal", return_value=test_db):
+        process_scraped_events(events, "test")
+
+    event = test_db.query(Event).filter(Event.url == events[0]["url"]).one()
+    assert event.is_active is False
 
 
 def test_trigger_scraper_refuses_when_source_already_running(test_db):
