@@ -7,6 +7,7 @@ import { publicAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import TagBadge from '../components/TagBadge'
+import ShareButtons from '../components/ShareButtons'
 
 const DEFAULT_TITLE = 'TechEventRadar | Bootcamp, Hackathon & Kariyer Etkinlikleri'
 const DEFAULT_DESC = 'Türkiye\'deki bootcamp, hackathon ve kariyer etkinliklerini tek yerden ücretsiz takip et. 7 kaynaktan günlük güncellenen etkinlik platformu.'
@@ -132,6 +133,24 @@ const EventDetailPage = () => {
     }
   }
 
+  const formatDeadline = (dateString) => {
+    if (!dateString) return null
+    try {
+      const deadline = new Date(dateString)
+      const daysLeft = Math.ceil((deadline - new Date()) / (1000 * 60 * 60 * 24))
+      const formatted = format(deadline, 'dd MMMM yyyy', { locale: tr })
+      if (daysLeft < 0) return null
+      if (daysLeft === 0) return 'Son başvuru: bugün'
+      if (daysLeft <= 3) return `Son başvuruya ${daysLeft} gün kaldı (${formatted})`
+      return `Son başvuru: ${formatted}`
+    } catch {
+      return null
+    }
+  }
+
+  const deadlineText = formatDeadline(event.application_deadline)
+  const canonicalUrl = `https://eventradar.dev/etkinlik/${id}`
+
   return (
     <div className="container py-5">
       <div className="row justify-content-center">
@@ -178,6 +197,12 @@ const EventDetailPage = () => {
               <i className="fas fa-globe me-2" style={{ color: 'var(--action-primary)' }}></i>
               {event.source}
             </span>
+            {deadlineText && (
+              <span style={{ color: '#EF4444', fontWeight: 600 }}>
+                <i className="fas fa-hourglass-half me-2"></i>
+                {deadlineText}
+              </span>
+            )}
           </div>
 
           {/* Etiketler */}
@@ -217,6 +242,10 @@ const EventDetailPage = () => {
             Etkinliğe Git
             <i className="fas fa-external-link-alt" style={{ fontSize: '0.8rem' }}></i>
           </a>
+
+          <div className="mt-3">
+            <ShareButtons event={event} detailUrl={canonicalUrl} variant="full" />
+          </div>
 
         </div>
       </div>

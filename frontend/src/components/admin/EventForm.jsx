@@ -11,6 +11,7 @@ const EventForm = ({ event, onClose, onSuccess }) => {
       title: event.title,
       description: event.description || '',
       date: event.date ? new Date(event.date).toISOString().slice(0, 16) : '',
+      application_deadline: event.application_deadline ? new Date(event.application_deadline).toISOString().slice(0, 16) : '',
       location: event.location || '',
       url: event.url,
       image_url: event.image_url || '',
@@ -127,6 +128,18 @@ const EventForm = ({ event, onClose, onSuccess }) => {
                     className="form-control"
                     id="location"
                     {...register('location')}
+                  />
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="application_deadline" className="form-label">Son Başvuru Tarihi</label>
+                  <input
+                    type="datetime-local"
+                    className="form-control"
+                    id="application_deadline"
+                    {...register('application_deadline')}
                   />
                 </div>
               </div>
