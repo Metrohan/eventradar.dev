@@ -224,7 +224,7 @@ The open-source version of this project does not include secrets or credentials.
 - [x] Auto-archiving of past events
 
 ### Phase 3 — Product Growth 🚀 (Near-term)
-- [ ] User accounts and personalized event recommendations
+- [x] Browser-stored favorites and filter preferences (no account required)
 - [ ] Email / browser push notification subscriptions
 - [x] RSS feed subscriptions
 - [x] Advanced search and filtering (city, date range, price)

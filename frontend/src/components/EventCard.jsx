@@ -5,8 +5,10 @@ import { tr } from 'date-fns/locale'
 import TagBadge from './TagBadge'
 import ShareButtons from './ShareButtons'
 import { getSourceStyle } from '../utils/sourceColor'
+import { useFavorites } from '../hooks/useBrowserPreferences'
 
 const EventCard = ({ event }) => {
+  const { isFavorite, toggleFavorite } = useFavorites()
   const safeUrl = /^https?:\/\//i.test(event.url) ? event.url : '#'
   const canonicalUrl = `https://eventradar.dev/etkinlik/${event.id}`
 
@@ -72,6 +74,19 @@ const EventCard = ({ event }) => {
         <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
           <ShareButtons event={event} detailUrl={canonicalUrl} variant="icon" />
         </div>
+        <button
+          type="button"
+          className={`favorite-button ${isFavorite(event.id) ? 'active' : ''}`}
+          aria-label={isFavorite(event.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+          title={isFavorite(event.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+          onClick={e => {
+            e.preventDefault()
+            e.stopPropagation()
+            toggleFavorite(event.id)
+          }}
+        >
+          <i className={`${isFavorite(event.id) ? 'fas' : 'far'} fa-bookmark`} />
+        </button>
         {event.tags && event.tags.length > 0 && (
           <div style={{ position: 'absolute', bottom: '8px', left: '8px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
             {event.tags.slice(0, 2).map(name => (

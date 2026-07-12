@@ -233,7 +233,7 @@ Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güve
 - [x] Geçmiş etkinliklerin otomatik arşivlenmesi
 
 ### Faz 3 — Ürün Büyümesi 🚀 (Yakın dönem)
-- [ ] Kullanıcı hesabı ve kişiselleştirilmiş etkinlik önerileri
+- [x] Tarayıcıda saklanan favoriler ve filtre tercihleri (hesapsız)
 - [ ] E-posta / tarayıcı bildirim abonelikleri
 - [x] RSS feed aboneliği
 - [x] Gelişmiş arama ve filtreleme (şehir, tarih aralığı, ücret)
