@@ -39,6 +39,18 @@ class EventService:
         """Get event by ID"""
         return self.db.query(Event).filter(Event.id == event_id).first()
 
+    def get_public_event_by_id(self, event_id: int) -> Optional[Event]:
+        """Return only an event that is currently visible to public callers."""
+        return (
+            self.db.query(Event)
+            .filter(
+                Event.id == event_id,
+                Event.is_active == True,
+                or_(Event.date.is_(None), Event.date >= datetime.now()),
+            )
+            .first()
+        )
+
     def create_event(self, event_data: EventCreate) -> Event:
         """Create a new event"""
         try:

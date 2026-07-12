@@ -8,7 +8,7 @@ os.environ.setdefault("ADMIN_PASSWORD", "testpassword")
 import pytest
 from app.models.event import Event
 from app.models.announcement import Announcement
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def _seed_event(db, url="https://example.com/ev", is_active=True):
@@ -90,6 +90,35 @@ def test_get_events_paginates_without_changing_total_count(client, test_db):
 def test_get_events_rejects_invalid_pagination(client):
     assert client.get("/api/events?page=0").status_code == 422
     assert client.get("/api/events?page_size=201").status_code == 422
+
+
+def test_get_event_detail_hides_inactive_event(client, test_db):
+    event = _seed_event(test_db, is_active=False)
+
+    resp = client.get(f"/api/events/{event.id}")
+
+    assert resp.status_code == 404
+
+
+def test_get_event_detail_hides_past_event_even_if_flag_is_active(client, test_db):
+    event = _seed_event(test_db, is_active=True)
+    event.date = datetime.now() - timedelta(days=1)
+    test_db.commit()
+
+    resp = client.get(f"/api/events/{event.id}")
+
+    assert resp.status_code == 404
+
+
+def test_get_event_detail_returns_active_future_event(client, test_db):
+    event = _seed_event(test_db, is_active=True)
+    event.date = datetime.now() + timedelta(days=1)
+    test_db.commit()
+
+    resp = client.get(f"/api/events/{event.id}")
+
+    assert resp.status_code == 200
+    assert resp.json()["id"] == event.id
 
 
 def test_get_sources_returns_enabled_catalog_without_runners(client):
