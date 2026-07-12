@@ -107,21 +107,23 @@ curl http://localhost:8000/health
 
 ## Scrapers
 
-| Kaynak | Durum | Selenium |
-|--------|-------|----------|
-| TechCareer | ✅ Aktif | ✓ |
-| Youthall | ✅ Aktif | ✓ |
-| Akbank Gençlik | ✅ Aktif | ✓ (UC) |
-| Pupilica | ✅ Aktif | ✓ (UC) |
-| Kodluyoruz | ✅ Aktif | ✗ |
-| Anbean | ✅ Aktif | ✗ |
-| Coderspace | ✅ Aktif | ✓ (UC) |
-| Tech Istanbul | ✅ Aktif | ✗ |
+| Kaynak | Durum | Çalışma biçimi |
+|--------|-------|----------------|
+| TechCareer | ✅ Aktif | Tarayıcı (Selenium) |
+| Youthall | ✅ Aktif | Tarayıcı (Selenium) |
+| Akbank Gençlik | ✅ Aktif | Tarayıcı (UC) |
+| Pupilica | ✅ Aktif | Tarayıcı (UC) |
+| Kodluyoruz | ✅ Aktif | HTTP |
+| Anbean | ✅ Aktif | HTTP |
+| Coderspace | ✅ Aktif | Tarayıcı (UC) |
+| Tech Istanbul | ✅ Aktif | HTTP API |
 
 ## API Docs
 
 - Swagger UI: <http://localhost:8000/docs>
 - Health check: <http://localhost:8000/health>
+- Etkinlikler: `GET /api/events?page=1&page_size=20&active_only=true`
+- Kaynak kataloğu: `GET /api/sources`
 
 ## Troubleshooting
 
@@ -151,7 +153,7 @@ uvicorn app.main:app --reload
 
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
@@ -259,9 +261,16 @@ Etkinlikleri anlık çekmek için:
 docker compose run --rm scraper python scripts/run_daily_scrape.py
 ```
 
-## Hata Alarmı (Telegram)
+## Scraper Hata Alarmı (Telegram)
 
-`backend`/`scraper` loglarında kritik hata olduğunda Telegram mesajı almak için:
+Scraper coordinator, aynı kaynak art arda üç kez başarısız olduğunda uygulama içinden Telegram alarmı gönderir:
+
+```bash
+TELEGRAM_BOT_TOKEN=<BOT_TOKEN>
+TELEGRAM_CHANNEL_ID=<CHANNEL_ID>
+```
+
+Log dosyalarında geçen diğer kritik hataları ayrıca izlemek istersen isteğe bağlı log monitörünü çalıştırabilirsin:
 
 ```bash
 export TELEGRAM_BOT_TOKEN="<BOT_TOKEN>"
