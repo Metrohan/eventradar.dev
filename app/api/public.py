@@ -13,6 +13,8 @@ from ..services.source_catalog import get_enabled_sources
 from ..services.rate_limiter import FixedWindowRateLimiter
 from ..services.rss_service import build_events_rss
 from ..services import email_service, push_service
+from ..services.weekly_content_service import WeeklyContentService
+from ..schemas.blog_post import BlogPostListResponse, BlogPostResponse
 from ..schemas.event import EventResponse, EventListResponse
 from ..schemas.announcement import AnnouncementResponse, AnnouncementListResponse
 from ..schemas.suggestion import SuggestionCreate, SuggestionResponse
@@ -49,6 +51,20 @@ def enforce_public_form_rate_limit(request: Request) -> None:
 async def get_sources():
     """Return public metadata for enabled event-source integrations."""
     return [source.public_dict() for source in get_enabled_sources()]
+
+
+@router.get("/blog", response_model=BlogPostListResponse)
+async def get_blog_posts(db: Session = Depends(get_db)):
+    posts = WeeklyContentService(db).list_published()
+    return BlogPostListResponse(posts=posts, total_count=len(posts))
+
+
+@router.get("/blog/{slug}", response_model=BlogPostResponse)
+async def get_blog_post(slug: str, db: Session = Depends(get_db)):
+    post = WeeklyContentService(db).get_published(slug)
+    if not post:
+        raise HTTPException(status_code=404, detail="Blog yazısı bulunamadı")
+    return post
 
 
 @router.get("/events", response_model=EventListResponse)

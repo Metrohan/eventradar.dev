@@ -7,6 +7,7 @@ const NAV_LINKS = [
   { to: '/', label: 'Anasayfa' },
   { to: '/takvim', label: 'Takvim' },
   { to: '/bootcamp-rehberi', label: 'Rehber' },
+  { to: '/blog', label: 'Blog' },
   { to: '/egitim-kaynaklari', label: 'Ücretsiz Eğitimler' },
   { to: '/oneri-sikayet', label: 'Öneri / Şikayet' },
   { to: '/status', label: 'Durum' },

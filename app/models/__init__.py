@@ -9,6 +9,7 @@ from .subscriber import Subscriber
 from .push_subscription import PushSubscription
 from .traffic_log import TrafficLog
 from .tag import Tag, event_tags
+from .blog_post import BlogPost
 
 __all__ = [
     "Event",
@@ -23,4 +24,5 @@ __all__ = [
     "TrafficLog",
     "Tag",
     "event_tags",
+    "BlogPost",
 ]
