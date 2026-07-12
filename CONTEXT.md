@@ -33,3 +33,13 @@ Avoid maintaining independent source-name arrays in backend orchestration or fro
 ## Source Quality
 
 **Source Quality** combines recent run health with event-data completeness for each enabled Source Catalog entry. Success rate, consecutive failures, last error, and missing date/location/description counts are computed behind one interface and displayed in the admin area.
+
+## Scrape Run
+
+A **Scrape Run** is one source fetch followed by Event Ingestion, Source Reconciliation, and a single persisted outcome. `ScrapeRunResult` records fetched, new, updated, failed, and deactivated counts with duration and error state. Cron and manual triggers use the same coordinator interface.
+
+Source fetch uses bounded exponential retry. Only extraction is retried; Event Ingestion and database operations run once to avoid duplicate side effects.
+
+## Migration Contract
+
+The **Migration Contract** requires a blank database to upgrade through the complete Alembic chain to the current head. CI verifies this independently from SQLAlchemy `create_all()` so missing historical tables cannot be hidden by application startup.

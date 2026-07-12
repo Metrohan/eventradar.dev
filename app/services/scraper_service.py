@@ -1,13 +1,11 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List
-import subprocess
 import threading
-import time
 
 from ..models.scraper_log import ScraperLog
 from ..schemas.scraper_log import ScraperLogCreate
-from .event_ingestion import ScrapedEvent, build_event_ingestion
+from .scrape_run import build_scrape_run_coordinator
 from .source_catalog import get_source
 
 
@@ -85,58 +83,14 @@ class ScraperService:
         }
 
     def _run_scraper_task(self, source: str):
-        from ..core.database import SessionLocal
-
         definition = None if source.casefold() == "all" else get_source(source)
         key = definition.key if definition else source.casefold()
-        source_name = definition.name if definition else source
-        status = "failed"
-        error_msg = None
-        events_found = 0
-        new_count = 0
-
-        start_time = time.time()
         try:
+            coordinator = build_scrape_run_coordinator()
             if key == "all":
-                # Tüm scraper'ları sırayla çalıştır
-                cmd = ["python", "scripts/run_daily_scrape.py"]
-                proc = subprocess.run(cmd, capture_output=True, text=True)
-                status = "success" if proc.returncode == 0 else "failed"
-                if proc.returncode != 0:
-                    error_msg = proc.stderr
+                coordinator.run_all()
             elif definition and definition.enabled:
-                events = definition.runner()
-                events_found = len(events)
-                ingestion = build_event_ingestion()
-                if events:
-                    result = ingestion.ingest(
-                        ScrapedEvent.from_mapping(event, definition.name)
-                        for event in events
-                    )
-                    new_count = result.new
-                ingestion.reconcile_source(definition.name)
-                status = "success"
-            else:
-                error_msg = f"Bilinmeyen kaynak: {source}"
-                status = "failed"
-        except Exception as e:
-            error_msg = str(e)
-            status = "failed"
-
-        duration = time.time() - start_time
-        db = SessionLocal()
-        try:
-            log = ScraperLog(
-                source=source_name,
-                status=status,
-                events_found=events_found,
-                new_events=new_count,
-                error_message=error_msg,
-                duration_seconds=duration,
-            )
-            db.add(log)
-            db.commit()
+                coordinator.run(definition)
         finally:
-            db.close()
             with ScraperService._lock:
                 ScraperService._running_sources.discard(key)
