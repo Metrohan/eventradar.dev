@@ -6,7 +6,6 @@ Create Date: 2026-07-12 01:30:00.000000
 """
 
 from alembic import op
-from sqlalchemy import text
 
 revision = "e5f6a7b8c9d0"
 down_revision = "d4e5f6a7b8c9"
@@ -36,14 +35,12 @@ def upgrade() -> None:
         placeholders = ", ".join(f":value_{index}" for index in range(len(variants)))
         parameters = {f"value_{index}": value for index, value in enumerate(variants)}
         parameters["canonical"] = canonical
-        connection.execute(
-            text(
-                f"UPDATE events SET location = :canonical WHERE trim(location) IN ({placeholders})"
-            ),
+        connection.exec_driver_sql(
+            f"UPDATE events SET location = :canonical WHERE trim(location) IN ({placeholders})",
             parameters,
         )
-    connection.execute(
-        text("UPDATE events SET location = NULL WHERE trim(location) IN ('', '-')")
+    connection.exec_driver_sql(
+        "UPDATE events SET location = NULL WHERE trim(location) IN ('', '-')"
     )
 
 
