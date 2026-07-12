@@ -231,6 +231,7 @@ Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güve
 ### Faz 3 — Ürün Büyümesi 🚀 (Yakın dönem)
 - [ ] Kullanıcı hesabı ve kişiselleştirilmiş etkinlik önerileri
 - [ ] E-posta / tarayıcı bildirim abonelikleri
+- [x] RSS feed aboneliği
 - [x] Gelişmiş arama ve filtreleme (şehir, tarih aralığı, ücret)
 - [ ] Etkinlik takvimi görünümü
 - [ ] Mobil uyumlu PWA
