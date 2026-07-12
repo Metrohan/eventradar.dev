@@ -189,6 +189,49 @@ def test_post_suggestion(client):
     assert resp.json()["suggestion_title"] == "Better UI"
 
 
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"suggestion_type": "x", "suggestion_title": "OK", "suggestion_text": "short"},
+        {
+            "suggestion_type": "oneri",
+            "suggestion_title": "   ",
+            "suggestion_text": "A valid long message",
+        },
+        {
+            "suggestion_type": "oneri",
+            "suggestion_title": "Valid",
+            "suggestion_text": "x" * 5001,
+        },
+    ],
+)
+def test_post_suggestion_rejects_invalid_content(client, payload):
+    assert client.post("/api/suggestions", json=payload).status_code == 422
+
+
+def test_public_forms_are_rate_limited(client):
+    from app.api.public import public_form_limiter
+
+    public_form_limiter.reset()
+    payload = {
+        "suggestion_type": "oneri",
+        "suggestion_title": "Rate limit",
+        "suggestion_text": "This is a valid suggestion message.",
+    }
+    headers = {"x-forwarded-for": "203.0.113.50"}
+
+    for _ in range(5):
+        assert (
+            client.post("/api/suggestions", json=payload, headers=headers).status_code
+            == 200
+        )
+    blocked = client.post("/api/suggestions", json=payload, headers=headers)
+
+    assert blocked.status_code == 429
+    assert blocked.headers["retry-after"]
+    public_form_limiter.reset()
+
+
 # ── /api/event-requests ───────────────────────────────────────────────────────
 
 
@@ -200,6 +243,27 @@ def test_post_event_request(client):
     resp = client.post("/api/event-requests", json=payload)
     assert resp.status_code == 200
     assert resp.json()["event_title"] == "Global Hackathon"
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"event_link": "javascript:alert(1)", "event_title": "Valid Event"},
+        {"event_link": "https://example.com", "event_title": "  "},
+        {
+            "event_link": "https://example.com",
+            "event_title": "Valid",
+            "contact_email": "not-an-email",
+        },
+        {
+            "event_link": "https://example.com",
+            "event_title": "Valid",
+            "event_description": "x" * 5001,
+        },
+    ],
+)
+def test_post_event_request_rejects_invalid_content(client, payload):
+    assert client.post("/api/event-requests", json=payload).status_code == 422
 
 
 from app.services.tag_service import seed_tags

@@ -29,8 +29,8 @@ def test_create_and_get_suggestion(test_db):
 
 def test_get_suggestions_returns_list(test_db):
     service = SuggestionService(test_db)
-    service.create_suggestion(_sug(suggestion_title="A"))
-    service.create_suggestion(_sug(suggestion_title="B"))
+    service.create_suggestion(_sug(suggestion_title="First"))
+    service.create_suggestion(_sug(suggestion_title="Second"))
     items = service.get_suggestions()
     assert len(items) == 2
 

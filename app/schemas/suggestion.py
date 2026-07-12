@@ -1,12 +1,14 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional
 from datetime import datetime
 
 
 class SuggestionBase(BaseModel):
-    suggestion_type: str
-    suggestion_title: str
-    suggestion_text: str
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    suggestion_type: str = Field(min_length=2, max_length=50)
+    suggestion_title: str = Field(min_length=3, max_length=200)
+    suggestion_text: str = Field(min_length=10, max_length=5000)
 
 
 class SuggestionCreate(SuggestionBase):

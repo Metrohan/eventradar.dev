@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List, Optional
@@ -9,6 +9,7 @@ from ..services.announcement_service import AnnouncementService
 from ..services.suggestion_service import SuggestionService
 from ..services.event_request_service import EventRequestService
 from ..services.source_catalog import get_enabled_sources
+from ..services.rate_limiter import FixedWindowRateLimiter
 from ..schemas.event import EventResponse, EventListResponse
 from ..schemas.announcement import AnnouncementResponse, AnnouncementListResponse
 from ..schemas.suggestion import SuggestionCreate, SuggestionResponse
@@ -17,6 +18,20 @@ from ..models.scraper_log import ScraperLog
 from ..models.event import Event
 
 router = APIRouter()
+public_form_limiter = FixedWindowRateLimiter(limit=5, window_seconds=60)
+
+
+def enforce_public_form_rate_limit(request: Request) -> None:
+    direct_ip = request.client.host if request.client else "unknown"
+    forwarded_ip = request.headers.get("x-forwarded-for", "").split(",", 1)[0].strip()
+    key = f"{direct_ip}:{forwarded_ip or direct_ip}"
+    retry_after = public_form_limiter.check(key)
+    if retry_after is not None:
+        raise HTTPException(
+            status_code=429,
+            detail="Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.",
+            headers={"Retry-After": str(max(1, int(retry_after)))},
+        )
 
 
 @router.get("/sources")
@@ -155,7 +170,9 @@ async def get_status(db: Session = Depends(get_db)):
 
 @router.post("/suggestions", response_model=SuggestionResponse)
 async def submit_suggestion(
-    suggestion: SuggestionCreate, db: Session = Depends(get_db)
+    suggestion: SuggestionCreate,
+    db: Session = Depends(get_db),
+    _rate_limit: None = Depends(enforce_public_form_rate_limit),
 ):
     """
     Public endpoint to submit a suggestion/complaint (converted from /suggestions/oneri_sikayet)
@@ -172,7 +189,9 @@ async def submit_suggestion(
 
 @router.post("/event-requests", response_model=EventRequestResponse)
 async def submit_event_request(
-    request: EventRequestCreate, db: Session = Depends(get_db)
+    request: EventRequestCreate,
+    db: Session = Depends(get_db),
+    _rate_limit: None = Depends(enforce_public_form_rate_limit),
 ):
     """
     Public endpoint to submit an event request (converted from /requests/etkinlik-talep)
