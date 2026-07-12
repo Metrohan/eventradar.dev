@@ -75,6 +75,22 @@ SOURCE_CATALOG: tuple[SourceDefinition, ...] = (
         _lazy_runner("app.scrapers.techistanbul_scraper", "scrape_techistanbul_events"),
     ),
     SourceDefinition(
+        "patika",
+        "Patika.dev",
+        "https://www.patika.dev/bootcamp",
+        "static",
+        True,
+        _lazy_runner("app.scrapers.patika_scraper", "scrape_patika_events"),
+    ),
+    SourceDefinition(
+        "komunite",
+        "Komünite",
+        "https://komunite.com.tr/etkinlikler",
+        "static",
+        True,
+        _lazy_runner("app.scrapers.komunite_scraper", "scrape_komunite_events"),
+    ),
+    SourceDefinition(
         "techcareer",
         "TechCareer.net",
         "https://www.techcareer.net/events",

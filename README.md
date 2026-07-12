@@ -85,7 +85,7 @@ Event Ingestion ── tarih ve konum normalizasyonu / tag / transaction
       └── Telegram ── commit sonrası yeni etkinlik bildirimi
 ```
 
-- `app/services/source_catalog.py`: Sekiz kaynağın canonical kayıtları ve lazy runner adapter'ları
+- `app/services/source_catalog.py`: On kaynağın canonical kayıtları ve lazy runner adapter'ları
 - `app/services/scrape_run.py`: Fetch, retry, ingestion, reconciliation ve tek çalışma logu
 - `app/services/event_ingestion.py`: Canonical etkinlik yazımı ve yaşam döngüsü kuralları
 - `app/services/source_quality.py`: Kaynak başarı oranı ve veri tamlığı metrikleri
@@ -117,6 +117,8 @@ curl http://localhost:8000/health
 | Anbean | ✅ Aktif | HTTP |
 | Coderspace | ✅ Aktif | Tarayıcı (UC) |
 | Tech Istanbul | ✅ Aktif | HTTP API |
+| Patika.dev / Skillcamp | ✅ Aktif | HTTP |
+| Komünite | ✅ Aktif | HTTP |
 
 ## API Docs
 
@@ -217,14 +219,14 @@ Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güve
 > **Uzun vadeli hedef:** TechEventRadar'ı yalnızca Türkiye'ye değil, dünyanın her ülkesinden teknoloji etkinliklerini çekebilen, geliştiricilerin küresel fırsatları tek yerden keşfedebildiği bir platforma dönüştürmek.
 
 ### Faz 1 — Temel ✅ (Tamamlandı)
-- [x] Çoklu kaynaklardan otomatik etkinlik toplama (8 kaynak)
+- [x] Çoklu kaynaklardan otomatik etkinlik toplama (10 kaynak)
 - [x] Kategori tag sistemi (Hackathon, Bootcamp, Seminer…)
 - [x] Admin paneli ve içerik yönetimi
 - [x] Telegram bildirim sistemi
 - [x] CI/CD pipeline ve test altyapısı
 
 ### Faz 2 — Kalite & Güvenilirlik 🔧 (Devam ediyor)
-- [ ] Yeni Türkçe kaynaklar: Skillcamp/Patika, Komunite
+- [x] Yeni Türkçe kaynaklar: Skillcamp/Patika, Komünite
 - [x] Scraper'lara retry mekanizması ve hata yönetimi
 - [x] Kaynak bazlı kalite metrikleri (başarı oranı, veri tamlığı)
 - [x] Konum verisi normalizasyonu (Online / şehir bazlı)

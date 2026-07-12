@@ -85,6 +85,8 @@ After the stack starts:
 | Anbean | Active | HTTP |
 | Coderspace | Active | Browser (UC) |
 | Tech Istanbul | Active | HTTP API |
+| Patika.dev / Skillcamp | Active | HTTP |
+| Komünite | Active | HTTP |
 
 ## API
 
@@ -208,14 +210,14 @@ The open-source version of this project does not include secrets or credentials.
 > **Long-term vision:** Transform TechEventRadar from a Turkey-focused aggregator into a global platform — one place where developers worldwide can discover tech events from any country.
 
 ### Phase 1 — Foundation ✅ (Done)
-- [x] Automated event aggregation from multiple sources (8 sources)
+- [x] Automated event aggregation from multiple sources (10 sources)
 - [x] Category tag system (Hackathon, Bootcamp, Seminar…)
 - [x] Admin panel and content management
 - [x] Telegram notification system
 - [x] CI/CD pipeline and test infrastructure
 
 ### Phase 2 — Quality & Reliability 🔧 (In progress)
-- [ ] New Turkish sources: Skillcamp/Patika, Komunite
+- [x] New Turkish sources: Skillcamp/Patika, Komünite
 - [x] Retry mechanism and error handling for scrapers
 - [x] Per-source quality metrics (success rate, data completeness)
 - [x] Location normalization (Online / city-based)

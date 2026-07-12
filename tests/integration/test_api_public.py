@@ -163,8 +163,10 @@ def test_get_sources_returns_enabled_catalog_without_runners(client):
 
     assert resp.status_code == 200
     sources = resp.json()
-    assert len(sources) == 8
+    assert len(sources) == 10
     assert any(source["key"] == "tech-istanbul" for source in sources)
+    assert any(source["key"] == "patika" for source in sources)
+    assert any(source["key"] == "komunite" for source in sources)
     assert all(source["enabled"] is True for source in sources)
     assert all("runner" not in source for source in sources)
 

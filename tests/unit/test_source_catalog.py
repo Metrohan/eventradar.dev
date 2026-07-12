@@ -2,7 +2,7 @@ from app.services.source_catalog import SOURCE_CATALOG, get_enabled_sources, get
 
 
 def test_source_catalog_has_unique_keys_and_names():
-    assert len(SOURCE_CATALOG) == 8
+    assert len(SOURCE_CATALOG) == 10
     assert len({source.key for source in SOURCE_CATALOG}) == len(SOURCE_CATALOG)
     assert len({source.name for source in SOURCE_CATALOG}) == len(SOURCE_CATALOG)
 
