@@ -172,13 +172,17 @@ def notify_scraper_failure(source: str, error: str, consecutive_failures: int) -
     )
 
 
-def send_daily_digest(events: list[dict], date_label: str) -> None:
+def send_daily_digest(events: list[dict], date_label: str) -> bool:
     """
     Günlük özet gönderir. events boşsa hiçbir şey göndermez.
     date_label: "1 Haziran 2026" formatında string.
+    Dönüş değeri: mesaj gerçekten gönderildiyse True (çağıran script'lerin
+    "gönderildi" derken gerçekten göndermiş olduğundan emin olması için —
+    daha önce bu değer hiç kontrol edilmiyordu ve TELEGRAM_* env var'ları
+    boşken bile script "gönderildi" yazıp çıkıyordu).
     """
     if not _is_configured() or not events:
-        return
+        return False
 
     lines = [f"📊 <b>Günlük Özet · {date_label}</b>", ""]
     lines.append(f"Bugün <b>{len(events)}</b> yeni etkinlik eklendi:")
@@ -199,24 +203,24 @@ def send_daily_digest(events: list[dict], date_label: str) -> None:
         lines.append(f"  … ve {len(events) - 10} etkinlik daha")
 
     lines.extend(["", '👉 <a href="https://eventradar.dev">eventradar.dev</a>'])
-    _send_message("\n".join(lines))
+    return _send_message("\n".join(lines))
 
 
-def send_weekly_digest(events: list[dict], week_label: str) -> None:
+def send_weekly_digest(events: list[dict], week_label: str) -> bool:
     """
     Haftalık özet gönderir. events boş olsa bile gönderir.
     week_label: "26 Mayıs – 1 Haziran" formatında string.
+    Dönüş değeri: mesaj gerçekten gönderildiyse True (bkz. send_daily_digest).
     """
     if not _is_configured():
-        return
+        return False
 
     if not events:
-        _send_message(
+        return _send_message(
             f"📅 <b>Haftalık Özet · {week_label}</b>\n\n"
             "Bu hafta yeni etkinlik eklenmedi.\n\n"
             '👉 <a href="https://eventradar.dev">eventradar.dev</a>'
         )
-        return
 
     from collections import Counter
 
@@ -233,4 +237,4 @@ def send_weekly_digest(events: list[dict], week_label: str) -> None:
         lines.append("   ".join(type_parts))
 
     lines.extend(["", '👉 <a href="https://eventradar.dev">eventradar.dev</a>'])
-    _send_message("\n".join(lines))
+    return _send_message("\n".join(lines))
