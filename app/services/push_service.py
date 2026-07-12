@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from typing import Literal
 from urllib.parse import urlparse
 
 from pywebpush import WebPushException, webpush
@@ -44,11 +45,14 @@ def _is_configured() -> bool:
     return bool(os.getenv("VAPID_PRIVATE_KEY") and os.getenv("VAPID_PUBLIC_KEY"))
 
 
-def _send_to_subscription(sub: PushSubscription, payload: dict) -> bool:
+DeliveryResult = Literal["sent", "stale", "failed"]
+
+
+def _send_to_subscription(sub: PushSubscription, payload: dict) -> DeliveryResult:
     private_key = os.getenv("VAPID_PRIVATE_KEY", "")
     if not is_valid_push_endpoint(str(sub.endpoint)):
         logger.warning("Geçersiz push endpoint reddedildi (id=%s)", sub.id)
-        return False
+        return "failed"
     try:
         webpush(
             subscription_info={
@@ -59,10 +63,11 @@ def _send_to_subscription(sub: PushSubscription, payload: dict) -> bool:
             vapid_private_key=private_key,
             vapid_claims={"sub": VAPID_CLAIMS_SUB},
         )
-        return True
+        return "sent"
     except WebPushException as exc:
         logger.warning("Push gönderilemedi (endpoint id=%s): %s", sub.id, exc)
-        return False
+        status_code = getattr(getattr(exc, "response", None), "status_code", None)
+        return "stale" if status_code in {404, 410} else "failed"
 
 
 def notify_new_events(db: Session, events: list[dict]) -> None:
@@ -89,8 +94,8 @@ def notify_new_events(db: Session, events: list[dict]) -> None:
     stale_ids = []
     for sub in subscriptions:
         try:
-            success = _send_to_subscription(sub, payload)
-            if not success:
+            result = _send_to_subscription(sub, payload)
+            if result == "stale":
                 stale_ids.append(sub.id)
         except Exception as exc:
             logger.error("Push subscription hatası (id=%s): %s", sub.id, exc)

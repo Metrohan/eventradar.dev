@@ -361,6 +361,23 @@ h1, h2, h3, h4, h5, h6 {
 .favorite-button:hover { transform: translateY(-1px); background: rgba(10, 15, 30, 0.9); }
 .favorite-button.active { color: #fbbf24; background: rgba(69, 45, 5, 0.88); }
 
+.footer-push-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.footer-push-toggle:hover,
+.footer-push-toggle.active { color: var(--action-primary); }
+.footer-push-toggle:disabled { opacity: 0.6; cursor: wait; }
+
 /* Mobile nav */
 .nav-mobile-toggle {
   display: none;
