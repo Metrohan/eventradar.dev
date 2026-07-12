@@ -14,6 +14,7 @@ class ScraperLog(Base):
     updated_events = Column(Integer, default=0, nullable=False)
     deactivated_events = Column(Integer, default=0, nullable=False)
     failed_events = Column(Integer, default=0, nullable=False)
+    attempts = Column(Integer, default=1, nullable=False)
     error_message = Column(Text, nullable=True)
     duration_seconds = Column(Float, default=0.0)
     created_at = Column(DateTime, default=func.now(), nullable=False)
