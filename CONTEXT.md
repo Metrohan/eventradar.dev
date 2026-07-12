@@ -42,6 +42,10 @@ Source fetch uses bounded exponential retry. Only extraction is retried; Event I
 
 When a source reaches three consecutive failed Scrape Runs, the coordinator emits one maintainer alert. Later failures do not repeat the alert until a successful run resets the sequence.
 
+## Location Normalization
+
+**Location Normalization** converts safe, known spelling variants into canonical display values during Event Ingestion. Online variants become `Online`; known city names use Turkish spelling. Specific venues and districts remain unchanged when the normalizer cannot classify them confidently.
+
 ## Migration Contract
 
 The **Migration Contract** requires a blank database to upgrade through the complete Alembic chain to the current head. CI verifies this independently from SQLAlchemy `create_all()` so missing historical tables cannot be hidden by application startup.
