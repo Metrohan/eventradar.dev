@@ -158,6 +158,20 @@ def notify_new_events(events: list[dict]) -> None:
             time.sleep(0.5)
 
 
+def notify_scraper_failure(source: str, error: str, consecutive_failures: int) -> None:
+    """Alert maintainers once when a source reaches the failure threshold."""
+    if not _is_configured():
+        return
+    safe_source = html_lib.escape(source)
+    safe_error = html_lib.escape(error[:500])
+    _send_message(
+        "🚨 <b>Scraper Uyarısı</b>\n\n"
+        f"Kaynak: <b>{safe_source}</b>\n"
+        f"Ardışık hata: <b>{consecutive_failures}</b>\n"
+        f"Hata: <code>{safe_error}</code>"
+    )
+
+
 def send_daily_digest(events: list[dict], date_label: str) -> None:
     """
     Günlük özet gönderir. events boşsa hiçbir şey göndermez.

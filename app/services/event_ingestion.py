@@ -9,6 +9,7 @@ from ..models.event import Event
 from ..models.tag import Tag
 from .date_extractor import parse_event_date
 from .tag_service import classify_event
+from .location_normalizer import normalize_location
 
 SessionFactory = Callable[[], Session]
 NotificationAdapter = Callable[[list[dict[str, Any]]], None]
@@ -41,7 +42,7 @@ class ScrapedEvent:
             description=payload.get("description"),
             date=payload.get("date"),
             application_deadline=payload.get("application_deadline"),
-            location=payload.get("location"),
+            location=normalize_location(payload.get("location")),
             image_url=payload.get("image_url"),
         )
 

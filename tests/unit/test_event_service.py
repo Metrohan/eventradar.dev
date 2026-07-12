@@ -33,6 +33,12 @@ def test_create_and_get_event(test_db):
     assert event.source == "test"
 
 
+def test_create_event_normalizes_location(test_db):
+    event = EventService(test_db).create_event(_create_data(location="Istanbul"))
+
+    assert event.location == "İstanbul"
+
+
 def test_get_event_by_id(test_db):
     service = EventService(test_db)
     created = service.create_event(_create_data())
@@ -91,6 +97,16 @@ def test_update_event_title(test_db):
     updated = service.update_event(created.id, EventUpdate(title="New Title"))
     assert updated is not None
     assert updated.title == "New Title"
+
+
+def test_update_event_normalizes_location(test_db):
+    service = EventService(test_db)
+    created = service.create_event(_create_data())
+
+    updated = service.update_event(created.id, EventUpdate(location="remote"))
+
+    assert updated is not None
+    assert updated.location == "Online"
 
 
 def test_update_event_not_found_returns_none(test_db):

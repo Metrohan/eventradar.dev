@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List, Optional
@@ -9,6 +9,7 @@ from ..services.announcement_service import AnnouncementService
 from ..services.suggestion_service import SuggestionService
 from ..services.event_request_service import EventRequestService
 from ..services.source_catalog import get_enabled_sources
+from ..services.rate_limiter import FixedWindowRateLimiter
 from ..schemas.event import EventResponse, EventListResponse
 from ..schemas.announcement import AnnouncementResponse, AnnouncementListResponse
 from ..schemas.suggestion import SuggestionCreate, SuggestionResponse
@@ -17,6 +18,20 @@ from ..models.scraper_log import ScraperLog
 from ..models.event import Event
 
 router = APIRouter()
+public_form_limiter = FixedWindowRateLimiter(limit=5, window_seconds=60)
+
+
+def enforce_public_form_rate_limit(request: Request) -> None:
+    direct_ip = request.client.host if request.client else "unknown"
+    forwarded_ip = request.headers.get("x-forwarded-for", "").split(",", 1)[0].strip()
+    key = f"{direct_ip}:{forwarded_ip or direct_ip}"
+    retry_after = public_form_limiter.check(key)
+    if retry_after is not None:
+        raise HTTPException(
+            status_code=429,
+            detail="Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.",
+            headers={"Retry-After": str(max(1, int(retry_after)))},
+        )
 
 
 @router.get("/sources")
@@ -29,15 +44,21 @@ async def get_sources():
 async def get_events(
     active_only: bool = True,
     tags: Optional[List[str]] = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=100, ge=1, le=200),
     db: Session = Depends(get_db),
 ):
     event_service = EventService(db)
 
     try:
-        events = event_service.get_events(active_only=active_only, tags=tags)
-        total_count = (
-            event_service.get_total_active_events() if not tags else len(events)
+        offset = (page - 1) * page_size
+        events = event_service.get_events(
+            active_only=active_only,
+            tags=tags,
+            offset=offset,
+            limit=page_size,
         )
+        total_count = event_service.get_event_count(active_only=active_only, tags=tags)
         last_updated_event = event_service.get_last_updated_event()
 
         last_updated = None
@@ -48,6 +69,9 @@ async def get_events(
             events=events,  # type: ignore[arg-type]
             total_count=total_count,
             last_updated=last_updated,
+            page=page,
+            page_size=page_size,
+            total_pages=(total_count + page_size - 1) // page_size,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading events: {str(e)}")
@@ -84,14 +108,16 @@ async def get_latest_announcement(db: Session = Depends(get_db)):
         if not announcement:
             return None  # Frontend will handle null
         return announcement
-    except Exception as e:
-        return None  # Silently return null instead of 404
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500, detail="Duyuru yüklenirken bir hata oluştu"
+        ) from exc
 
 
 @router.get("/events/{event_id}", response_model=EventResponse)
 async def get_event(event_id: int, db: Session = Depends(get_db)):
     event_service = EventService(db)
-    event = event_service.get_event_by_id(event_id)
+    event = event_service.get_public_event_by_id(event_id)
     if not event:
         raise HTTPException(status_code=404, detail="Etkinlik bulunamadı")
     return event
@@ -144,7 +170,9 @@ async def get_status(db: Session = Depends(get_db)):
 
 @router.post("/suggestions", response_model=SuggestionResponse)
 async def submit_suggestion(
-    suggestion: SuggestionCreate, db: Session = Depends(get_db)
+    suggestion: SuggestionCreate,
+    db: Session = Depends(get_db),
+    _rate_limit: None = Depends(enforce_public_form_rate_limit),
 ):
     """
     Public endpoint to submit a suggestion/complaint (converted from /suggestions/oneri_sikayet)
@@ -161,7 +189,9 @@ async def submit_suggestion(
 
 @router.post("/event-requests", response_model=EventRequestResponse)
 async def submit_event_request(
-    request: EventRequestCreate, db: Session = Depends(get_db)
+    request: EventRequestCreate,
+    db: Session = Depends(get_db),
+    _rate_limit: None = Depends(enforce_public_form_rate_limit),
 ):
     """
     Public endpoint to submit an event request (converted from /requests/etkinlik-talep)

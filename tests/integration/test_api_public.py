@@ -6,9 +6,10 @@ os.environ.setdefault("ADMIN_USERNAME", "testadmin")
 os.environ.setdefault("ADMIN_PASSWORD", "testpassword")
 
 import pytest
+from unittest.mock import patch
 from app.models.event import Event
 from app.models.announcement import Announcement
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def _seed_event(db, url="https://example.com/ev", is_active=True):
@@ -69,6 +70,56 @@ def test_get_events_all_when_active_only_false(client, test_db):
     resp = client.get("/api/events?active_only=false")
     assert resp.status_code == 200
     assert len(resp.json()["events"]) == 2
+    assert resp.json()["total_count"] == 2
+
+
+def test_get_events_paginates_without_changing_total_count(client, test_db):
+    for index in range(3):
+        _seed_event(test_db, url=f"https://example.com/page-{index}", is_active=True)
+
+    first = client.get("/api/events?page=1&page_size=2")
+    second = client.get("/api/events?page=2&page_size=2")
+
+    assert first.status_code == 200
+    assert len(first.json()["events"]) == 2
+    assert len(second.json()["events"]) == 1
+    assert first.json()["total_count"] == 3
+    assert first.json()["total_pages"] == 2
+    assert first.json()["page"] == 1
+
+
+def test_get_events_rejects_invalid_pagination(client):
+    assert client.get("/api/events?page=0").status_code == 422
+    assert client.get("/api/events?page_size=201").status_code == 422
+
+
+def test_get_event_detail_hides_inactive_event(client, test_db):
+    event = _seed_event(test_db, is_active=False)
+
+    resp = client.get(f"/api/events/{event.id}")
+
+    assert resp.status_code == 404
+
+
+def test_get_event_detail_hides_past_event_even_if_flag_is_active(client, test_db):
+    event = _seed_event(test_db, is_active=True)
+    event.date = datetime.now() - timedelta(days=1)
+    test_db.commit()
+
+    resp = client.get(f"/api/events/{event.id}")
+
+    assert resp.status_code == 404
+
+
+def test_get_event_detail_returns_active_future_event(client, test_db):
+    event = _seed_event(test_db, is_active=True)
+    event.date = datetime.now() + timedelta(days=1)
+    test_db.commit()
+
+    resp = client.get(f"/api/events/{event.id}")
+
+    assert resp.status_code == 200
+    assert resp.json()["id"] == event.id
 
 
 def test_get_sources_returns_enabled_catalog_without_runners(client):
@@ -112,6 +163,18 @@ def test_get_latest_announcement_returns_item(client, test_db):
     assert resp.json()["title"] == "Latest"
 
 
+def test_get_latest_announcement_reports_service_failure(client):
+    with patch(
+        "app.services.announcement_service.AnnouncementService.get_latest_announcement",
+        side_effect=RuntimeError("database unavailable"),
+    ):
+        resp = client.get("/api/announcements/latest")
+
+    assert resp.status_code == 500
+    assert resp.json()["detail"] == "Duyuru yüklenirken bir hata oluştu"
+    assert "database unavailable" not in resp.text
+
+
 # ── /api/suggestions ─────────────────────────────────────────────────────────
 
 
@@ -126,6 +189,49 @@ def test_post_suggestion(client):
     assert resp.json()["suggestion_title"] == "Better UI"
 
 
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"suggestion_type": "x", "suggestion_title": "OK", "suggestion_text": "short"},
+        {
+            "suggestion_type": "oneri",
+            "suggestion_title": "   ",
+            "suggestion_text": "A valid long message",
+        },
+        {
+            "suggestion_type": "oneri",
+            "suggestion_title": "Valid",
+            "suggestion_text": "x" * 5001,
+        },
+    ],
+)
+def test_post_suggestion_rejects_invalid_content(client, payload):
+    assert client.post("/api/suggestions", json=payload).status_code == 422
+
+
+def test_public_forms_are_rate_limited(client):
+    from app.api.public import public_form_limiter
+
+    public_form_limiter.reset()
+    payload = {
+        "suggestion_type": "oneri",
+        "suggestion_title": "Rate limit",
+        "suggestion_text": "This is a valid suggestion message.",
+    }
+    headers = {"x-forwarded-for": "203.0.113.50"}
+
+    for _ in range(5):
+        assert (
+            client.post("/api/suggestions", json=payload, headers=headers).status_code
+            == 200
+        )
+    blocked = client.post("/api/suggestions", json=payload, headers=headers)
+
+    assert blocked.status_code == 429
+    assert blocked.headers["retry-after"]
+    public_form_limiter.reset()
+
+
 # ── /api/event-requests ───────────────────────────────────────────────────────
 
 
@@ -137,6 +243,27 @@ def test_post_event_request(client):
     resp = client.post("/api/event-requests", json=payload)
     assert resp.status_code == 200
     assert resp.json()["event_title"] == "Global Hackathon"
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"event_link": "javascript:alert(1)", "event_title": "Valid Event"},
+        {"event_link": "https://example.com", "event_title": "  "},
+        {
+            "event_link": "https://example.com",
+            "event_title": "Valid",
+            "contact_email": "not-an-email",
+        },
+        {
+            "event_link": "https://example.com",
+            "event_title": "Valid",
+            "event_description": "x" * 5001,
+        },
+    ],
+)
+def test_post_event_request_rejects_invalid_content(client, payload):
+    assert client.post("/api/event-requests", json=payload).status_code == 422
 
 
 from app.services.tag_service import seed_tags

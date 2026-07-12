@@ -44,6 +44,8 @@ logs/
 output/
 *.json
 !tests/fixtures/*.json
+!frontend/package.json
+!frontend/package-lock.json
 
 chromedriver/
 geckodriver/

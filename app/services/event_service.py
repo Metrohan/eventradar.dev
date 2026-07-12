@@ -7,6 +7,7 @@ from ..models.event import Event
 from ..models.tag import Tag
 from ..schemas.event import EventCreate, EventUpdate
 from .date_extractor import extract_date_from_text
+from .location_normalizer import normalize_location
 
 
 class EventService:
@@ -14,7 +15,11 @@ class EventService:
         self.db = db
 
     def get_events(
-        self, active_only: bool = True, tags: list[str] | None = None
+        self,
+        active_only: bool = True,
+        tags: list[str] | None = None,
+        offset: int = 0,
+        limit: int | None = None,
     ) -> List[Event]:
         """Get all events, optionally filtered by active status and/or tag names."""
         query = self.db.query(Event)
@@ -25,11 +30,26 @@ class EventService:
             )
         if tags:
             query = query.filter(Event.tags.any(Tag.name.in_(tags)))
-        return query.order_by(Event.date.desc()).all()
+        query = query.order_by(Event.date.desc()).offset(offset)
+        if limit is not None:
+            query = query.limit(limit)
+        return query.all()
 
     def get_event_by_id(self, event_id: int) -> Optional[Event]:
         """Get event by ID"""
         return self.db.query(Event).filter(Event.id == event_id).first()
+
+    def get_public_event_by_id(self, event_id: int) -> Optional[Event]:
+        """Return only an event that is currently visible to public callers."""
+        return (
+            self.db.query(Event)
+            .filter(
+                Event.id == event_id,
+                Event.is_active == True,
+                or_(Event.date.is_(None), Event.date >= datetime.now()),
+            )
+            .first()
+        )
 
     def create_event(self, event_data: EventCreate) -> Event:
         """Create a new event"""
@@ -45,7 +65,7 @@ class EventService:
                 description=event_data.description,
                 date=date_val,
                 application_deadline=event_data.application_deadline,
-                location=event_data.location,
+                location=normalize_location(event_data.location),
                 url=str(event_data.url),
                 image_url=str(event_data.image_url) if event_data.image_url else None,
                 source=event_data.source,
@@ -75,7 +95,9 @@ class EventService:
                 if extracted:
                     update_data["date"] = extracted
             for field, value in update_data.items():
-                if field == "url" and value:
+                if field == "location":
+                    setattr(db_event, field, normalize_location(value))
+                elif field == "url" and value:
                     setattr(db_event, field, str(value))
                 elif field == "image_url" and value:
                     setattr(db_event, field, str(value))
@@ -99,16 +121,22 @@ class EventService:
         self.db.commit()
         return True
 
-    def get_total_active_events(self) -> int:
+    def get_total_active_events(self, tags: list[str] | None = None) -> int:
         """Get count of active events"""
-        return (
-            self.db.query(Event)
-            .filter(
+        return self.get_event_count(active_only=True, tags=tags)
+
+    def get_event_count(
+        self, active_only: bool = True, tags: list[str] | None = None
+    ) -> int:
+        query = self.db.query(Event)
+        if active_only:
+            query = query.filter(
                 Event.is_active == True,
                 or_(Event.date.is_(None), Event.date >= datetime.now()),
             )
-            .count()
-        )
+        if tags:
+            query = query.filter(Event.tags.any(Tag.name.in_(tags)))
+        return query.count()
 
     def get_last_updated_event(self) -> Optional[Event]:
         """Get the most recently updated event"""
