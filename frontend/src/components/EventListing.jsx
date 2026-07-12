@@ -25,7 +25,11 @@ const EventListing = ({
   onSearchTermChange,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const savedFilters = React.useMemo(() => readSavedFilters(), [])
+  const usesPresetFilters = initialTags.length > 0 || Boolean(initialLocation) || Boolean(extraFilter)
+  const savedFilters = React.useMemo(
+    () => usesPresetFilters ? {} : readSavedFilters(),
+    [usesPresetFilters]
+  )
   const { favorites } = useFavorites()
 
   const [internalSearchTerm, setInternalSearchTerm] = React.useState(() => searchParams.get('q') || '')
@@ -61,8 +65,9 @@ const EventListing = ({
   }, [searchTerm, selectedSource, selectedLocation, showPastEvents, selectedTags, freeOnly, favoritesOnly, dateFrom, dateTo])
 
   React.useEffect(() => {
+    if (usesPresetFilters) return
     saveFilters({ source: selectedSource, location: selectedLocation, tags: selectedTags, freeOnly })
-  }, [selectedSource, selectedLocation, selectedTags, freeOnly])
+  }, [usesPresetFilters, selectedSource, selectedLocation, selectedTags, freeOnly])
 
   const { data: eventsData, isLoading, error } = useQuery(
     'events',

@@ -234,7 +234,7 @@ Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güve
 
 ### Faz 3 — Ürün Büyümesi 🚀 (Yakın dönem)
 - [x] Tarayıcıda saklanan favoriler ve filtre tercihleri (hesapsız)
-- [ ] E-posta / tarayıcı bildirim abonelikleri
+- [x] E-posta / tarayıcı bildirim abonelikleri
 - [x] RSS feed aboneliği
 - [x] Gelişmiş arama ve filtreleme (şehir, tarih aralığı, ücret)
 - [x] Etkinlik takvimi görünümü
@@ -262,6 +262,44 @@ Etkinlikleri anlık çekmek için:
 ```bash
 docker compose run --rm scraper python scripts/run_daily_scrape.py
 ```
+
+## E-posta ve Tarayıcı Bildirimleri
+
+E-posta aboneliği double opt-in ile çalışır: kullanıcı onay bağlantısını açtıktan sonra haftalık özete dahil edilir. Gmail SMTP kullanıyorsan normal hesap şifresi yerine Google Uygulama Şifresi kullan:
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=hesabin@gmail.com
+SMTP_PASS=<16-karakterlik-uygulama-sifresi>
+SMTP_FROM=hesabin@gmail.com
+```
+
+Tarayıcı bildirimleri için VAPID anahtarlarını üretip `.env` dosyasına ekle:
+
+```bash
+python scripts/generate_vapid_keys.py
+```
+
+```env
+VAPID_PRIVATE_KEY=<private-key>
+VAPID_PUBLIC_KEY=<public-key>
+```
+
+Ardından servisleri yeniden oluştur ve public key'i doğrula:
+
+```bash
+docker compose up -d --force-recreate backend scraper
+curl http://localhost:8000/api/push/vapid-public-key
+```
+
+Yanıttaki `key` boş olmamalı. Haftalık e-posta özeti için sunucu cron örneği:
+
+```cron
+0 9 * * 1 cd /path/to/eventradar.dev && docker compose exec -T backend python scripts/send_weekly_email_digest.py >> /var/log/eventradar-email-digest.log 2>&1
+```
+
+Secret değerlerini repoya veya `.env.example` dosyasına yazma.
 
 ## Scraper Hata Alarmı (Telegram)
 

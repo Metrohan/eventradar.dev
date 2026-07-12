@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eventradar-v1'
+const CACHE_NAME = 'eventradar-v2'
 const PRECACHE_URLS = ['/', '/manifest.json', '/favicon.ico']
 
 self.addEventListener('install', (event) => {
@@ -45,6 +45,24 @@ self.addEventListener('fetch', (event) => {
   // API yanıtları her zaman güncel olmalı (etkinlik verisi günlük değişiyor);
   // service worker bunları hiç önbelleğe almaz, doğrudan ağa gider.
   if (url.pathname.startsWith('/api/')) return
+
+  // SPA navigasyonlarında önce ağı kullan. Böylece yeni deploy sonrasında eski
+  // index.html ve eski bundle referansları cache'den geri gelmez. Ağ yoksa son
+  // başarılı uygulama kabuğuna düş.
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone()
+            caches.open(CACHE_NAME).then((cache) => cache.put('/', clone))
+          }
+          return response
+        })
+        .catch(() => caches.match('/'))
+    )
+    return
+  }
 
   // Statik varlıklar (JS/CSS/görsel/font): cache-first, ağ yalnızca eksikse.
   event.respondWith(
