@@ -55,7 +55,7 @@ TechEventRadar bu dağınıklığı azaltmak için geliştirildi.
 ┌──────────────────────────▼──────────────────────────────┐
 │                 Backend (FastAPI)                        │
 │                  http://localhost:8000                   │
-│       /api/events  /api/admin  /health  /docs            │
+│   /api/events  /api/sources  /api/admin  /health  /docs  │
 └──────────┬─────────────────────────────┬────────────────┘
            │                             │
   ┌────────▼────────┐          ┌─────────▼─────────┐
@@ -70,6 +70,27 @@ TechEventRadar bu dağınıklığı azaltmak için geliştirildi.
 - **Scraping:** Python tabanlı scraper modülleri (Selenium + requests)
 - **Deployment:** Docker Compose
 
+### Etkinlik Veri Akışı
+
+```text
+Source Catalog
+      │
+      ▼
+Scrape Run Coordinator ── retry / çalışma metrikleri / hata alarmı
+      │
+      ▼
+Event Ingestion ── tarih ve konum normalizasyonu / tag / transaction
+      │
+      ├── Source Reconciliation ── kaynaktan kaldırılan kayıtları pasifleştirir
+      └── Telegram ── commit sonrası yeni etkinlik bildirimi
+```
+
+- `app/services/source_catalog.py`: Sekiz kaynağın canonical kayıtları ve lazy runner adapter'ları
+- `app/services/scrape_run.py`: Fetch, retry, ingestion, reconciliation ve tek çalışma logu
+- `app/services/event_ingestion.py`: Canonical etkinlik yazımı ve yaşam döngüsü kuralları
+- `app/services/source_quality.py`: Kaynak başarı oranı ve veri tamlığı metrikleri
+- `CONTEXT.md` ve `docs/adr/`: Domain dili ve kabul edilmiş mimari kararlar
+
 ## Hızlı Başlangıç (Docker)
 
 ```bash
@@ -78,6 +99,7 @@ cd eventradar.dev
 cp .env.example .env
 # .env içinde SECRET_KEY, ADMIN_USERNAME, ADMIN_PASSWORD değerlerini düzenle
 docker compose up -d --build
+docker compose exec backend alembic upgrade head
 sleep 10
 curl http://localhost:8000/health
 # Frontend: http://localhost:3000
@@ -114,7 +136,7 @@ kill -9 <PID>
 `.env` içindeki `DATABASE_URL` değerinin `docker-compose.yml`'deki servis adıyla eşleştiğini kontrol et.
 
 **Scraper Chrome hatası:**
-Scraper logları için: `GET /api/admin/scraper-logs` (admin token gerekli)
+Scraper logları için: `GET /api/admin/scrapers/logs` (admin token gerekli)
 
 ## Geliştirme (Local)
 
@@ -201,10 +223,10 @@ Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güve
 
 ### Faz 2 — Kalite & Güvenilirlik 🔧 (Devam ediyor)
 - [ ] Yeni Türkçe kaynaklar: Skillcamp/Patika, Komunite
-- [ ] Scraper'lara retry mekanizması ve hata yönetimi
-- [ ] Kaynak bazlı kalite metrikleri (başarı oranı, veri tamlığı)
-- [ ] Konum verisi normalizasyonu (Online / şehir bazlı)
-- [ ] Geçmiş etkinliklerin otomatik arşivlenmesi
+- [x] Scraper'lara retry mekanizması ve hata yönetimi
+- [x] Kaynak bazlı kalite metrikleri (başarı oranı, veri tamlığı)
+- [x] Konum verisi normalizasyonu (Online / şehir bazlı)
+- [x] Geçmiş etkinliklerin otomatik arşivlenmesi
 
 ### Faz 3 — Ürün Büyümesi 🚀 (Yakın dönem)
 - [ ] Kullanıcı hesabı ve kişiselleştirilmiş etkinlik önerileri

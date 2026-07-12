@@ -100,7 +100,7 @@ components/     — shared UI (Header, Footer, EventCard, etc.); admin sub-compo
 ## Key Constraints
 
 - `SECRET_KEY` must be ≥ 32 characters; `ADMIN_USERNAME` and `ADMIN_PASSWORD` must be set. The app refuses to start otherwise (bypassed only with `ALLOW_INSECURE_DEFAULTS=true`).
-- `frontend/package.json` is listed in `.gitignore` (`*.json` rule) — it is not committed. Recreate from imports if missing.
+- `frontend/package.json` and `frontend/package-lock.json` are tracked explicitly despite the general `*.json` ignore rule; use `npm ci` for reproducible installs.
 - Old `docker-compose` v1.29 has a `ContainerConfig` bug: always use `down && up`, never just `up` when recreating containers.
 - JSON responses use `UnicodeJSONResponse` (ensure_ascii=False) — do not replace with standard `JSONResponse`.
 
