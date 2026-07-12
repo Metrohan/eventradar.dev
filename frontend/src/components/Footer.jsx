@@ -49,6 +49,15 @@ const Footer = () => {
             >
               <i className="fas fa-envelope"></i>
             </a>
+            <a
+              href="/api/events/rss"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="RSS Feed"
+              style={socialLinkStyle}
+            >
+              <i className="fas fa-rss"></i>
+            </a>
           </div>
         </div>
 
