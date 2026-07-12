@@ -69,6 +69,27 @@ def test_get_events_all_when_active_only_false(client, test_db):
     resp = client.get("/api/events?active_only=false")
     assert resp.status_code == 200
     assert len(resp.json()["events"]) == 2
+    assert resp.json()["total_count"] == 2
+
+
+def test_get_events_paginates_without_changing_total_count(client, test_db):
+    for index in range(3):
+        _seed_event(test_db, url=f"https://example.com/page-{index}", is_active=True)
+
+    first = client.get("/api/events?page=1&page_size=2")
+    second = client.get("/api/events?page=2&page_size=2")
+
+    assert first.status_code == 200
+    assert len(first.json()["events"]) == 2
+    assert len(second.json()["events"]) == 1
+    assert first.json()["total_count"] == 3
+    assert first.json()["total_pages"] == 2
+    assert first.json()["page"] == 1
+
+
+def test_get_events_rejects_invalid_pagination(client):
+    assert client.get("/api/events?page=0").status_code == 422
+    assert client.get("/api/events?page_size=201").status_code == 422
 
 
 def test_get_sources_returns_enabled_catalog_without_runners(client):

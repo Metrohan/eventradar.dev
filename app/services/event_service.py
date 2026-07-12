@@ -15,7 +15,11 @@ class EventService:
         self.db = db
 
     def get_events(
-        self, active_only: bool = True, tags: list[str] | None = None
+        self,
+        active_only: bool = True,
+        tags: list[str] | None = None,
+        offset: int = 0,
+        limit: int | None = None,
     ) -> List[Event]:
         """Get all events, optionally filtered by active status and/or tag names."""
         query = self.db.query(Event)
@@ -26,7 +30,10 @@ class EventService:
             )
         if tags:
             query = query.filter(Event.tags.any(Tag.name.in_(tags)))
-        return query.order_by(Event.date.desc()).all()
+        query = query.order_by(Event.date.desc()).offset(offset)
+        if limit is not None:
+            query = query.limit(limit)
+        return query.all()
 
     def get_event_by_id(self, event_id: int) -> Optional[Event]:
         """Get event by ID"""
@@ -102,16 +109,22 @@ class EventService:
         self.db.commit()
         return True
 
-    def get_total_active_events(self) -> int:
+    def get_total_active_events(self, tags: list[str] | None = None) -> int:
         """Get count of active events"""
-        return (
-            self.db.query(Event)
-            .filter(
+        return self.get_event_count(active_only=True, tags=tags)
+
+    def get_event_count(
+        self, active_only: bool = True, tags: list[str] | None = None
+    ) -> int:
+        query = self.db.query(Event)
+        if active_only:
+            query = query.filter(
                 Event.is_active == True,
                 or_(Event.date.is_(None), Event.date >= datetime.now()),
             )
-            .count()
-        )
+        if tags:
+            query = query.filter(Event.tags.any(Tag.name.in_(tags)))
+        return query.count()
 
     def get_last_updated_event(self) -> Optional[Event]:
         """Get the most recently updated event"""

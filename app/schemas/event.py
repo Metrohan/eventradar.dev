@@ -52,3 +52,6 @@ class EventListResponse(BaseModel):
     events: List[EventResponse]
     total_count: int
     last_updated: Optional[str] = None
+    page: int = 1
+    page_size: int = 100
+    total_pages: int = 0

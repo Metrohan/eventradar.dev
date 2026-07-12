@@ -39,8 +39,8 @@ api.interceptors.response.use(
 // Public API endpoints (converted from Flask routes)
 export const publicAPI = {
   // Get all events (converted from /events)
-  getEvents: (activeOnly = true) =>
-    api.get(`/events?active_only=${activeOnly}`),
+  getEvents: (activeOnly = true, page = 1, pageSize = 200) =>
+    api.get(`/events?active_only=${activeOnly}&page=${page}&page_size=${pageSize}`),
 
   // Canonical event-source catalog
   getSources: () =>

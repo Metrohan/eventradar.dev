@@ -29,15 +29,21 @@ async def get_sources():
 async def get_events(
     active_only: bool = True,
     tags: Optional[List[str]] = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=100, ge=1, le=200),
     db: Session = Depends(get_db),
 ):
     event_service = EventService(db)
 
     try:
-        events = event_service.get_events(active_only=active_only, tags=tags)
-        total_count = (
-            event_service.get_total_active_events() if not tags else len(events)
+        offset = (page - 1) * page_size
+        events = event_service.get_events(
+            active_only=active_only,
+            tags=tags,
+            offset=offset,
+            limit=page_size,
         )
+        total_count = event_service.get_event_count(active_only=active_only, tags=tags)
         last_updated_event = event_service.get_last_updated_event()
 
         last_updated = None
@@ -48,6 +54,9 @@ async def get_events(
             events=events,  # type: ignore[arg-type]
             total_count=total_count,
             last_updated=last_updated,
+            page=page,
+            page_size=page_size,
+            total_pages=(total_count + page_size - 1) // page_size,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading events: {str(e)}")
