@@ -1,7 +1,9 @@
 import React from 'react'
 
 const FAVORITES_KEY = 'eventradar:favorites'
-const FILTERS_KEY = 'eventradar:filters'
+// v2 resets preferences that were accidentally populated by preset SEO pages
+// such as /online-etkinlikler.
+const FILTERS_KEY = 'eventradar:filters:v2'
 const FAVORITES_EVENT = 'eventradar:favorites-changed'
 
 const readJSON = (key, fallback) => {

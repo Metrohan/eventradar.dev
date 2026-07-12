@@ -130,6 +130,44 @@ To fetch events on demand:
 docker compose run --rm scraper python scripts/run_daily_scrape.py
 ```
 
+## Email and Browser Notifications
+
+Email subscriptions use double opt-in: subscribers join the weekly digest only after opening the confirmation link. With Gmail SMTP, use a Google App Password instead of the account password:
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=account@gmail.com
+SMTP_PASS=<16-character-app-password>
+SMTP_FROM=account@gmail.com
+```
+
+Generate VAPID keys for browser notifications and add them to `.env`:
+
+```bash
+python scripts/generate_vapid_keys.py
+```
+
+```env
+VAPID_PRIVATE_KEY=<private-key>
+VAPID_PUBLIC_KEY=<public-key>
+```
+
+Recreate the services and verify the public key:
+
+```bash
+docker compose up -d --force-recreate backend scraper
+curl http://localhost:8000/api/push/vapid-public-key
+```
+
+The returned `key` must not be empty. Server cron example for the weekly email digest:
+
+```cron
+0 9 * * 1 cd /path/to/eventradar.dev && docker compose exec -T backend python scripts/send_weekly_email_digest.py >> /var/log/eventradar-email-digest.log 2>&1
+```
+
+Never commit secrets or place them in `.env.example`.
+
 ## Telegram Scraper Alerts
 
 The scrape run coordinator sends an in-app Telegram alert after three consecutive failures for the same source:
@@ -225,7 +263,7 @@ The open-source version of this project does not include secrets or credentials.
 
 ### Phase 3 — Product Growth 🚀 (Near-term)
 - [x] Browser-stored favorites and filter preferences (no account required)
-- [ ] Email / browser push notification subscriptions
+- [x] Email / browser push notification subscriptions
 - [x] RSS feed subscriptions
 - [x] Advanced search and filtering (city, date range, price)
 - [x] Calendar view

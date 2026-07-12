@@ -26,9 +26,19 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 )
 
 if ('serviceWorker' in navigator) {
+  let refreshing = false
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return
+    refreshing = true
+    window.location.reload()
+  })
+
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
-      // Service worker kaydı başarısız olsa da uygulama normal şekilde çalışmaya devam eder.
-    })
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then(registration => registration.update())
+      .catch(() => {
+        // Service worker kaydı başarısız olsa da uygulama normal şekilde çalışmaya devam eder.
+      })
   })
 }
