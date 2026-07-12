@@ -33,3 +33,7 @@ Avoid maintaining independent source-name arrays in backend orchestration or fro
 ## Source Quality
 
 **Source Quality** combines recent run health with event-data completeness for each enabled Source Catalog entry. Success rate, consecutive failures, last error, and missing date/location/description counts are computed behind one interface and displayed in the admin area.
+
+## Scrape Run
+
+A **Scrape Run** is one source fetch followed by Event Ingestion, Source Reconciliation, and a single persisted outcome. `ScrapeRunResult` records fetched, new, updated, failed, and deactivated counts with duration and error state. Cron and manual triggers use the same coordinator interface.
