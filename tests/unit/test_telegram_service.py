@@ -189,3 +189,20 @@ def test_send_weekly_digest_sends_even_when_empty(monkeypatch):
 
     mock_send.assert_called_once()
     assert "yeni etkinlik eklenmedi" in mock_send.call_args[0][0]
+
+
+def test_notify_scraper_failure_escapes_untrusted_text(monkeypatch):
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:ABC")
+    monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
+    import importlib
+    import app.services.telegram_service as ts
+
+    importlib.reload(ts)
+
+    with patch("app.services.telegram_service._send_message") as mock_send:
+        ts.notify_scraper_failure("Bad <source>", "<script>alert(1)</script>", 3)
+
+    message = mock_send.call_args[0][0]
+    assert "Bad &lt;source&gt;" in message
+    assert "&lt;script&gt;" in message
+    assert "<script>" not in message

@@ -40,6 +40,8 @@ A **Scrape Run** is one source fetch followed by Event Ingestion, Source Reconci
 
 Source fetch uses bounded exponential retry. Only extraction is retried; Event Ingestion and database operations run once to avoid duplicate side effects.
 
+When a source reaches three consecutive failed Scrape Runs, the coordinator emits one maintainer alert. Later failures do not repeat the alert until a successful run resets the sequence.
+
 ## Migration Contract
 
 The **Migration Contract** requires a blank database to upgrade through the complete Alembic chain to the current head. CI verifies this independently from SQLAlchemy `create_all()` so missing historical tables cannot be hidden by application startup.

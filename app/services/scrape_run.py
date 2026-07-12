@@ -9,6 +9,7 @@ from .event_ingestion import EventIngestion, ScrapedEvent
 from .source_catalog import SourceDefinition, get_enabled_sources
 
 RunStatus = Literal["success", "failed"]
+FailureAlertAdapter = Callable[[str, str, int], None]
 
 
 @dataclass(frozen=True)
@@ -36,6 +37,8 @@ class ScrapeRunCoordinator:
         sleeper: Callable[[float], None] = sleep,
         max_fetch_attempts: int = 3,
         backoff_seconds: float = 1.0,
+        failure_alert_adapter: FailureAlertAdapter | None = None,
+        failure_alert_threshold: int = 3,
     ):
         self._session_factory = session_factory
         self._ingestion_factory = ingestion_factory
@@ -43,6 +46,8 @@ class ScrapeRunCoordinator:
         self._sleeper = sleeper
         self._max_fetch_attempts = max_fetch_attempts
         self._backoff_seconds = backoff_seconds
+        self._failure_alert_adapter = failure_alert_adapter
+        self._failure_alert_threshold = failure_alert_threshold
 
     def run(self, source: SourceDefinition) -> ScrapeRunResult:
         started = self._timer()
@@ -75,6 +80,7 @@ class ScrapeRunCoordinator:
             )
 
         self._persist(result)
+        self._alert_on_failure_threshold(result)
         return result
 
     def run_all(self) -> list[ScrapeRunResult]:
@@ -111,9 +117,44 @@ class ScrapeRunCoordinator:
         finally:
             db.close()
 
+    def _alert_on_failure_threshold(self, result: ScrapeRunResult) -> None:
+        if result.status != "failed" or not self._failure_alert_adapter:
+            return
+
+        db = self._session_factory()
+        try:
+            logs = (
+                db.query(ScraperLog)
+                .filter(ScraperLog.source == result.source)
+                .order_by(ScraperLog.created_at.desc(), ScraperLog.id.desc())
+                .limit(self._failure_alert_threshold + 1)
+                .all()
+            )
+            consecutive_failures = 0
+            for log in logs:
+                if log.status != "failed":
+                    break
+                consecutive_failures += 1
+            if consecutive_failures == self._failure_alert_threshold:
+                try:
+                    self._failure_alert_adapter(
+                        result.source,
+                        result.error or "Bilinmeyen hata",
+                        consecutive_failures,
+                    )
+                except Exception:
+                    pass
+        finally:
+            db.close()
+
 
 def build_scrape_run_coordinator() -> ScrapeRunCoordinator:
     from ..core.database import SessionLocal
     from .event_ingestion import build_event_ingestion
+    from .telegram_service import notify_scraper_failure
 
-    return ScrapeRunCoordinator(SessionLocal, build_event_ingestion)
+    return ScrapeRunCoordinator(
+        SessionLocal,
+        build_event_ingestion,
+        failure_alert_adapter=notify_scraper_failure,
+    )

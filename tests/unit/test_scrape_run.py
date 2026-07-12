@@ -86,3 +86,25 @@ def test_fetch_retries_with_exponential_backoff_before_ingestion(test_db):
     assert sleeps == [1.0, 2.0]
     ingestion.ingest.assert_called_once()
     assert test_db.query(ScraperLog).one().attempts == 3
+
+
+def test_failure_alert_fires_once_when_threshold_is_reached(test_db):
+    source = get_source("tech-istanbul")
+    assert source is not None
+    source = replace(
+        source, runner=lambda: (_ for _ in ()).throw(RuntimeError("timeout"))
+    )
+    alert = MagicMock()
+    timer_values = iter(float(value) for value in range(8))
+    coordinator = ScrapeRunCoordinator(
+        lambda: test_db,
+        MagicMock(),
+        timer=lambda: next(timer_values),
+        sleeper=lambda _seconds: None,
+        failure_alert_adapter=alert,
+    )
+
+    for _ in range(4):
+        coordinator.run(source)
+
+    alert.assert_called_once_with("Tech Istanbul", "timeout", 3)
