@@ -5,11 +5,17 @@ Revises: e5f6a7b8c9d0
 Create Date: 2026-07-12 14:50:00.000000
 
 The Subscriber model existed in the codebase but relied on
-Base.metadata.create_all() at app startup rather than a migration —
-CI's migration-only smoke test (a fresh DB via `alembic upgrade head`,
-no app startup) never had this table, so the next migration that
-ALTERs it failed. This creates the table matching the model as it
-stood before that next migration adds the confirm/unsubscribe columns.
+Base.metadata.create_all() at app startup rather than a migration.
+That means two different environments disagree about whether this
+table already exists:
+  - CI's migration-only smoke test (a fresh DB via `alembic upgrade
+    head`, no app startup) never had this table, so the next
+    migration that ALTERs it failed with "no such table".
+  - Production (and any environment that has run the app at least
+    once) already has it via create_all(), so unconditionally
+    creating it here fails with "relation already exists".
+This migration is therefore idempotent: it only creates the table if
+it isn't already there.
 """
 
 from alembic import op
@@ -22,6 +28,11 @@ depends_on = None
 
 
 def upgrade() -> None:
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if "subscribers" in inspector.get_table_names():
+        return
+
     op.create_table(
         "subscribers",
         sa.Column("id", sa.Integer(), primary_key=True, index=True),
@@ -36,4 +47,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_table("subscribers")
+    # Tablo bu migration'dan önce de var olabileceğinden (create_all ile)
+    # downgrade'de düşürmüyoruz; sonraki migration'ın eklediği kolonları
+    # kaldırmak yeterli.
+    pass
