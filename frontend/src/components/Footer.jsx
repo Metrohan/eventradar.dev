@@ -2,7 +2,6 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useSources from '../hooks/useSources'
-import SupportModal from './SupportModal'
 import { publicAPI } from '../services/api'
 
 const QUICK_LINKS = [
@@ -14,7 +13,6 @@ const QUICK_LINKS = [
 
 const Footer = () => {
   const { sources } = useSources()
-  const [showSupport, setShowSupport] = React.useState(false)
   const [email, setEmail] = React.useState('')
   const [submitting, setSubmitting] = React.useState(false)
 
@@ -146,8 +144,8 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Open source badge + Destek Ol */}
-        <div className="col-lg-4 col-md-6 d-flex flex-column align-items-start align-items-lg-end gap-3">
+        {/* Open source badge */}
+        <div className="col-lg-4 col-md-6 d-flex align-items-start justify-content-lg-end">
           <a
             href="https://github.com/Metrohan/eventradar.dev"
             target="_blank"
@@ -181,42 +179,8 @@ const Footer = () => {
             </span>
           </a>
 
-          <button
-            type="button"
-            onClick={() => setShowSupport(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              padding: '1rem 1.5rem',
-              width: '100%',
-              maxWidth: '280px',
-              background: 'var(--bg-card)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: '16px',
-              textAlign: 'left',
-              cursor: 'pointer',
-              transition: 'all 0.25s ease',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#FFDD00'
-              e.currentTarget.style.boxShadow = '0 4px 20px rgba(255,221,0,0.12)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'var(--border-subtle)'
-              e.currentTarget.style.boxShadow = 'none'
-            }}
-          >
-            <img src="/coffee.svg" alt="" width="24" height="24" />
-            <span>
-              <span style={{ display: 'block', fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>Destek Ol</span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sunucu + domain masraflarına katkı ☕</span>
-            </span>
-          </button>
         </div>
       </div>
-
-      <SupportModal show={showSupport} handleClose={() => setShowSupport(false)} />
 
       {/* Bottom bar */}
       <div style={{

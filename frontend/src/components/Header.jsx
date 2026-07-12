@@ -1,4 +1,5 @@
 import React from 'react'
+import SupportModal from './SupportModal'
 import { Link, useLocation } from 'react-router-dom'
 import ThemeToggle from './ThemeToggle'
 
@@ -12,6 +13,7 @@ const NAV_LINKS = [
 ]
 
 const Header = () => {
+  const [showSupport, setShowSupport] = React.useState(false)
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const location = useLocation()
 
@@ -75,6 +77,14 @@ const Header = () => {
 	  GitHub
 	</a>
             <ThemeToggle />
+            <button
+              type="button"
+              onClick={() => setShowSupport(true)}
+              className="support-btn-link"
+            >
+              <img src="/coffee.svg" className="bmc-icon" alt="" width="18" height="18" />
+              Destek Ol
+            </button>
           </nav>
 
           {/* Mobile hamburger */}
@@ -87,6 +97,8 @@ const Header = () => {
           </button>
         </div>
       </div>
+
+      <SupportModal show={showSupport} handleClose={() => setShowSupport(false)} />
     </header>
     </>
   )
