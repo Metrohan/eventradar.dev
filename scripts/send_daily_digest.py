@@ -42,12 +42,20 @@ def main() -> None:
         ]
 
         date_label = yesterday_start.strftime("%-d %B %Y")
-        send_daily_digest(event_dicts, date_label)
 
-        if event_dicts:
+        if not event_dicts:
+            print(f"Günlük özet atlandı: dün ({date_label}) yeni etkinlik yok")
+            return
+
+        sent = send_daily_digest(event_dicts, date_label)
+        if sent:
             print(f"Günlük özet gönderildi: {len(event_dicts)} etkinlik ({date_label})")
         else:
-            print(f"Günlük özet atlandı: dün ({date_label}) yeni etkinlik yok")
+            print(
+                "Günlük özet GÖNDERİLEMEDİ (TELEGRAM_BOT_TOKEN/TELEGRAM_CHANNEL_ID "
+                "eksik olabilir veya Telegram API hatası oluştu — loglara bakın)."
+            )
+            sys.exit(1)
     finally:
         db.close()
 

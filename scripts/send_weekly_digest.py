@@ -41,9 +41,18 @@ def main() -> None:
         ]
 
         week_label = f"{week_start.strftime('%-d %B')} – {(today - timedelta(days=1)).strftime('%-d %B')}"
-        send_weekly_digest(event_dicts, week_label)
+        sent = send_weekly_digest(event_dicts, week_label)
 
-        print(f"Haftalık özet gönderildi: {len(event_dicts)} etkinlik ({week_label})")
+        if sent:
+            print(
+                f"Haftalık özet gönderildi: {len(event_dicts)} etkinlik ({week_label})"
+            )
+        else:
+            print(
+                "Haftalık özet GÖNDERİLEMEDİ (TELEGRAM_BOT_TOKEN/TELEGRAM_CHANNEL_ID "
+                "eksik olabilir veya Telegram API hatası oluştu — loglara bakın)."
+            )
+            sys.exit(1)
     finally:
         db.close()
 
