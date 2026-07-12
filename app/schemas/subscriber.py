@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from typing import List, Optional
 from datetime import datetime
 
@@ -6,7 +6,7 @@ from datetime import datetime
 class SubscriberBase(BaseModel):
     contact_info: str
     channel: str  # 'telegram', 'email'
-    interests: List[str] = []
+    interests: List[str] = Field(default_factory=list)
     is_active: bool = True
 
 
@@ -15,11 +15,10 @@ class SubscriberCreate(SubscriberBase):
 
 
 class SubscriberResponse(SubscriberBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class BroadcastRequest(BaseModel):

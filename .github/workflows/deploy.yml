@@ -59,4 +59,6 @@ jobs:
             docker compose run --rm backend alembic upgrade head
             docker compose up -d --force-recreate
 
+            BASE_URL=http://127.0.0.1:8000 bash scripts/verify_deploy.sh
+
             echo "--- Deploy tamamlandi ---"

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import List, Optional
 from datetime import datetime
 
@@ -32,9 +32,11 @@ class EventUpdate(BaseModel):
 
 
 class EventResponse(EventBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     scraped_at: datetime
-    tags: list[str] = []
+    tags: list[str] = Field(default_factory=list)
 
     @field_validator("tags", mode="before")
     @classmethod
@@ -43,14 +45,10 @@ class EventResponse(EventBase):
             return []
         return [t.name if hasattr(t, "name") else t for t in v]
 
-    class Config:
-        from_attributes = True
-
 
 class EventListResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     events: List[EventResponse]
     total_count: int
     last_updated: Optional[str] = None
-
-    class Config:
-        from_attributes = True

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
+from contextlib import asynccontextmanager
 from .core.config import settings
 from .core.database import engine, Base
 from .api import api_router
@@ -21,18 +22,9 @@ class UnicodeJSONResponse(JSONResponse):
 
 # Create database tables
 
-# Create FastAPI app
-app = FastAPI(
-    title=settings.app_name,
-    description="TechEventRadar API - Modern full-stack event management system",
-    version="2.0.0",
-    debug=settings.debug,
-    default_response_class=UnicodeJSONResponse,
-)
 
-
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
     Base.metadata.create_all(bind=engine)
     from .core.database import SessionLocal
     from .services.tag_service import seed_tags
@@ -42,6 +34,18 @@ def on_startup():
         seed_tags(db)
     finally:
         db.close()
+    yield
+
+
+# Create FastAPI app
+app = FastAPI(
+    title=settings.app_name,
+    description="TechEventRadar API - Modern full-stack event management system",
+    version="2.0.0",
+    debug=settings.debug,
+    default_response_class=UnicodeJSONResponse,
+    lifespan=lifespan,
+)
 
 
 # Add CORS middleware

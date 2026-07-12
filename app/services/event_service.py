@@ -66,7 +66,7 @@ class EventService:
         if not db_event:
             return None
         try:
-            update_data = event_data.dict(exclude_unset=True)
+            update_data = event_data.model_dump(exclude_unset=True)
             # Eğer date güncellenmiyorsa ve açıklama varsa, açıklamadan çek
             if (
                 "date" not in update_data or not update_data.get("date")
