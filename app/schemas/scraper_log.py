@@ -11,6 +11,7 @@ class ScraperLogBase(BaseModel):
     updated_events: int = 0
     deactivated_events: int = 0
     failed_events: int = 0
+    attempts: int = 1
     error_message: Optional[str] = None
     duration_seconds: float = 0.0
 

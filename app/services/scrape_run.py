@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from time import monotonic
+from time import monotonic, sleep
 from typing import Callable, Literal
 
 from sqlalchemy.orm import Session
@@ -22,6 +22,7 @@ class ScrapeRunResult:
     deactivated: int = 0
     duration_seconds: float = 0.0
     error: str | None = None
+    attempts: int = 1
 
 
 class ScrapeRunCoordinator:
@@ -32,15 +33,22 @@ class ScrapeRunCoordinator:
         session_factory: Callable[[], Session],
         ingestion_factory: Callable[[], EventIngestion],
         timer: Callable[[], float] = monotonic,
+        sleeper: Callable[[float], None] = sleep,
+        max_fetch_attempts: int = 3,
+        backoff_seconds: float = 1.0,
     ):
         self._session_factory = session_factory
         self._ingestion_factory = ingestion_factory
         self._timer = timer
+        self._sleeper = sleeper
+        self._max_fetch_attempts = max_fetch_attempts
+        self._backoff_seconds = backoff_seconds
 
     def run(self, source: SourceDefinition) -> ScrapeRunResult:
         started = self._timer()
+        attempts = 0
         try:
-            events = source.runner()
+            events, attempts = self._fetch_with_retry(source)
             ingestion = self._ingestion_factory()
             ingestion_result = ingestion.ingest(
                 ScrapedEvent.from_mapping(event, source.name) for event in events
@@ -55,6 +63,7 @@ class ScrapeRunCoordinator:
                 failed=ingestion_result.failed,
                 deactivated=deactivated,
                 duration_seconds=self._timer() - started,
+                attempts=attempts,
             )
         except Exception as exc:
             result = ScrapeRunResult(
@@ -62,6 +71,7 @@ class ScrapeRunCoordinator:
                 status="failed",
                 duration_seconds=self._timer() - started,
                 error=str(exc),
+                attempts=attempts or self._max_fetch_attempts,
             )
 
         self._persist(result)
@@ -69,6 +79,16 @@ class ScrapeRunCoordinator:
 
     def run_all(self) -> list[ScrapeRunResult]:
         return [self.run(source) for source in get_enabled_sources()]
+
+    def _fetch_with_retry(self, source: SourceDefinition) -> tuple[list[dict], int]:
+        for attempt in range(1, self._max_fetch_attempts + 1):
+            try:
+                return source.runner(), attempt
+            except Exception:
+                if attempt == self._max_fetch_attempts:
+                    raise
+                self._sleeper(self._backoff_seconds * (2 ** (attempt - 1)))
+        raise RuntimeError("unreachable")
 
     def _persist(self, result: ScrapeRunResult) -> None:
         db = self._session_factory()
@@ -84,6 +104,7 @@ class ScrapeRunCoordinator:
                     failed_events=result.failed,
                     error_message=result.error,
                     duration_seconds=result.duration_seconds,
+                    attempts=result.attempts,
                 )
             )
             db.commit()
