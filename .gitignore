@@ -46,6 +46,7 @@ output/
 !tests/fixtures/*.json
 !frontend/package.json
 !frontend/package-lock.json
+!frontend/public/manifest.json
 
 chromedriver/
 geckodriver/

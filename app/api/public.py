@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List, Optional
@@ -10,6 +11,7 @@ from ..services.suggestion_service import SuggestionService
 from ..services.event_request_service import EventRequestService
 from ..services.source_catalog import get_enabled_sources
 from ..services.rate_limiter import FixedWindowRateLimiter
+from ..services.rss_service import build_events_rss
 from ..schemas.event import EventResponse, EventListResponse
 from ..schemas.announcement import AnnouncementResponse, AnnouncementListResponse
 from ..schemas.suggestion import SuggestionCreate, SuggestionResponse
@@ -75,6 +77,15 @@ async def get_events(
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading events: {str(e)}")
+
+
+@router.get("/events/rss")
+async def get_events_rss(db: Session = Depends(get_db)):
+    """En güncel etkinlikleri RSS 2.0 feed'i olarak döner (bkz. rss_service)."""
+    event_service = EventService(db)
+    events = event_service.get_events(active_only=True, limit=100)
+    feed_xml = build_events_rss(events)
+    return Response(content=feed_xml, media_type="application/rss+xml")
 
 
 @router.get("/announcements", response_model=AnnouncementListResponse)

@@ -93,6 +93,42 @@ def test_get_events_rejects_invalid_pagination(client):
     assert client.get("/api/events?page_size=201").status_code == 422
 
 
+def test_events_rss_returns_well_formed_feed_with_expected_items(client, test_db):
+    import xml.etree.ElementTree as ET
+
+    for index in range(3):
+        _seed_event(test_db, url=f"https://example.com/rss-{index}", is_active=True)
+
+    response = client.get("/api/events/rss")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("application/rss+xml")
+
+    root = ET.fromstring(response.text)
+    assert root.tag == "rss"
+    channel = root.find("channel")
+    assert channel is not None
+    items = channel.findall("item")
+    assert len(items) == 3
+    for item in items:
+        assert item.find("title") is not None
+        assert item.find("link") is not None
+        assert item.find("pubDate") is not None
+
+
+def test_events_rss_excludes_inactive_events(client, test_db):
+    import xml.etree.ElementTree as ET
+
+    _seed_event(test_db, url="https://example.com/rss-active", is_active=True)
+    _seed_event(test_db, url="https://example.com/rss-inactive", is_active=False)
+
+    response = client.get("/api/events/rss")
+    root = ET.fromstring(response.text)
+    items = root.find("channel").findall("item")
+
+    assert len(items) == 1
+
+
 def test_get_event_detail_hides_inactive_event(client, test_db):
     event = _seed_event(test_db, is_active=False)
 

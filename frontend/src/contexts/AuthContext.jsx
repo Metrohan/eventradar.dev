@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import toast from 'react-hot-toast'
 import { adminAPI } from '../services/api'
 
 const AuthContext = createContext()
@@ -18,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   const handleForceLogout = useCallback(() => {
     localStorage.removeItem('admin_token')
     setIsAuthenticated(false)
+    toast.error('Oturumunuz sona erdi, lütfen tekrar giriş yapın.')
   }, [])
 
   useEffect(() => {
