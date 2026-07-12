@@ -6,8 +6,18 @@ from ..models.blog_post import BlogPost
 from ..models.event import Event
 
 MONTHS = (
-    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
+    "Ocak",
+    "Şubat",
+    "Mart",
+    "Nisan",
+    "Mayıs",
+    "Haziran",
+    "Temmuz",
+    "Ağustos",
+    "Eylül",
+    "Ekim",
+    "Kasım",
+    "Aralık",
 )
 
 
@@ -84,5 +94,7 @@ class WeeklyContentService:
 
     @staticmethod
     def _event_line(event: Event) -> str:
-        event_date = event.date.strftime("%d.%m.%Y %H:%M") if event.date else "Tarih açıklanmadı"
+        event_date = (
+            event.date.strftime("%d.%m.%Y %H:%M") if event.date else "Tarih açıklanmadı"
+        )
         return f"**{event_date} · {event.location or 'Konum açıklanmadı'} · {event.source}**"

@@ -7,7 +7,10 @@ _RUNNERS = {
     "scrape_anbean_events": ("anbean_scraper", "scrape_anbean_events"),
     "scrape_kodluyoruz_events": ("kodluyoruz_scraper", "scrape_kodluyoruz_events"),
     "scrape_youthall_events": ("youthall_scraper", "scrape_youthall_events"),
-    "scrape_techistanbul_events": ("techistanbul_scraper", "scrape_techistanbul_events"),
+    "scrape_techistanbul_events": (
+        "techistanbul_scraper",
+        "scrape_techistanbul_events",
+    ),
     "scrape_patika_events": ("patika_scraper", "scrape_patika_events"),
     "scrape_komunite_events": ("komunite_scraper", "scrape_komunite_events"),
 }

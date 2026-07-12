@@ -23,9 +23,15 @@ def upgrade():
         sa.Column("content", sa.Text(), nullable=False),
         sa.Column("week_start", sa.Date(), nullable=False),
         sa.Column("week_end", sa.Date(), nullable=False),
-        sa.Column("is_published", sa.Boolean(), nullable=False, server_default=sa.true()),
-        sa.Column("created_at", sa.DateTime(), nullable=False, server_default=sa.func.now()),
-        sa.Column("published_at", sa.DateTime(), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "is_published", sa.Boolean(), nullable=False, server_default=sa.true()
+        ),
+        sa.Column(
+            "created_at", sa.DateTime(), nullable=False, server_default=sa.func.now()
+        ),
+        sa.Column(
+            "published_at", sa.DateTime(), nullable=False, server_default=sa.func.now()
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("slug"),
         sa.UniqueConstraint("week_start"),

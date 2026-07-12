@@ -23,7 +23,10 @@ def parse_komunite_events(html: bytes | str) -> list[dict]:
         text = " ".join(card.get_text(" ", strip=True).split())
         if "Yakında Açıklanacak" in text:
             continue
-        date_match = re.search(r"(\d{1,2}(?:\s*-\s*\d{1,2})?\s+[A-Za-zÇĞİÖŞÜçğıöşü]+\s+\d{4})(?:\s*\|\s*(\d{1,2}:\d{2}))?", text)
+        date_match = re.search(
+            r"(\d{1,2}(?:\s*-\s*\d{1,2})?\s+[A-Za-zÇĞİÖŞÜçğıöşü]+\s+\d{4})(?:\s*\|\s*(\d{1,2}:\d{2}))?",
+            text,
+        )
         paragraphs = [node.get_text(" ", strip=True) for node in card.select("p")]
         description = max(paragraphs, key=len, default="")
         title_node = card.select_one("h2, h3, h4")
@@ -44,18 +47,27 @@ def parse_komunite_events(html: bytes | str) -> list[dict]:
         if not date_match or not title:
             continue
         seen.add(url)
-        location = next((value for value in paragraphs if "Komünite Space" in value or value == "Online"), None)
-        events.append({
-            "title": title,
-            "description": description,
-            "date": " ".join(part for part in date_match.groups() if part),
-            "application_deadline": None,
-            "location": location,
-            "url": url,
-            "image_url": None,
-            "source": "Komünite",
-            "is_active": True,
-        })
+        location = next(
+            (
+                value
+                for value in paragraphs
+                if "Komünite Space" in value or value == "Online"
+            ),
+            None,
+        )
+        events.append(
+            {
+                "title": title,
+                "description": description,
+                "date": " ".join(part for part in date_match.groups() if part),
+                "application_deadline": None,
+                "location": location,
+                "url": url,
+                "image_url": None,
+                "source": "Komünite",
+                "is_active": True,
+            }
+        )
     return events
 
 

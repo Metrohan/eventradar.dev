@@ -31,8 +31,20 @@ def test_weekly_content_generation_is_idempotent(test_db):
 def test_weekly_content_excludes_inactive_and_out_of_range_events(test_db):
     test_db.add_all(
         [
-            Event(title="Inactive", date=datetime(2026, 7, 15), url="https://example.com/inactive", source="Example", is_active=False),
-            Event(title="Next week", date=datetime(2026, 7, 21), url="https://example.com/next", source="Example", is_active=True),
+            Event(
+                title="Inactive",
+                date=datetime(2026, 7, 15),
+                url="https://example.com/inactive",
+                source="Example",
+                is_active=False,
+            ),
+            Event(
+                title="Next week",
+                date=datetime(2026, 7, 21),
+                url="https://example.com/next",
+                source="Example",
+                is_active=True,
+            ),
         ]
     )
     test_db.commit()

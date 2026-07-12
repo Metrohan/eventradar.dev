@@ -134,7 +134,10 @@ def get_source(identifier: str) -> SourceDefinition | None:
             source
             for source in SOURCE_CATALOG
             if normalized
-            in {source.key.casefold(), *(value.casefold() for value in source.identifiers)}
+            in {
+                source.key.casefold(),
+                *(value.casefold() for value in source.identifiers),
+            }
         ),
         None,
     )

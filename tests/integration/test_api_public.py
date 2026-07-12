@@ -177,8 +177,24 @@ def test_blog_list_and_detail_return_only_published_posts(client, test_db):
 
     test_db.add_all(
         [
-            BlogPost(slug="published", title="Published", summary="Summary", content="Content", week_start=date(2026, 7, 13), week_end=date(2026, 7, 19), is_published=True),
-            BlogPost(slug="draft", title="Draft", summary="Summary", content="Content", week_start=date(2026, 7, 20), week_end=date(2026, 7, 26), is_published=False),
+            BlogPost(
+                slug="published",
+                title="Published",
+                summary="Summary",
+                content="Content",
+                week_start=date(2026, 7, 13),
+                week_end=date(2026, 7, 19),
+                is_published=True,
+            ),
+            BlogPost(
+                slug="draft",
+                title="Draft",
+                summary="Summary",
+                content="Content",
+                week_start=date(2026, 7, 20),
+                week_end=date(2026, 7, 26),
+                is_published=False,
+            ),
         ]
     )
     test_db.commit()
