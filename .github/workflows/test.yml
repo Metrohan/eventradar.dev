@@ -77,6 +77,15 @@ jobs:
       - name: Security scan (bandit)
         run: bandit -r app/ -ll -q
 
+      - name: Migration smoke test
+        env:
+          DEBUG: "false"
+          DATABASE_URL: "sqlite:///./migration-smoke.db"
+        run: |
+          rm -f migration-smoke.db
+          alembic upgrade head
+          alembic current | grep "(head)"
+
       - name: Run tests (excluding integration)
         run: pytest -m "not integration" --cov=app --cov-report=xml -q
 
