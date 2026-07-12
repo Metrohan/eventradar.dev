@@ -6,6 +6,7 @@ os.environ.setdefault("ADMIN_USERNAME", "testadmin")
 os.environ.setdefault("ADMIN_PASSWORD", "testpassword")
 
 import pytest
+from unittest.mock import patch
 from app.models.event import Event
 from app.models.announcement import Announcement
 from datetime import datetime, timedelta
@@ -160,6 +161,18 @@ def test_get_latest_announcement_returns_item(client, test_db):
     resp = client.get("/api/announcements/latest")
     assert resp.status_code == 200
     assert resp.json()["title"] == "Latest"
+
+
+def test_get_latest_announcement_reports_service_failure(client):
+    with patch(
+        "app.services.announcement_service.AnnouncementService.get_latest_announcement",
+        side_effect=RuntimeError("database unavailable"),
+    ):
+        resp = client.get("/api/announcements/latest")
+
+    assert resp.status_code == 500
+    assert resp.json()["detail"] == "Duyuru yüklenirken bir hata oluştu"
+    assert "database unavailable" not in resp.text
 
 
 # ── /api/suggestions ─────────────────────────────────────────────────────────

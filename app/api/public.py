@@ -93,8 +93,10 @@ async def get_latest_announcement(db: Session = Depends(get_db)):
         if not announcement:
             return None  # Frontend will handle null
         return announcement
-    except Exception as e:
-        return None  # Silently return null instead of 404
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500, detail="Duyuru yüklenirken bir hata oluştu"
+        ) from exc
 
 
 @router.get("/events/{event_id}", response_model=EventResponse)
