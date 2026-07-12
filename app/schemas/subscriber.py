@@ -34,3 +34,7 @@ class EmailSubscribeRequest(BaseModel):
 class PushSubscribeRequest(BaseModel):
     endpoint: str = Field(min_length=1, max_length=1000)
     keys: dict[str, str]  # {"p256dh": "...", "auth": "..."}
+
+
+class PushUnsubscribeRequest(BaseModel):
+    endpoint: str = Field(min_length=1, max_length=1000)

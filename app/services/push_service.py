@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from urllib.parse import urlparse
 
 from pywebpush import WebPushException, webpush
 from sqlalchemy.orm import Session
@@ -11,6 +12,33 @@ logger = logging.getLogger(__name__)
 
 VAPID_CLAIMS_SUB = "mailto:metehangnn@outlook.com"
 
+# Push endpoint'i tarayıcı tarafından belirlenir ve sunucuya gönderilir; bunu
+# doğrulamadan webpush() ile isteğe bağlı bir URL'ye HTTP isteği yapmak SSRF
+# riski oluşturur. Yalnızca bilinen push servis sağlayıcılarının domain'lerine
+# izin veriyoruz.
+ALLOWED_PUSH_HOSTS = (
+    "fcm.googleapis.com",  # Chrome / Android / Edge (Chromium)
+    "updates.push.services.mozilla.com",  # Firefox
+    "notify.windows.com",  # Legacy WNS
+    "web.push.apple.com",  # Safari
+)
+
+
+def is_valid_push_endpoint(endpoint: str) -> bool:
+    """Push endpoint'inin https olduğunu ve bilinen bir sağlayıcıya ait
+    olduğunu doğrular (SSRF önleme)."""
+    try:
+        parsed = urlparse(endpoint)
+    except ValueError:
+        return False
+    if parsed.scheme != "https" or not parsed.hostname:
+        return False
+    host = parsed.hostname.lower()
+    return any(
+        host == allowed or host.endswith(f".{allowed}")
+        for allowed in ALLOWED_PUSH_HOSTS
+    )
+
 
 def _is_configured() -> bool:
     return bool(os.getenv("VAPID_PRIVATE_KEY") and os.getenv("VAPID_PUBLIC_KEY"))
@@ -18,6 +46,9 @@ def _is_configured() -> bool:
 
 def _send_to_subscription(sub: PushSubscription, payload: dict) -> bool:
     private_key = os.getenv("VAPID_PRIVATE_KEY", "")
+    if not is_valid_push_endpoint(str(sub.endpoint)):
+        logger.warning("Geçersiz push endpoint reddedildi (id=%s)", sub.id)
+        return False
     try:
         webpush(
             subscription_info={
