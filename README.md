@@ -233,7 +233,7 @@ Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güve
 - [ ] E-posta / tarayıcı bildirim abonelikleri
 - [x] RSS feed aboneliği
 - [x] Gelişmiş arama ve filtreleme (şehir, tarih aralığı, ücret)
-- [ ] Etkinlik takvimi görünümü
+- [x] Etkinlik takvimi görünümü
 - [ ] Mobil uyumlu PWA
 
 ### Faz 4 — Uluslararasılaşma 🌍 (Uzun dönem)
