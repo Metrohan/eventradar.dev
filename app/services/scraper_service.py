@@ -21,7 +21,7 @@ class ScraperService:
         self.db = db
 
     def create_log(self, log_data: ScraperLogCreate) -> ScraperLog:
-        db_log = ScraperLog(**log_data.dict())
+        db_log = ScraperLog(**log_data.model_dump())
         self.db.add(db_log)
         self.db.commit()
         self.db.refresh(db_log)

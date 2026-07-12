@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, ConfigDict, HttpUrl
 from typing import List, Optional
 from datetime import datetime, date
 
@@ -16,11 +16,10 @@ class EventRequestCreate(EventRequestBase):
 
 
 class EventRequestResponse(EventRequestBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class EventRequestListResponse(BaseModel):

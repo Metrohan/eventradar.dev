@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 from datetime import datetime
 
@@ -14,11 +14,10 @@ class SuggestionCreate(SuggestionBase):
 
 
 class SuggestionResponse(SuggestionBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class SuggestionListResponse(BaseModel):

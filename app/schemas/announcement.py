@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 from datetime import datetime
 
@@ -13,16 +13,14 @@ class AnnouncementCreate(AnnouncementBase):
 
 
 class AnnouncementResponse(AnnouncementBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class AnnouncementListResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     announcements: List[AnnouncementResponse]
     total_count: int
-
-    class Config:
-        from_attributes = True

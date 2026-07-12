@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Union
 import os
 from dotenv import load_dotenv
@@ -8,6 +8,7 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
     # Database
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./instance/events.db")
 
@@ -61,10 +62,6 @@ class Settings(BaseSettings):
                 raise ValueError("ADMIN_USERNAME is required.")
             if not self.admin_password:
                 raise ValueError("ADMIN_PASSWORD is required.")
-
-    class Config:
-        env_file = ".env"
-        extra = "ignore"
 
 
 settings = Settings()
