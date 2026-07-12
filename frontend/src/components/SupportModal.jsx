@@ -38,6 +38,19 @@ const SupportModal = ({ show, handleClose }) => {
                                 TechEventRadar tamamen gönüllülük esasıyla geliştirilen açık kaynaklı bir projedir.
                                 Geliştirmemize katkıda bulunmak için bize bir kahve ısmarlayabilir veya projemizi çevrenizle paylaşabilirsiniz.
                             </p>
+                            <div
+                                className="d-flex justify-content-center gap-4 mt-3 pt-3"
+                                style={{ borderTop: '1px solid var(--border-subtle)' }}
+                            >
+                                <div className="text-center">
+                                    <div className="fw-bold" style={{ fontSize: '1.1rem', color: 'var(--action-primary)' }}>~180₺</div>
+                                    <div className="text-muted" style={{ fontSize: '0.72rem' }}>Sunucu / ay</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="fw-bold" style={{ fontSize: '1.1rem', color: 'var(--action-primary)' }}>~1.700₺</div>
+                                    <div className="text-muted" style={{ fontSize: '0.72rem' }}>Domain / yıl</div>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="d-grid gap-3">

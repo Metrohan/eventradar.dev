@@ -17,6 +17,25 @@ self.addEventListener('activate', (event) => {
   self.clients.claim()
 })
 
+self.addEventListener('push', (event) => {
+  if (!event.data) return
+  const payload = event.data.json()
+  event.waitUntil(
+    self.registration.showNotification(payload.title || 'TechEventRadar', {
+      body: payload.body || '',
+      icon: '/pwa-icon-192.png',
+      badge: '/pwa-icon-192.png',
+      data: { url: payload.url || '/' },
+    })
+  )
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const url = event.notification.data?.url || '/'
+  event.waitUntil(self.clients.openWindow(url))
+})
+
 self.addEventListener('fetch', (event) => {
   const { request } = event
   if (request.method !== 'GET') return

@@ -25,3 +25,16 @@ class BroadcastRequest(BaseModel):
     message: str = Field(min_length=10, max_length=4096)
     target_channel: str = "all"  # 'all', 'telegram', 'email'
     target_interest: Optional[str] = None  # Filter by tag
+
+
+class EmailSubscribeRequest(BaseModel):
+    email: EmailStr
+
+
+class PushSubscribeRequest(BaseModel):
+    endpoint: str = Field(min_length=1, max_length=1000)
+    keys: dict[str, str]  # {"p256dh": "...", "auth": "..."}
+
+
+class PushUnsubscribeRequest(BaseModel):
+    endpoint: str = Field(min_length=1, max_length=1000)

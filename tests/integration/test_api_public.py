@@ -349,3 +349,224 @@ def test_get_events_filter_by_tags(client, test_db):
     events = resp.json()["events"]
     assert len(events) == 1
     assert events[0]["tags"] == ["hackathon"]
+
+
+# ── Email subscription ──────────────────────────────────────────────────────
+
+
+def test_subscribe_email_creates_unconfirmed_subscriber(client, test_db):
+    from app.api.public import public_form_limiter
+    from app.models.subscriber import Subscriber
+
+    public_form_limiter.reset()
+
+    with patch("app.services.email_service.send_confirmation_email", return_value=True):
+        resp = client.post("/api/subscribe", json={"email": "test@example.com"})
+
+    assert resp.status_code == 200
+    subscriber = (
+        test_db.query(Subscriber)
+        .filter(Subscriber.contact_info == "test@example.com")
+        .first()
+    )
+    assert subscriber is not None
+    assert subscriber.confirmed is False
+    assert subscriber.confirm_token
+    assert subscriber.unsubscribe_token
+
+
+def test_subscribe_email_rejects_invalid_email(client):
+    from app.api.public import public_form_limiter
+
+    public_form_limiter.reset()
+    resp = client.post("/api/subscribe", json={"email": "not-an-email"})
+    assert resp.status_code == 422
+
+
+def test_confirm_subscription_marks_confirmed(client, test_db):
+    from app.models.subscriber import Subscriber
+
+    subscriber = Subscriber(
+        contact_info="confirm@example.com",
+        channel="email",
+        confirmed=False,
+        confirm_token="tok123",
+        unsubscribe_token="unsub123",
+    )
+    test_db.add(subscriber)
+    test_db.commit()
+
+    resp = client.get("/api/subscribe/confirm?token=tok123")
+    assert resp.status_code == 200
+
+    test_db.refresh(subscriber)
+    assert subscriber.confirmed is True
+
+
+def test_confirm_subscription_invalid_token_404s(client):
+    resp = client.get("/api/subscribe/confirm?token=nonexistent")
+    assert resp.status_code == 404
+
+
+def test_unsubscribe_removes_subscriber(client, test_db):
+    from app.models.subscriber import Subscriber
+
+    subscriber = Subscriber(
+        contact_info="bye@example.com",
+        channel="email",
+        confirmed=True,
+        confirm_token="tok456",
+        unsubscribe_token="unsub456",
+    )
+    test_db.add(subscriber)
+    test_db.commit()
+
+    resp = client.get("/api/subscribe/unsubscribe?token=unsub456")
+    assert resp.status_code == 200
+
+    remaining = (
+        test_db.query(Subscriber)
+        .filter(Subscriber.contact_info == "bye@example.com")
+        .first()
+    )
+    assert remaining is None
+
+
+# ── Push subscription ────────────────────────────────────────────────────────
+
+
+def test_push_subscribe_creates_subscription(client, test_db):
+    from app.api.public import public_form_limiter
+    from app.models.push_subscription import PushSubscription
+
+    public_form_limiter.reset()
+
+    payload = {
+        "endpoint": "https://fcm.googleapis.com/fcm/send/abc123",
+        "keys": {"p256dh": "key1", "auth": "key2"},
+    }
+    resp = client.post("/api/push/subscribe", json=payload)
+    assert resp.status_code == 200
+
+    sub = (
+        test_db.query(PushSubscription)
+        .filter(PushSubscription.endpoint == payload["endpoint"])
+        .first()
+    )
+    assert sub is not None
+    assert sub.p256dh == "key1"
+
+
+def test_push_subscribe_is_idempotent(client, test_db):
+    from app.api.public import public_form_limiter
+
+    public_form_limiter.reset()
+    payload = {
+        "endpoint": "https://fcm.googleapis.com/fcm/send/dup",
+        "keys": {"p256dh": "key1", "auth": "key2"},
+    }
+    client.post("/api/push/subscribe", json=payload)
+    resp = client.post("/api/push/subscribe", json=payload)
+    assert resp.status_code == 200
+
+    from app.models.push_subscription import PushSubscription
+
+    count = (
+        test_db.query(PushSubscription)
+        .filter(PushSubscription.endpoint == payload["endpoint"])
+        .count()
+    )
+    assert count == 1
+
+
+def test_push_unsubscribe_removes_subscription(client, test_db):
+    from app.api.public import public_form_limiter
+    from app.models.push_subscription import PushSubscription
+
+    public_form_limiter.reset()
+    sub = PushSubscription(
+        endpoint="https://fcm.googleapis.com/fcm/send/rm", p256dh="a", auth="b"
+    )
+    test_db.add(sub)
+    test_db.commit()
+
+    resp = client.post(
+        "/api/push/unsubscribe",
+        json={"endpoint": "https://fcm.googleapis.com/fcm/send/rm"},
+    )
+    assert resp.status_code == 200
+
+    remaining = (
+        test_db.query(PushSubscription)
+        .filter(PushSubscription.endpoint == "https://fcm.googleapis.com/fcm/send/rm")
+        .first()
+    )
+    assert remaining is None
+
+
+def test_vapid_public_key_endpoint_returns_key(client, monkeypatch):
+    monkeypatch.setenv("VAPID_PUBLIC_KEY", "test-public-key")
+    resp = client.get("/api/push/vapid-public-key")
+    assert resp.status_code == 200
+    assert resp.json()["key"] == "test-public-key"
+
+
+# ── Push endpoint SSRF guard ─────────────────────────────────────────────────
+
+
+def test_push_subscribe_rejects_non_allowlisted_endpoint(client, test_db):
+    from app.api.public import public_form_limiter
+
+    public_form_limiter.reset()
+    resp = client.post(
+        "/api/push/subscribe",
+        json={
+            "endpoint": "https://internal-service.local/admin",
+            "keys": {"p256dh": "key1", "auth": "key2"},
+        },
+    )
+    assert resp.status_code == 400
+
+
+def test_push_subscribe_rejects_non_https_endpoint(client, test_db):
+    from app.api.public import public_form_limiter
+
+    public_form_limiter.reset()
+    resp = client.post(
+        "/api/push/subscribe",
+        json={
+            "endpoint": "http://fcm.googleapis.com/fcm/send/x",
+            "keys": {"p256dh": "key1", "auth": "key2"},
+        },
+    )
+    assert resp.status_code == 400
+
+
+# ── Email enumeration guard ──────────────────────────────────────────────────
+
+
+def test_subscribe_email_returns_same_message_for_existing_confirmed_subscriber(
+    client, test_db
+):
+    from app.api.public import public_form_limiter
+    from app.models.subscriber import Subscriber
+
+    public_form_limiter.reset()
+    test_db.add(
+        Subscriber(
+            contact_info="already@example.com",
+            channel="email",
+            confirmed=True,
+            confirm_token="tokA",
+            unsubscribe_token="unsubA",
+        )
+    )
+    test_db.commit()
+
+    with patch("app.services.email_service.send_confirmation_email", return_value=True):
+        resp_new = client.post("/api/subscribe", json={"email": "brandnew@example.com"})
+        resp_existing = client.post(
+            "/api/subscribe", json={"email": "already@example.com"}
+        )
+
+    assert resp_new.json()["message"] == resp_existing.json()["message"]
