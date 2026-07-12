@@ -6,6 +6,7 @@ from .pending_event import PendingEvent
 from .similar_event_pair import SimilarEventPair
 from .scraper_log import ScraperLog
 from .subscriber import Subscriber
+from .push_subscription import PushSubscription
 from .traffic_log import TrafficLog
 from .tag import Tag, event_tags
 
@@ -18,6 +19,7 @@ __all__ = [
     "SimilarEventPair",
     "ScraperLog",
     "Subscriber",
+    "PushSubscription",
     "TrafficLog",
     "Tag",
     "event_tags",

@@ -29,6 +29,8 @@ const OnlineEtkinliklerPage = lazy(() => import('./pages/landing/OnlineEtkinlikl
 const BuHaftakiEtkinliklerPage = lazy(() => import('./pages/landing/BuHaftakiEtkinliklerPage'))
 const SonBasvurularPage = lazy(() => import('./pages/landing/SonBasvurularPage'))
 const CalendarPage = lazy(() => import('./pages/CalendarPage'))
+const SubscribeConfirmPage = lazy(() => import('./pages/SubscribeConfirmPage'))
+const UnsubscribePage = lazy(() => import('./pages/UnsubscribePage'))
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { Toaster } from 'react-hot-toast'
@@ -66,6 +68,8 @@ function App() {
                   <Route path="/egitim-kaynaklari" element={<FreeTrainingsPage />} />
                   <Route path="/status" element={<StatusPage />} />
                   <Route path="/takvim" element={<CalendarPage />} />
+                  <Route path="/abone-onay" element={<SubscribeConfirmPage />} />
+                  <Route path="/abone-iptal" element={<UnsubscribePage />} />
                   <Route path="/hackathonlar" element={<HackathonlarPage />} />
                   <Route path="/bootcamplar" element={<BootcamplarPage />} />
                   <Route path="/online-etkinlikler" element={<OnlineEtkinliklerPage />} />

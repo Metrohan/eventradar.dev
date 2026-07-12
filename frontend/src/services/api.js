@@ -61,6 +61,22 @@ export const publicAPI = {
   // Platform status
   getStatus: () =>
     api.get('/status'),
+
+  // Email subscription (double opt-in)
+  subscribeEmail: (email) =>
+    api.post('/subscribe', { email }),
+  confirmSubscription: (token) =>
+    api.get(`/subscribe/confirm?token=${encodeURIComponent(token)}`),
+  unsubscribe: (token) =>
+    api.get(`/subscribe/unsubscribe?token=${encodeURIComponent(token)}`),
+
+  // Browser push
+  getVapidPublicKey: () =>
+    api.get('/push/vapid-public-key'),
+  pushSubscribe: (subscription) =>
+    api.post('/push/subscribe', subscription),
+  pushUnsubscribe: (endpoint) =>
+    api.post('/push/unsubscribe', { endpoint }),
 }
 
 // Admin API endpoints (converted from Flask admin routes)

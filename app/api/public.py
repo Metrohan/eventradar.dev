@@ -12,12 +12,17 @@ from ..services.event_request_service import EventRequestService
 from ..services.source_catalog import get_enabled_sources
 from ..services.rate_limiter import FixedWindowRateLimiter
 from ..services.rss_service import build_events_rss
+from ..services import email_service
 from ..schemas.event import EventResponse, EventListResponse
 from ..schemas.announcement import AnnouncementResponse, AnnouncementListResponse
 from ..schemas.suggestion import SuggestionCreate, SuggestionResponse
 from ..schemas.event_request import EventRequestCreate, EventRequestResponse
+from ..schemas.subscriber import EmailSubscribeRequest, PushSubscribeRequest
 from ..models.scraper_log import ScraperLog
 from ..models.event import Event
+from ..models.subscriber import Subscriber
+from ..models.push_subscription import PushSubscription
+import secrets
 
 router = APIRouter()
 public_form_limiter = FixedWindowRateLimiter(limit=5, window_seconds=60)
@@ -86,6 +91,110 @@ async def get_events_rss(db: Session = Depends(get_db)):
     events = event_service.get_events(active_only=True, limit=100)
     feed_xml = build_events_rss(events)
     return Response(content=feed_xml, media_type="application/rss+xml")
+
+
+@router.post("/subscribe")
+async def subscribe_email(
+    payload: EmailSubscribeRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    _rate_limit: None = Depends(enforce_public_form_rate_limit),
+):
+    """
+    E-posta ile abone olur (hesap gerektirmez). Double opt-in: onay e-postası
+    gönderilir, kullanıcı linke tıklayana kadar 'confirmed' False kalır ve
+    haftalık özete dahil edilmez.
+    """
+    existing = (
+        db.query(Subscriber)
+        .filter(Subscriber.contact_info == payload.email, Subscriber.channel == "email")
+        .first()
+    )
+    confirm_token: str
+    if existing:
+        if existing.confirmed:  # type: ignore[truthy-bool]
+            return {"message": "Bu e-posta zaten abone."}
+        confirm_token = str(existing.confirm_token)
+    else:
+        confirm_token = secrets.token_urlsafe(32)
+        subscriber = Subscriber(
+            contact_info=payload.email,
+            channel="email",
+            confirmed=False,
+            confirm_token=confirm_token,
+            unsubscribe_token=secrets.token_urlsafe(32),
+        )
+        db.add(subscriber)
+        db.commit()
+
+    email_service.send_confirmation_email(payload.email, str(confirm_token))
+    return {"message": "Onay e-postası gönderildi. Lütfen gelen kutunuzu kontrol edin."}
+
+
+@router.get("/subscribe/confirm")
+async def confirm_subscription(token: str, db: Session = Depends(get_db)):
+    subscriber = db.query(Subscriber).filter(Subscriber.confirm_token == token).first()
+    if not subscriber:
+        raise HTTPException(
+            status_code=404, detail="Geçersiz veya süresi dolmuş bağlantı"
+        )
+    subscriber.confirmed = True  # type: ignore[assignment]
+    db.commit()
+    return {"message": "Aboneliğiniz onaylandı."}
+
+
+@router.get("/subscribe/unsubscribe")
+async def unsubscribe(token: str, db: Session = Depends(get_db)):
+    subscriber = (
+        db.query(Subscriber).filter(Subscriber.unsubscribe_token == token).first()
+    )
+    if not subscriber:
+        raise HTTPException(status_code=404, detail="Geçersiz bağlantı")
+    db.delete(subscriber)
+    db.commit()
+    return {"message": "Abonelikten çıkıldı."}
+
+
+@router.post("/push/subscribe")
+async def push_subscribe(
+    payload: PushSubscribeRequest,
+    db: Session = Depends(get_db),
+    _rate_limit: None = Depends(enforce_public_form_rate_limit),
+):
+    existing = (
+        db.query(PushSubscription)
+        .filter(PushSubscription.endpoint == payload.endpoint)
+        .first()
+    )
+    if existing:
+        return {"message": "Zaten abone."}
+
+    sub = PushSubscription(
+        endpoint=payload.endpoint,
+        p256dh=payload.keys.get("p256dh", ""),
+        auth=payload.keys.get("auth", ""),
+    )
+    db.add(sub)
+    db.commit()
+    return {"message": "Push bildirimleri etkinleştirildi."}
+
+
+@router.post("/push/unsubscribe")
+async def push_unsubscribe(
+    payload: dict,
+    db: Session = Depends(get_db),
+):
+    endpoint = payload.get("endpoint", "")
+    db.query(PushSubscription).filter(PushSubscription.endpoint == endpoint).delete()
+    db.commit()
+    return {"message": "Push bildirimleri kapatıldı."}
+
+
+@router.get("/push/vapid-public-key")
+async def get_vapid_public_key():
+    import os
+
+    return {"key": os.getenv("VAPID_PUBLIC_KEY", "")}
 
 
 @router.get("/announcements", response_model=AnnouncementListResponse)

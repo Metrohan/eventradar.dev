@@ -11,6 +11,9 @@ class Subscriber(Base):
     channel = Column(String(50), nullable=False)  # 'telegram', 'email'
     interests = Column(JSON, default=list)  # e.g. ["python", "react"]
     is_active = Column(Boolean, default=True)
+    confirmed = Column(Boolean, default=False, nullable=False)
+    confirm_token = Column(String(64), unique=True, index=True)
+    unsubscribe_token = Column(String(64), unique=True, index=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
 
     def __repr__(self):

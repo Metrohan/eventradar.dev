@@ -277,6 +277,15 @@ class EventIngestion:
 
 def build_event_ingestion() -> EventIngestion:
     from ..core.database import SessionLocal
-    from .telegram_service import notify_new_events
+    from .telegram_service import notify_new_events as notify_telegram
+    from . import push_service
 
-    return EventIngestion(SessionLocal, notify_new_events)
+    def notify_all(events: list[dict]) -> None:
+        notify_telegram(events)
+        db = SessionLocal()
+        try:
+            push_service.notify_new_events(db, events)
+        finally:
+            db.close()
+
+    return EventIngestion(SessionLocal, notify_all)
