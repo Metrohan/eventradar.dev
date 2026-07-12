@@ -18,3 +18,4 @@ dateparser>=1.2.0
 undetected-chromedriver>=3.5.0
 gunicorn
 pywebpush
+Markdown>=3.6

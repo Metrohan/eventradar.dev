@@ -17,3 +17,4 @@ class BlogPost(Base):
     is_published = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     published_at = Column(DateTime, default=func.now(), nullable=False)
+    email_sent_at = Column(DateTime, nullable=True)
