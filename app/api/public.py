@@ -56,7 +56,10 @@ async def get_sources():
 @router.get("/blog", response_model=BlogPostListResponse)
 async def get_blog_posts(db: Session = Depends(get_db)):
     posts = WeeklyContentService(db).list_published()
-    return BlogPostListResponse(posts=posts, total_count=len(posts))
+    return BlogPostListResponse(
+        posts=[BlogPostResponse.model_validate(post) for post in posts],
+        total_count=len(posts),
+    )
 
 
 @router.get("/blog/{slug}", response_model=BlogPostResponse)

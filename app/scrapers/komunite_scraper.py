@@ -14,7 +14,10 @@ def parse_komunite_events(html: bytes | str) -> list[dict]:
     events: list[dict] = []
     seen: set[str] = set()
     for link in soup.select('a[href*="/etkinlikler/"]'):
-        url = urljoin(BASE_URL, link.get("href", ""))
+        href = link.get("href")
+        if not isinstance(href, str):
+            continue
+        url = urljoin(BASE_URL, href)
         if url in seen:
             continue
         card = link.find_parent("div")

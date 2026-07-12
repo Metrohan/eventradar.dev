@@ -31,7 +31,10 @@ def parse_patika_events(html: str) -> list[dict]:
         text = " ".join(card.get_text(" ", strip=True).split())
         if "Başvurular Açık" not in text:
             continue
-        url = urljoin(BASE_URL, card.get("href", ""))
+        href = card.get("href")
+        if not isinstance(href, str):
+            continue
+        url = urljoin(BASE_URL, href)
         title_node = card.select_one("h2, h3")
         if not url or not title_node or url in seen:
             continue
@@ -39,6 +42,7 @@ def parse_patika_events(html: str) -> list[dict]:
         description_node = card.select_one("p")
         deadline = re.search(r"Son başvuru:\s*(.+?)(?:$|Başvurular)", text)
         image = card.select_one("img[src]")
+        image_src = image.get("src") if image else None
         events.append(
             {
                 "title": title_node.get_text(" ", strip=True),
@@ -51,7 +55,9 @@ def parse_patika_events(html: str) -> list[dict]:
                 "application_deadline": deadline.group(1).strip() if deadline else None,
                 "location": None,
                 "url": url,
-                "image_url": urljoin(BASE_URL, image.get("src")) if image else None,
+                "image_url": (
+                    urljoin(BASE_URL, image_src) if isinstance(image_src, str) else None
+                ),
                 "source": "Patika.dev",
                 "is_active": True,
             }
