@@ -29,7 +29,12 @@ const EventDetailPage = () => {
   const { data, isLoading, error } = useQuery(
     ['event', id],
     () => publicAPI.getEventById(id),
-    { retry: 1 }
+    {
+      // 404 gibi 4xx hatalar tekrar denendiğinde de aynı sonucu verir;
+      // sadece geçici/sunucu hatalarında (5xx) bir kez retry et.
+      retry: (failureCount, err) =>
+        (err?.response?.status ?? 0) >= 500 && failureCount < 1,
+    }
   )
 
   const event = data?.data
