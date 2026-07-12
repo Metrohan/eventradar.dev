@@ -1,7 +1,9 @@
 import logging
 import smtplib
+from html import escape
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from markdown import markdown
 
 from ..core.config import settings
 
@@ -76,3 +78,31 @@ def send_weekly_digest_email(
     </div>
     """
     return _send(email, "TechEventRadar — Haftalık Etkinlik Özeti", html)
+
+
+def send_weekly_blog_email(
+    email: str,
+    title: str,
+    summary: str,
+    content: str,
+    slug: str,
+    unsubscribe_token: str,
+) -> bool:
+    """Send the published weekly blog post as an email newsletter."""
+    post_url = f"{SITE_URL}/blog/{slug}"
+    unsubscribe_url = f"{SITE_URL}/abone-iptal?token={unsubscribe_token}"
+    rendered_content = markdown(escape(content))
+    safe_title = escape(title)
+    safe_summary = escape(summary)
+    html = f"""
+    <div style="font-family:sans-serif;max-width:640px;margin:0 auto;line-height:1.6">
+      <h1>{safe_title}</h1>
+      <p style="color:#555">{safe_summary}</p>
+      <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
+      {rendered_content}
+      <p style="margin-top:28px"><a href="{post_url}">Yazıyı EventRadar'da aç →</a></p>
+      <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
+      <p style="color:#999;font-size:0.75rem"><a href="{unsubscribe_url}" style="color:#999">Abonelikten çık</a></p>
+    </div>
+    """
+    return _send(email, title, html)

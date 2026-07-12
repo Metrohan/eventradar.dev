@@ -1,44 +1,32 @@
 #!/usr/bin/env python3
 """
-Son 7 günde eklenen etkinliklerin özetini onaylanmış tüm e-posta
-abonelerine gönderir.
+Haftalık blog yazısını onaylanmış tüm e-posta abonelerine gönderir.
+Yazı henüz üretilmediyse önce idempotent olarak oluşturur.
 Cron: her Pazartesi 09:00
   0 9 * * 1 cd ~/TechEventRadar && docker compose exec -T backend python scripts/send_weekly_email_digest.py >> ~/scrape.log 2>&1
 """
 
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.insert(0, project_root)
 
 from app.core.database import SessionLocal
-from app.models.event import Event
 from app.models.subscriber import Subscriber
-from app.services.email_service import send_weekly_digest_email
+from app.services.email_service import send_weekly_blog_email
+from app.services.weekly_content_service import WeeklyContentService
 
 
 def main() -> None:
     db = SessionLocal()
     try:
-        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        week_start = today - timedelta(days=7)
-
-        events = (
-            db.query(Event)
-            .filter(
-                Event.is_active == True,
-                Event.scraped_at >= week_start,
-                Event.scraped_at < today,
-            )
-            .order_by(Event.scraped_at.desc())
-            .all()
-        )
-        event_dicts = [
-            {"id": e.id, "title": e.title, "source": e.source} for e in events
-        ]
+        post = WeeklyContentService(db).generate()
+        if post.email_sent_at:
+            print(f"Bu haftanın blog e-postası daha önce gönderildi: {post.slug}")
+            return
 
         subscribers = (
             db.query(Subscriber)
@@ -56,9 +44,12 @@ def main() -> None:
 
         sent, failed = 0, 0
         for subscriber in subscribers:
-            ok = send_weekly_digest_email(
+            ok = send_weekly_blog_email(
                 str(subscriber.contact_info),
-                event_dicts,
+                str(post.title),
+                str(post.summary),
+                str(post.content),
+                str(post.slug),
                 str(subscriber.unsubscribe_token or ""),
             )
             if ok:
@@ -66,7 +57,11 @@ def main() -> None:
             else:
                 failed += 1
 
-        print(f"Haftalık e-posta özeti: {sent} gönderildi, {failed} başarısız")
+        if sent:
+            post.email_sent_at = datetime.now()  # type: ignore[assignment]
+            db.commit()
+
+        print(f"Haftalık blog e-postası: {sent} gönderildi, {failed} başarısız")
         if failed and not sent:
             sys.exit(1)
     finally:
