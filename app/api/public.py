@@ -267,19 +267,18 @@ async def get_status(db: Session = Depends(get_db)):
         active_count = db.query(Event).filter(Event.is_active == True).count()
         total_count = db.query(Event).count()
 
-        sources = db.query(ScraperLog.source).distinct().all()
         scrapers = []
-        for (source,) in sources:
+        for source in get_enabled_sources():
             latest: Optional[ScraperLog] = (
                 db.query(ScraperLog)
-                .filter(ScraperLog.source == source)
+                .filter(ScraperLog.source.in_(source.identifiers))
                 .order_by(desc(ScraperLog.created_at))
                 .first()
             )
             if latest:
                 scrapers.append(
                     {
-                        "source": latest.source,
+                        "source": source.name,
                         "status": latest.status,
                         "events_found": latest.events_found,
                         "new_events": latest.new_events,

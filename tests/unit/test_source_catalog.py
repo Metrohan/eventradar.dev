@@ -15,6 +15,13 @@ def test_source_catalog_includes_tech_istanbul():
     assert source.mode == "static"
 
 
+def test_source_catalog_resolves_legacy_akbank_name_to_canonical_source():
+    source = get_source("Akbank")
+
+    assert source is not None
+    assert source.name == "Akbank Gençlik Akademisi"
+
+
 def test_get_source_accepts_canonical_name_case_insensitively():
     source = get_source("TECH ISTANBUL")
 

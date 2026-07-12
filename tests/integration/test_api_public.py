@@ -171,6 +171,31 @@ def test_get_sources_returns_enabled_catalog_without_runners(client):
     assert all("runner" not in source for source in sources)
 
 
+def test_status_merges_legacy_akbank_logs_into_canonical_source(client, test_db):
+    from app.models.scraper_log import ScraperLog
+
+    test_db.add_all(
+        [
+            ScraperLog(source="Akbank", status="success", events_found=2),
+            ScraperLog(
+                source="Akbank Gençlik Akademisi", status="success", events_found=3
+            ),
+        ]
+    )
+    test_db.commit()
+
+    resp = client.get("/api/status")
+
+    assert resp.status_code == 200
+    akbank_rows = [
+        row
+        for row in resp.json()["scrapers"]
+        if row["source"] in {"Akbank", "Akbank Gençlik Akademisi"}
+    ]
+    assert len(akbank_rows) == 1
+    assert akbank_rows[0]["source"] == "Akbank Gençlik Akademisi"
+
+
 # ── /api/announcements ────────────────────────────────────────────────────────
 
 
