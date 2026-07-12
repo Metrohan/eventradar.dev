@@ -7,6 +7,7 @@ from ..models.event import Event
 from ..models.tag import Tag
 from ..schemas.event import EventCreate, EventUpdate
 from .date_extractor import extract_date_from_text
+from .location_normalizer import normalize_location
 
 
 class EventService:
@@ -45,7 +46,7 @@ class EventService:
                 description=event_data.description,
                 date=date_val,
                 application_deadline=event_data.application_deadline,
-                location=event_data.location,
+                location=normalize_location(event_data.location),
                 url=str(event_data.url),
                 image_url=str(event_data.image_url) if event_data.image_url else None,
                 source=event_data.source,
@@ -75,7 +76,9 @@ class EventService:
                 if extracted:
                     update_data["date"] = extracted
             for field, value in update_data.items():
-                if field == "url" and value:
+                if field == "location":
+                    setattr(db_event, field, normalize_location(value))
+                elif field == "url" and value:
                     setattr(db_event, field, str(value))
                 elif field == "image_url" and value:
                     setattr(db_event, field, str(value))
