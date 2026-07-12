@@ -163,10 +163,76 @@ def test_get_sources_returns_enabled_catalog_without_runners(client):
 
     assert resp.status_code == 200
     sources = resp.json()
-    assert len(sources) == 8
+    assert len(sources) == 10
     assert any(source["key"] == "tech-istanbul" for source in sources)
+    assert any(source["key"] == "patika" for source in sources)
+    assert any(source["key"] == "komunite" for source in sources)
     assert all(source["enabled"] is True for source in sources)
     assert all("runner" not in source for source in sources)
+
+
+def test_blog_list_and_detail_return_only_published_posts(client, test_db):
+    from datetime import date
+    from app.models.blog_post import BlogPost
+
+    test_db.add_all(
+        [
+            BlogPost(
+                slug="published",
+                title="Published",
+                summary="Summary",
+                content="Content",
+                week_start=date(2026, 7, 13),
+                week_end=date(2026, 7, 19),
+                is_published=True,
+            ),
+            BlogPost(
+                slug="draft",
+                title="Draft",
+                summary="Summary",
+                content="Content",
+                week_start=date(2026, 7, 20),
+                week_end=date(2026, 7, 26),
+                is_published=False,
+            ),
+        ]
+    )
+    test_db.commit()
+
+    listing = client.get("/api/blog")
+    detail = client.get("/api/blog/published")
+    draft = client.get("/api/blog/draft")
+
+    assert listing.status_code == 200
+    assert listing.json()["total_count"] == 1
+    assert detail.status_code == 200
+    assert detail.json()["slug"] == "published"
+    assert draft.status_code == 404
+
+
+def test_status_merges_legacy_akbank_logs_into_canonical_source(client, test_db):
+    from app.models.scraper_log import ScraperLog
+
+    test_db.add_all(
+        [
+            ScraperLog(source="Akbank", status="success", events_found=2),
+            ScraperLog(
+                source="Akbank Gençlik Akademisi", status="success", events_found=3
+            ),
+        ]
+    )
+    test_db.commit()
+
+    resp = client.get("/api/status")
+
+    assert resp.status_code == 200
+    akbank_rows = [
+        row
+        for row in resp.json()["scrapers"]
+        if row["source"] in {"Akbank", "Akbank Gençlik Akademisi"}
+    ]
+    assert len(akbank_rows) == 1
+    assert akbank_rows[0]["source"] == "Akbank Gençlik Akademisi"
 
 
 # ── /api/announcements ────────────────────────────────────────────────────────

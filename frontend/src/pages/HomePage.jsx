@@ -3,7 +3,6 @@ import { useQuery } from 'react-query'
 import { publicAPI } from '../services/api'
 import AnnouncementModal from '../components/AnnouncementModal'
 import EventListing from '../components/EventListing'
-import SubscribeWidget from '../components/SubscribeWidget'
 import useSources from '../hooks/useSources'
 
 const HomePage = () => {
@@ -81,10 +80,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-      <div className="container pt-4">
-        <SubscribeWidget />
-      </div>
 
       {/* ── Main content ─────────────────────────────────── */}
       <EventListing searchTerm={searchTerm} onSearchTermChange={setSearchTerm} />

@@ -2,7 +2,7 @@ from app.services.source_catalog import SOURCE_CATALOG, get_enabled_sources, get
 
 
 def test_source_catalog_has_unique_keys_and_names():
-    assert len(SOURCE_CATALOG) == 8
+    assert len(SOURCE_CATALOG) == 10
     assert len({source.key for source in SOURCE_CATALOG}) == len(SOURCE_CATALOG)
     assert len({source.name for source in SOURCE_CATALOG}) == len(SOURCE_CATALOG)
 
@@ -13,6 +13,13 @@ def test_source_catalog_includes_tech_istanbul():
     assert source is not None
     assert source.name == "Tech Istanbul"
     assert source.mode == "static"
+
+
+def test_source_catalog_resolves_legacy_akbank_name_to_canonical_source():
+    source = get_source("Akbank")
+
+    assert source is not None
+    assert source.name == "Akbank Gençlik Akademisi"
 
 
 def test_get_source_accepts_canonical_name_case_insensitively():

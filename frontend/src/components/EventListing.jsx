@@ -6,6 +6,7 @@ import EventCard from './EventCard'
 import LoadingSpinner from './LoadingSpinner'
 import ErrorMessage from './ErrorMessage'
 import TagBadge, { TAG_STYLES } from './TagBadge'
+import { readSavedFilters, saveFilters, useFavorites } from '../hooks/useBrowserPreferences'
 
 /**
  * Etkinlik filtreleme + listeleme mantığı. HomePage ve kategori/zaman bazlı
@@ -24,18 +25,21 @@ const EventListing = ({
   onSearchTermChange,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams()
+  const savedFilters = React.useMemo(() => readSavedFilters(), [])
+  const { favorites } = useFavorites()
 
   const [internalSearchTerm, setInternalSearchTerm] = React.useState(() => searchParams.get('q') || '')
   const searchTerm = controlledSearchTerm !== undefined ? controlledSearchTerm : internalSearchTerm
   const setSearchTerm = onSearchTermChange || setInternalSearchTerm
-  const [selectedSource, setSelectedSource] = React.useState(() => searchParams.get('source') || '')
-  const [selectedLocation, setSelectedLocation] = React.useState(() => searchParams.get('location') || initialLocation)
+  const [selectedSource, setSelectedSource] = React.useState(() => searchParams.get('source') || savedFilters.source || '')
+  const [selectedLocation, setSelectedLocation] = React.useState(() => searchParams.get('location') || initialLocation || savedFilters.location || '')
   const [showPastEvents, setShowPastEvents] = React.useState(() => searchParams.get('past') === '1')
   const [selectedTags, setSelectedTags] = React.useState(() => {
     const fromUrl = searchParams.get('tags')
-    return fromUrl ? fromUrl.split(',') : initialTags
+    return fromUrl ? fromUrl.split(',') : (initialTags.length ? initialTags : savedFilters.tags || [])
   })
-  const [freeOnly, setFreeOnly] = React.useState(() => searchParams.get('free') === '1')
+  const [freeOnly, setFreeOnly] = React.useState(() => searchParams.has('free') ? searchParams.get('free') === '1' : Boolean(savedFilters.freeOnly))
+  const [favoritesOnly, setFavoritesOnly] = React.useState(() => searchParams.get('favorites') === '1')
   const [dateFrom, setDateFrom] = React.useState(() => searchParams.get('from') || '')
   const [dateTo, setDateTo] = React.useState(() => searchParams.get('to') || '')
 
@@ -49,11 +53,16 @@ const EventListing = ({
     if (showPastEvents) params.past = '1'
     if (selectedTags.length > 0) params.tags = selectedTags.join(',')
     if (freeOnly) params.free = '1'
+    if (favoritesOnly) params.favorites = '1'
     if (dateFrom) params.from = dateFrom
     if (dateTo) params.to = dateTo
     setSearchParams(params, { replace: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, selectedSource, selectedLocation, showPastEvents, selectedTags, freeOnly, dateFrom, dateTo])
+  }, [searchTerm, selectedSource, selectedLocation, showPastEvents, selectedTags, freeOnly, favoritesOnly, dateFrom, dateTo])
+
+  React.useEffect(() => {
+    saveFilters({ source: selectedSource, location: selectedLocation, tags: selectedTags, freeOnly })
+  }, [selectedSource, selectedLocation, selectedTags, freeOnly])
 
   const { data: eventsData, isLoading, error } = useQuery(
     'events',
@@ -90,6 +99,7 @@ const EventListing = ({
       const text = `${event.title || ''} ${event.description || ''}`.toLocaleLowerCase('tr-TR')
       if (!text.includes('ücretsiz')) return false
     }
+    if (favoritesOnly && !favorites.includes(String(event.id))) return false
     if (dateFrom) {
       if (!event.date || new Date(event.date) < new Date(dateFrom)) return false
     }
@@ -114,6 +124,7 @@ const EventListing = ({
     setShowPastEvents(false)
     setSelectedTags([])
     setFreeOnly(false)
+    setFavoritesOnly(false)
     setDateFrom('')
     setDateTo('')
   }
@@ -125,7 +136,7 @@ const EventListing = ({
   }
 
   const hasFilters = searchTerm || selectedSource || selectedLocation || showPastEvents ||
-    selectedTags.length > 0 || freeOnly || dateFrom || dateTo
+    selectedTags.length > 0 || freeOnly || favoritesOnly || dateFrom || dateTo
 
   return (
     <div className="container py-4">
@@ -184,6 +195,16 @@ const EventListing = ({
             />
             <i className="fas fa-tag"></i>
             Ücretsiz
+          </label>
+
+          <label className={`filter-toggle ${favoritesOnly ? 'active' : ''}`}>
+            <input
+              type="checkbox"
+              checked={favoritesOnly}
+              onChange={e => setFavoritesOnly(e.target.checked)}
+            />
+            <i className="fas fa-bookmark"></i>
+            Favorilerim
           </label>
 
           <div className="filter-select-wrap" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>

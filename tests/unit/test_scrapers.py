@@ -32,6 +32,51 @@ def _make_selenium_driver(html: str) -> MagicMock:
     return driver
 
 
+# ── Patika.dev / Skillcamp ───────────────────────────────────────────────────
+
+
+def test_patika_returns_only_open_unique_programs():
+    from app.scrapers.patika_scraper import parse_patika_events
+
+    events = parse_patika_events(_html("patika.html"))
+
+    assert len(events) == 1
+    assert events[0]["title"] == "Grid Up Hackathon"
+    assert events[0]["application_deadline"] == "8 Ağustos 2026"
+    assert events[0]["source"] == "Patika.dev"
+
+
+def test_patika_enriches_event_from_detail_page():
+    from app.scrapers.patika_scraper import scrape_patika_events
+
+    list_response = MagicMock(text=_html("patika.html"))
+    list_response.raise_for_status = MagicMock()
+    detail_response = MagicMock(text=_html("patika_detail.html"))
+    detail_response.raise_for_status = MagicMock()
+    with patch(
+        "app.scrapers.patika_scraper.requests.get",
+        side_effect=[list_response, detail_response],
+    ):
+        events = scrape_patika_events()
+
+    assert events[0]["date"] == "1/9/2026"
+    assert events[0]["location"] == "Online"
+
+
+# ── Komünite ─────────────────────────────────────────────────────────────────
+
+
+def test_komunite_deduplicates_responsive_cards_and_skips_unknown_dates():
+    from app.scrapers.komunite_scraper import parse_komunite_events
+
+    events = parse_komunite_events(_html("komunite.html"))
+
+    assert len(events) == 1
+    assert events[0]["title"] == "Vibe Coding Bootcamp"
+    assert events[0]["date"] == "18 - 19 Temmuz 2026 10:00"
+    assert events[0]["location"] == "Komünite Space, Vadistanbul"
+
+
 # ── Youthall ──────────────────────────────────────────────────────────────────
 
 

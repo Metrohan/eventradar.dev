@@ -31,6 +31,8 @@ const SonBasvurularPage = lazy(() => import('./pages/landing/SonBasvurularPage')
 const CalendarPage = lazy(() => import('./pages/CalendarPage'))
 const SubscribeConfirmPage = lazy(() => import('./pages/SubscribeConfirmPage'))
 const UnsubscribePage = lazy(() => import('./pages/UnsubscribePage'))
+const BlogPage = lazy(() => import('./pages/BlogPage'))
+const BlogDetailPage = lazy(() => import('./pages/BlogDetailPage'))
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { Toaster } from 'react-hot-toast'
@@ -70,6 +72,8 @@ function App() {
                   <Route path="/takvim" element={<CalendarPage />} />
                   <Route path="/abone-onay" element={<SubscribeConfirmPage />} />
                   <Route path="/abone-iptal" element={<UnsubscribePage />} />
+                  <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/blog/:slug" element={<BlogDetailPage />} />
                   <Route path="/hackathonlar" element={<HackathonlarPage />} />
                   <Route path="/bootcamplar" element={<BootcamplarPage />} />
                   <Route path="/online-etkinlikler" element={<OnlineEtkinliklerPage />} />

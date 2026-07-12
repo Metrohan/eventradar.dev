@@ -85,7 +85,7 @@ Event Ingestion ── tarih ve konum normalizasyonu / tag / transaction
       └── Telegram ── commit sonrası yeni etkinlik bildirimi
 ```
 
-- `app/services/source_catalog.py`: Sekiz kaynağın canonical kayıtları ve lazy runner adapter'ları
+- `app/services/source_catalog.py`: On kaynağın canonical kayıtları ve lazy runner adapter'ları
 - `app/services/scrape_run.py`: Fetch, retry, ingestion, reconciliation ve tek çalışma logu
 - `app/services/event_ingestion.py`: Canonical etkinlik yazımı ve yaşam döngüsü kuralları
 - `app/services/source_quality.py`: Kaynak başarı oranı ve veri tamlığı metrikleri
@@ -107,21 +107,25 @@ curl http://localhost:8000/health
 
 ## Scrapers
 
-| Kaynak | Durum | Selenium |
-|--------|-------|----------|
-| TechCareer | ✅ Aktif | ✓ |
-| Youthall | ✅ Aktif | ✓ |
-| Akbank Gençlik | ✅ Aktif | ✓ (UC) |
-| Pupilica | ✅ Aktif | ✓ (UC) |
-| Kodluyoruz | ✅ Aktif | ✗ |
-| Anbean | ✅ Aktif | ✗ |
-| Coderspace | ✅ Aktif | ✓ (UC) |
-| Tech Istanbul | ✅ Aktif | ✗ |
+| Kaynak | Durum | Çalışma biçimi |
+|--------|-------|----------------|
+| TechCareer | ✅ Aktif | Tarayıcı (Selenium) |
+| Youthall | ✅ Aktif | Tarayıcı (Selenium) |
+| Akbank Gençlik | ✅ Aktif | Tarayıcı (UC) |
+| Pupilica | ✅ Aktif | Tarayıcı (UC) |
+| Kodluyoruz | ✅ Aktif | HTTP |
+| Anbean | ✅ Aktif | HTTP |
+| Coderspace | ✅ Aktif | Tarayıcı (UC) |
+| Tech Istanbul | ✅ Aktif | HTTP API |
+| Patika.dev / Skillcamp | ✅ Aktif | HTTP |
+| Komünite | ✅ Aktif | HTTP |
 
 ## API Docs
 
 - Swagger UI: <http://localhost:8000/docs>
 - Health check: <http://localhost:8000/health>
+- Etkinlikler: `GET /api/events?page=1&page_size=20&active_only=true`
+- Kaynak kataloğu: `GET /api/sources`
 
 ## Troubleshooting
 
@@ -151,7 +155,7 @@ uvicorn app.main:app --reload
 
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
@@ -215,21 +219,21 @@ Bu proje açık kaynak sürümde secret/credential içermez. Şüpheli bir güve
 > **Uzun vadeli hedef:** TechEventRadar'ı yalnızca Türkiye'ye değil, dünyanın her ülkesinden teknoloji etkinliklerini çekebilen, geliştiricilerin küresel fırsatları tek yerden keşfedebildiği bir platforma dönüştürmek.
 
 ### Faz 1 — Temel ✅ (Tamamlandı)
-- [x] Çoklu kaynaklardan otomatik etkinlik toplama (8 kaynak)
+- [x] Çoklu kaynaklardan otomatik etkinlik toplama (10 kaynak)
 - [x] Kategori tag sistemi (Hackathon, Bootcamp, Seminer…)
 - [x] Admin paneli ve içerik yönetimi
 - [x] Telegram bildirim sistemi
 - [x] CI/CD pipeline ve test altyapısı
 
 ### Faz 2 — Kalite & Güvenilirlik 🔧 (Devam ediyor)
-- [ ] Yeni Türkçe kaynaklar: Skillcamp/Patika, Komunite
+- [x] Yeni Türkçe kaynaklar: Skillcamp/Patika, Komünite
 - [x] Scraper'lara retry mekanizması ve hata yönetimi
 - [x] Kaynak bazlı kalite metrikleri (başarı oranı, veri tamlığı)
 - [x] Konum verisi normalizasyonu (Online / şehir bazlı)
 - [x] Geçmiş etkinliklerin otomatik arşivlenmesi
 
 ### Faz 3 — Ürün Büyümesi 🚀 (Yakın dönem)
-- [ ] Kullanıcı hesabı ve kişiselleştirilmiş etkinlik önerileri
+- [x] Tarayıcıda saklanan favoriler ve filtre tercihleri (hesapsız)
 - [ ] E-posta / tarayıcı bildirim abonelikleri
 - [x] RSS feed aboneliği
 - [x] Gelişmiş arama ve filtreleme (şehir, tarih aralığı, ücret)
@@ -259,9 +263,16 @@ Etkinlikleri anlık çekmek için:
 docker compose run --rm scraper python scripts/run_daily_scrape.py
 ```
 
-## Hata Alarmı (Telegram)
+## Scraper Hata Alarmı (Telegram)
 
-`backend`/`scraper` loglarında kritik hata olduğunda Telegram mesajı almak için:
+Scraper coordinator, aynı kaynak art arda üç kez başarısız olduğunda uygulama içinden Telegram alarmı gönderir:
+
+```bash
+TELEGRAM_BOT_TOKEN=<BOT_TOKEN>
+TELEGRAM_CHANNEL_ID=<CHANNEL_ID>
+```
+
+Log dosyalarında geçen diğer kritik hataları ayrıca izlemek istersen isteğe bağlı log monitörünü çalıştırabilirsin:
 
 ```bash
 export TELEGRAM_BOT_TOKEN="<BOT_TOKEN>"

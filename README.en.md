@@ -25,13 +25,16 @@ TechEventRadar was built to reduce that fragmentation.
 ## Key Features
 
 - Event collection from multiple sources
+- **Category tags** for Hackathon, Seminar/Webinar, Workshop, Conference, and Bootcamp events
 - Search and filtering in a single event list
 - Quick access to event details
 - Content management through an admin panel
 - Suggestion, complaint, and event submission flows
 - Announcement system
 
-![Event Card Placeholder](frontend/public/placeholder-image-colored.jpeg)
+**Live demo:** [eventradar.dev](https://eventradar.dev)
+
+![TechEventRadar home page](docs/assets/eventradar-homepage.png)
 
 ## Architecture
 
@@ -43,8 +46,12 @@ TechEventRadar was built to reduce that fragmentation.
 ```text
 Frontend (React + Vite)  ->  Backend (FastAPI)  ->  PostgreSQL
                                    |
-                                   -> Scrapers
+                                   -> Source Catalog -> Scrape Run Coordinator
+                                                         |
+                                                         -> Event Ingestion
 ```
+
+The source catalog provides canonical source definitions and lazy runner adapters. The coordinator owns retries, run metrics, reconciliation, and consecutive-failure alerts. Event ingestion centralizes date and location normalization, tags, transactions, and event lifecycle rules. See [`CONTEXT.md`](CONTEXT.md) and [`docs/adr/`](docs/adr/) for the domain language and architecture decisions.
 
 ## Quick Start With Docker
 
@@ -54,6 +61,7 @@ cd eventradar.dev
 cp .env.example .env
 # Edit SECRET_KEY, ADMIN_USERNAME, and ADMIN_PASSWORD in .env
 docker compose up -d --build
+docker compose exec backend alembic upgrade head
 sleep 10
 curl http://localhost:8000/health
 ```
@@ -67,15 +75,25 @@ After the stack starts:
 
 ## Scrapers
 
-| Source | Status | Selenium |
-|--------|--------|----------|
-| TechCareer | Active | Yes |
-| Youthall | Active | Yes |
-| Akbank Genclik | Active | Yes (UC) |
-| Pupilica | Active | Yes (UC) |
-| Kodluyoruz | Active | No |
-| Anbean | Active | No |
-| Coderspace | Active | Yes (UC) |
+| Source | Status | Fetch mode |
+|--------|--------|------------|
+| TechCareer | Active | Browser (Selenium) |
+| Youthall | Active | Browser (Selenium) |
+| Akbank Genclik | Active | Browser (UC) |
+| Pupilica | Active | Browser (UC) |
+| Kodluyoruz | Active | HTTP |
+| Anbean | Active | HTTP |
+| Coderspace | Active | Browser (UC) |
+| Tech Istanbul | Active | HTTP API |
+| Patika.dev / Skillcamp | Active | HTTP |
+| Komünite | Active | HTTP |
+
+## API
+
+- Swagger UI: <http://localhost:8000/docs>
+- Health check: <http://localhost:8000/health>
+- Events: `GET /api/events?page=1&page_size=20&active_only=true`
+- Source catalog: `GET /api/sources`
 
 ## Local Development
 
@@ -90,7 +108,7 @@ uvicorn app.main:app --reload
 
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
@@ -112,9 +130,16 @@ To fetch events on demand:
 docker compose run --rm scraper python scripts/run_daily_scrape.py
 ```
 
-## Telegram Error Alerts
+## Telegram Scraper Alerts
 
-To receive Telegram messages when critical errors appear in backend or scraper logs:
+The scrape run coordinator sends an in-app Telegram alert after three consecutive failures for the same source:
+
+```bash
+TELEGRAM_BOT_TOKEN=<BOT_TOKEN>
+TELEGRAM_CHANNEL_ID=<CHANNEL_ID>
+```
+
+The optional log monitor can report other critical errors found in backend or scraper log files:
 
 ```bash
 export TELEGRAM_BOT_TOKEN="<BOT_TOKEN>"
@@ -143,7 +168,7 @@ Check that the `DATABASE_URL` value in `.env` matches the service name in `docke
 
 **Scraper Chrome error:**
 
-Check scraper logs through `GET /api/admin/scraper-logs` with an admin token.
+Check scraper logs through `GET /api/admin/scrapers/logs` with an admin token.
 
 ## Contributing
 
@@ -185,25 +210,26 @@ The open-source version of this project does not include secrets or credentials.
 > **Long-term vision:** Transform TechEventRadar from a Turkey-focused aggregator into a global platform — one place where developers worldwide can discover tech events from any country.
 
 ### Phase 1 — Foundation ✅ (Done)
-- [x] Automated event aggregation from multiple sources (7 scrapers)
+- [x] Automated event aggregation from multiple sources (10 sources)
 - [x] Category tag system (Hackathon, Bootcamp, Seminar…)
 - [x] Admin panel and content management
 - [x] Telegram notification system
 - [x] CI/CD pipeline and test infrastructure
 
 ### Phase 2 — Quality & Reliability 🔧 (In progress)
-- [ ] New Turkish sources: Skillcamp/Patika, Komunite
-- [ ] Retry mechanism and error handling for scrapers
-- [ ] Per-source quality metrics (success rate, data completeness)
-- [ ] Location normalization (Online / city-based)
-- [ ] Auto-archiving of past events
+- [x] New Turkish sources: Skillcamp/Patika, Komünite
+- [x] Retry mechanism and error handling for scrapers
+- [x] Per-source quality metrics (success rate, data completeness)
+- [x] Location normalization (Online / city-based)
+- [x] Auto-archiving of past events
 
 ### Phase 3 — Product Growth 🚀 (Near-term)
-- [ ] User accounts and personalized event recommendations
+- [x] Browser-stored favorites and filter preferences (no account required)
 - [ ] Email / browser push notification subscriptions
-- [ ] Advanced search and filtering (city, date range, price)
-- [ ] Calendar view
-- [ ] Mobile-friendly PWA
+- [x] RSS feed subscriptions
+- [x] Advanced search and filtering (city, date range, price)
+- [x] Calendar view
+- [x] Mobile-friendly PWA
 
 ### Phase 4 — Internationalization 🌍 (Long-term)
 - [ ] Multi-language UI (TR / EN)

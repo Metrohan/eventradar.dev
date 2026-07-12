@@ -22,6 +22,11 @@ class SourceDefinition:
     mode: RunnerMode
     enabled: bool
     runner: ScraperRunner
+    aliases: tuple[str, ...] = ()
+
+    @property
+    def identifiers(self) -> tuple[str, ...]:
+        return (self.name, *self.aliases)
 
     def public_dict(self) -> dict:
         return {
@@ -57,6 +62,7 @@ SOURCE_CATALOG: tuple[SourceDefinition, ...] = (
         "static",
         True,
         _lazy_runner("app.scrapers.akbank_scraper", "scrape_akbank_events"),
+        ("Akbank",),
     ),
     SourceDefinition(
         "pupilica",
@@ -73,6 +79,22 @@ SOURCE_CATALOG: tuple[SourceDefinition, ...] = (
         "static",
         True,
         _lazy_runner("app.scrapers.techistanbul_scraper", "scrape_techistanbul_events"),
+    ),
+    SourceDefinition(
+        "patika",
+        "Patika.dev",
+        "https://www.patika.dev/bootcamp",
+        "static",
+        True,
+        _lazy_runner("app.scrapers.patika_scraper", "scrape_patika_events"),
+    ),
+    SourceDefinition(
+        "komunite",
+        "Komünite",
+        "https://komunite.com.tr/etkinlikler",
+        "static",
+        True,
+        _lazy_runner("app.scrapers.komunite_scraper", "scrape_komunite_events"),
     ),
     SourceDefinition(
         "techcareer",
@@ -111,7 +133,11 @@ def get_source(identifier: str) -> SourceDefinition | None:
         (
             source
             for source in SOURCE_CATALOG
-            if normalized in {source.key.casefold(), source.name.casefold()}
+            if normalized
+            in {
+                source.key.casefold(),
+                *(value.casefold() for value in source.identifiers),
+            }
         ),
         None,
     )

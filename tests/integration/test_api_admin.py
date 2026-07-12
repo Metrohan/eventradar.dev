@@ -161,5 +161,5 @@ def test_quality_returns_metric_for_every_enabled_source(client, auth_headers):
 
     assert resp.status_code == 200
     payload = resp.json()
-    assert len(payload["sources"]) == 8
+    assert len(payload["sources"]) == 10
     assert any(source["key"] == "tech-istanbul" for source in payload["sources"])

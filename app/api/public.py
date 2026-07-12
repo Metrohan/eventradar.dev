@@ -13,6 +13,8 @@ from ..services.source_catalog import get_enabled_sources
 from ..services.rate_limiter import FixedWindowRateLimiter
 from ..services.rss_service import build_events_rss
 from ..services import email_service, push_service
+from ..services.weekly_content_service import WeeklyContentService
+from ..schemas.blog_post import BlogPostListResponse, BlogPostResponse
 from ..schemas.event import EventResponse, EventListResponse
 from ..schemas.announcement import AnnouncementResponse, AnnouncementListResponse
 from ..schemas.suggestion import SuggestionCreate, SuggestionResponse
@@ -49,6 +51,23 @@ def enforce_public_form_rate_limit(request: Request) -> None:
 async def get_sources():
     """Return public metadata for enabled event-source integrations."""
     return [source.public_dict() for source in get_enabled_sources()]
+
+
+@router.get("/blog", response_model=BlogPostListResponse)
+async def get_blog_posts(db: Session = Depends(get_db)):
+    posts = WeeklyContentService(db).list_published()
+    return BlogPostListResponse(
+        posts=[BlogPostResponse.model_validate(post) for post in posts],
+        total_count=len(posts),
+    )
+
+
+@router.get("/blog/{slug}", response_model=BlogPostResponse)
+async def get_blog_post(slug: str, db: Session = Depends(get_db)):
+    post = WeeklyContentService(db).get_published(slug)
+    if not post:
+        raise HTTPException(status_code=404, detail="Blog yazısı bulunamadı")
+    return post
 
 
 @router.get("/events", response_model=EventListResponse)
@@ -267,19 +286,18 @@ async def get_status(db: Session = Depends(get_db)):
         active_count = db.query(Event).filter(Event.is_active == True).count()
         total_count = db.query(Event).count()
 
-        sources = db.query(ScraperLog.source).distinct().all()
         scrapers = []
-        for (source,) in sources:
+        for source in get_enabled_sources():
             latest: Optional[ScraperLog] = (
                 db.query(ScraperLog)
-                .filter(ScraperLog.source == source)
+                .filter(ScraperLog.source.in_(source.identifiers))
                 .order_by(desc(ScraperLog.created_at))
                 .first()
             )
             if latest:
                 scrapers.append(
                     {
-                        "source": latest.source,
+                        "source": source.name,
                         "status": latest.status,
                         "events_found": latest.events_found,
                         "new_events": latest.new_events,

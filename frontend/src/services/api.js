@@ -46,6 +46,11 @@ export const publicAPI = {
   getSources: () =>
     api.get('/sources'),
 
+  getBlogPosts: () =>
+    api.get('/blog'),
+  getBlogPost: (slug) =>
+    api.get(`/blog/${encodeURIComponent(slug)}`),
+
   // Get single event by id
   getEventById: (id) =>
     api.get(`/events/${id}`),
