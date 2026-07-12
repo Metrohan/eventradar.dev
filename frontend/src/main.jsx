@@ -24,3 +24,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </QueryClientProvider>
   </React.StrictMode>,
 )
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Service worker kaydı başarısız olsa da uygulama normal şekilde çalışmaya devam eder.
+    })
+  })
+}
