@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useSources from '../hooks/useSources'
 import { publicAPI } from '../services/api'
+import PushNotificationToggle from './PushNotificationToggle'
 
 const QUICK_LINKS = [
   { to: '/', label: 'Anasayfa' },
@@ -88,6 +89,8 @@ const Footer = () => {
               {submitting ? '...' : 'Abone Ol'}
             </button>
           </form>
+
+          <PushNotificationToggle />
 
           <div style={{ display: 'flex', gap: '0.75rem' }}>
             <a
