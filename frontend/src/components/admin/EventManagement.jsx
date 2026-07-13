@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import EventForm from './EventForm'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import { getErrorMessage } from '../../utils/errorMessage'
 
 const EventManagement = ({ events }) => {
   const queryClient = useQueryClient()
@@ -18,7 +19,7 @@ const EventManagement = ({ events }) => {
       toast.success('Etkinlik silindi.')
     },
     onError: (error) => {
-      toast.error(error.response?.data?.detail || 'Etkinlik silinirken hata oluştu.')
+      toast.error(getErrorMessage(error, 'Etkinlik silinirken hata oluştu.'))
     }
   })
 

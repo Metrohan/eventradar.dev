@@ -4,6 +4,7 @@ import { adminAPI } from '../../services/api'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import { getErrorMessage } from '../../utils/errorMessage'
 
 const SuggestionManagement = ({ suggestions }) => {
   const queryClient = useQueryClient()
@@ -15,7 +16,7 @@ const SuggestionManagement = ({ suggestions }) => {
       toast.success('Öneri silindi.')
     },
     onError: (error) => {
-      toast.error(error.response?.data?.detail || 'Öneri silinirken hata oluştu.')
+      toast.error(getErrorMessage(error, 'Öneri silinirken hata oluştu.'))
     }
   })
 

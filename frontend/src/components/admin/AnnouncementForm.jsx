@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { adminAPI } from '../../services/api'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '../../utils/errorMessage'
 
 const AnnouncementForm = ({ announcement, onClose, onSuccess }) => {
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -19,7 +20,7 @@ const AnnouncementForm = ({ announcement, onClose, onSuccess }) => {
       onSuccess()
     },
     onError: (error) => {
-      toast.error(error.response?.data?.detail || 'İşlem sırasında hata oluştu.')
+      toast.error(getErrorMessage(error, 'İşlem sırasında hata oluştu.'))
     }
   })
 

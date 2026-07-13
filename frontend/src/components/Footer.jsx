@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useSources from '../hooks/useSources'
 import { publicAPI } from '../services/api'
+import { getErrorMessage } from '../utils/errorMessage'
 import PushNotificationToggle from './PushNotificationToggle'
 
 const QUICK_LINKS = [
@@ -26,7 +27,7 @@ const Footer = () => {
       toast.success(data.message || 'Onay e-postası gönderildi.')
       setEmail('')
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Abonelik başarısız oldu.')
+      toast.error(getErrorMessage(err, 'Abonelik başarısız oldu.'))
     } finally {
       setSubmitting(false)
     }

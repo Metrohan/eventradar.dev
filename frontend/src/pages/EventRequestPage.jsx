@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import toast from 'react-hot-toast'
 import { formAPI } from '../services/api'
+import { getErrorMessage } from '../utils/errorMessage'
 
 const EventRequestPage = () => {
   const [step, setStep] = useState(1)
@@ -11,7 +12,6 @@ const EventRequestPage = () => {
     handleSubmit,
     formState: { errors },
     reset,
-    trigger,
   } = useForm()
 
   const submitMutation = useMutation(formAPI.submitEventRequest, {
@@ -21,15 +21,28 @@ const EventRequestPage = () => {
       setStep(1)
     },
     onError: error => {
-      toast.error(error.response?.data?.detail || 'Talebiniz gönderilirken bir hata oluştu.')
+      toast.error(getErrorMessage(error, 'Talebiniz gönderilirken bir hata oluştu.'))
     },
   })
 
-  const onSubmit = data => submitMutation.mutate(data)
-
-  const handleNext = async () => {
-    const valid = await trigger('event_link')
-    if (valid) setStep(2)
+  // Step 1 only renders the event_link field, so handleSubmit's validation
+  // (and a native Enter-key submit) only ever checks that field. Route the
+  // form's own submit through the step machine instead of hitting the API
+  // with a request that's missing the step-2 fields the backend requires.
+  const onSubmit = data => {
+    if (step === 1) {
+      setStep(2)
+      return
+    }
+    // Optional fields left blank arrive as '' from their inputs; the backend's
+    // Optional[date]/EmailStr fields reject '' as invalid rather than treating
+    // it as absent, so blank optionals must be sent as undefined, not ''.
+    submitMutation.mutate({
+      ...data,
+      event_date: data.event_date || undefined,
+      event_description: data.event_description || undefined,
+      contact_email: data.contact_email || undefined,
+    })
   }
 
   return (
@@ -87,7 +100,7 @@ const EventRequestPage = () => {
                   <p className="field-error" role="alert">{errors.event_link.message}</p>
                 )}
               </div>
-              <button type="button" className="gradient-btn" onClick={handleNext}>
+              <button type="submit" className="gradient-btn">
                 Devam <i className="fas fa-arrow-right ms-2" aria-hidden="true" />
               </button>
             </div>

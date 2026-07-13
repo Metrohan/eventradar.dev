@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { adminAPI } from '../services/api'
+import { getErrorMessage } from '../utils/errorMessage'
 
 const AuthContext = createContext()
 
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.detail || 'Giriş başarısız'
+        error: getErrorMessage(error, 'Giriş başarısız')
       }
     }
   }

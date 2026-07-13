@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import toast from 'react-hot-toast'
 import { formAPI } from '../services/api'
+import { getErrorMessage } from '../utils/errorMessage'
 
 const TYPES = [
   { value: 'öneri',          label: '💡 Öneri',          color: '#6366f1', bg: 'rgba(99,102,241,0.15)',  border: 'rgba(99,102,241,0.4)'  },
@@ -56,7 +57,7 @@ const SuggestionPage = () => {
       reset()
     },
     onError: error => {
-      toast.error(error.response?.data?.detail || 'Gönderilirken bir hata oluştu.')
+      toast.error(getErrorMessage(error, 'Gönderilirken bir hata oluştu.'))
     },
   })
 

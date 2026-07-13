@@ -4,6 +4,7 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import LoadingSpinner from './components/LoadingSpinner'
 import ErrorBoundary from './components/ErrorBoundary'
+import ScrollToTop from './components/ScrollToTop'
 import { useAuth } from './contexts/AuthContext'
 
 // Lazy loaded pages
@@ -56,10 +57,11 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <div className="App d-flex flex-column min-vh-100">
-          <Header />
-          <main className="flex-grow-1">
-            <ErrorBoundary>
+        <ErrorBoundary>
+          <div className="App d-flex flex-column min-vh-100">
+            <ScrollToTop />
+            <Header />
+            <main className="flex-grow-1">
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
@@ -104,19 +106,19 @@ function App() {
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </Suspense>
-            </ErrorBoundary>
-          </main>
-          <Footer />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              style: {
-                background: 'var(--bg-card)',
-                color: 'var(--text-primary)',
-              },
-            }}
-          />
-        </div>
+            </main>
+            <Footer />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                style: {
+                  background: 'var(--bg-card)',
+                  color: 'var(--text-primary)',
+                },
+              }}
+            />
+          </div>
+        </ErrorBoundary>
       </AuthProvider>
     </ThemeProvider>
   )
