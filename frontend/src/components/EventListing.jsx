@@ -215,11 +215,10 @@ const EventListing = ({
             <i className="fas fa-bookmark"></i>
             Favorilerim
           </label>
-
-          <div className="filter-select-wrap" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div className="filter-date-range">
             <input
               type="date"
-              className="filter-select"
+              className="filter-select filter-date-input"
               value={dateFrom}
               onChange={e => setDateFrom(e.target.value)}
               aria-label="Başlangıç tarihi"
@@ -227,7 +226,7 @@ const EventListing = ({
             <span style={{ color: 'var(--text-muted)' }}>–</span>
             <input
               type="date"
-              className="filter-select"
+              className="filter-select filter-date-input"
               value={dateTo}
               onChange={e => setDateTo(e.target.value)}
               aria-label="Bitiş tarihi"

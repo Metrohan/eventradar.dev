@@ -58,6 +58,8 @@ def parse_komunite_events(html: bytes | str) -> list[dict]:
             ),
             None,
         )
+        img = card.select_one("img")
+        image_url = img.get("src") if img else None
         events.append(
             {
                 "title": title,
@@ -66,7 +68,7 @@ def parse_komunite_events(html: bytes | str) -> list[dict]:
                 "application_deadline": None,
                 "location": location,
                 "url": url,
-                "image_url": None,
+                "image_url": image_url,
                 "source": "Komünite",
                 "is_active": True,
             }

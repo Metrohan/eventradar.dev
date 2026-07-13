@@ -75,6 +75,10 @@ def test_komunite_deduplicates_responsive_cards_and_skips_unknown_dates():
     assert events[0]["title"] == "Vibe Coding Bootcamp"
     assert events[0]["date"] == "18 - 19 Temmuz 2026 10:00"
     assert events[0]["location"] == "Komünite Space, Vadistanbul"
+    assert (
+        events[0]["image_url"]
+        == "https://framerusercontent.com/images/lPEk0HJL02Nvo0DDtsWrPCdkK14.png?width=1280&height=720"
+    )
 
 
 # ── Youthall ──────────────────────────────────────────────────────────────────
