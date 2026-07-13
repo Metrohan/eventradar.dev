@@ -1,16 +1,40 @@
+<div align="center">
+
+<img src="frontend/public/techeventradar_logo.png" alt="TechEventRadar Logo" width="96" height="96">
+
 # TechEventRadar
 
+**Turkey's tech event radar** — bootcamps, hackathons, seminars, and career events in one place.
+
+[![Release](https://img.shields.io/github/v/release/Metrohan/eventradar.dev?style=flat-square&color=38BDF8&label=release)](https://github.com/Metrohan/eventradar.dev/releases/latest)
 [![Tests](https://github.com/Metrohan/eventradar.dev/actions/workflows/test.yml/badge.svg)](https://github.com/Metrohan/eventradar.dev/actions/workflows/test.yml)
 [![Deploy](https://github.com/Metrohan/eventradar.dev/actions/workflows/deploy.yml/badge.svg)](https://github.com/Metrohan/eventradar.dev/actions/workflows/deploy.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
-[![Docker](https://img.shields.io/badge/docker-compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg?style=flat-square)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/docker-compose-2496ED?style=flat-square&logo=docker&logoColor=white)](docker-compose.yml)
+
+[Türkçe README](README.md)
+
+![TechEventRadar home page](docs/assets/eventradar-homepage.png)
+
+</div>
 
 One-sentence goal: **Help students and recent graduates discover current technology events in one place.**
 
 TechEventRadar collects bootcamps, webinars, hackathons, career events, and community meetups from different sources and presents them on a single screen. It helps students answer "what event is happening, when is it, where is it, and how do I apply" without checking each site one by one.
 
-![TechEventRadar Logo](frontend/public/techeventradar_logo.png)
+## Table of Contents
+
+- [Why This Project?](#why-this-project)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Quick Start With Docker](#quick-start-with-docker)
+- [Scrapers](#scrapers)
+- [API](#api)
+- [Local Development](#local-development)
+- [Contributing](#contributing)
+- [Roadmap](#roadmap)
+- [Sponsorship](#sponsorship)
 
 ## Why This Project?
 
@@ -24,17 +48,16 @@ TechEventRadar was built to reduce that fragmentation.
 
 ## Key Features
 
-- Event collection from multiple sources
-- **Category tags** for Hackathon, Seminar/Webinar, Workshop, Conference, and Bootcamp events
-- Search and filtering in a single event list
-- Quick access to event details
-- Content management through an admin panel
-- Suggestion, complaint, and event submission flows
-- Announcement system
+| | |
+|---|---|
+| 🔎 **Search & filter in one list** | Source, location, date range, free-only and past-event filters |
+| 🏷️ **Category tags** | Hackathon, Seminar/Webinar, Workshop, Conference, and Bootcamp badges |
+| 📡 **Automated collection from 10 sources** | Kept fresh by a daily scrape cycle |
+| 🔔 **Multi-channel notifications** | Email, browser push, and a Telegram channel |
+| 🗓️ **Calendar & RSS** | Add to calendar (`.ics`), RSS feed, and PWA support |
+| 🛠️ **Admin panel** | Content, announcement, and suggestion/complaint management |
 
 **Live demo:** [eventradar.dev](https://eventradar.dev)
-
-![TechEventRadar home page](docs/assets/eventradar-homepage.png)
 
 ## Architecture
 
