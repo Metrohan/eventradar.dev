@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.sql import func
 from ..core.database import Base
 
@@ -10,7 +10,7 @@ class TrafficLog(Base):
     path = Column(String(255), nullable=False)
     method = Column(String(10), nullable=False)
     ip_address = Column(String(45), nullable=True)
-    user_agent = Column(String(255), nullable=True)
+    user_agent = Column(Text, nullable=True)
     timestamp = Column(DateTime, default=func.now(), nullable=False)
 
     def __repr__(self):
