@@ -1011,6 +1011,12 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0.92;
 }
 
+.btn-event-outline {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color);
+}
+
 /* =====================================================
    GENERIC BUTTONS
    ===================================================== */

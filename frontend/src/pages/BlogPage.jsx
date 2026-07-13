@@ -30,15 +30,19 @@ const BlogPage = () => {
       {!error && posts.length === 0 && <p style={{ color: 'var(--text-muted)' }}>İlk haftalık rehber yakında burada.</p>}
       <div style={{ display: 'grid', gap: '1rem' }}>
         {posts.map(post => (
-          <article key={post.id} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 14, padding: '1.5rem' }}>
+          <Link
+            key={post.id}
+            to={`/blog/${post.slug}`}
+            style={{ display: 'block', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 14, padding: '1.5rem', color: 'inherit', textDecoration: 'none' }}
+          >
             <time style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
               {new Date(post.published_at).toLocaleDateString('tr-TR')}
             </time>
             <h2 style={{ fontSize: '1.25rem', margin: '0.5rem 0', color: 'var(--text-primary)' }}>
-              <Link to={`/blog/${post.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{post.title}</Link>
+              {post.title}
             </h2>
             <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{post.summary}</p>
-          </article>
+          </Link>
         ))}
       </div>
     </div>
