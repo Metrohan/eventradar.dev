@@ -78,16 +78,14 @@ const ShareButtons = ({ event, detailUrl, variant = 'full' }) => {
       </a>
       <button
         type="button"
-        className="btn-event"
-        style={{ background: 'var(--bg-card)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
+        className="btn-event btn-event-outline"
         onClick={() => copyLink(detailUrl)}
       >
         <i className="fas fa-link"></i> Linki Kopyala
       </button>
       <button
         type="button"
-        className="btn-event"
-        style={{ background: 'var(--bg-card)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
+        className="btn-event btn-event-outline"
         onClick={() => {
           const ok = downloadICS(event, detailUrl)
           if (!ok) toast.error('Etkinlik tarihi bilinmediği için takvime eklenemedi.')
