@@ -83,6 +83,7 @@ async def log_traffic(request: Request, call_next):
 
     # Log valid successful requests
     if 200 <= response.status_code < 400:
+        db = None
         try:
             db = SessionLocal()
             service = AnalyticsService(db)
@@ -92,9 +93,11 @@ async def log_traffic(request: Request, call_next):
                 ip=request.client.host if request.client else None,
                 user_agent=request.headers.get("user-agent"),
             )
-            db.close()
         except Exception as e:
             print(f"Error logging traffic: {e}")
+        finally:
+            if db is not None:
+                db.close()
 
     return response
 
