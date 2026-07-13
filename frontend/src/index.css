@@ -715,6 +715,21 @@ h1, h2, h3, h4, h5, h6 {
   min-width: 160px;
 }
 
+/* Reusing .filter-select-wrap's 160px min-width for this group (two date
+   inputs plus a dash) forced it wider than its content needed, so it wrapped
+   onto its own line early and left a gap in the row above it. Size to content
+   instead. */
+.filter-date-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-date-input {
+  width: auto;
+  padding-left: 1rem;
+}
+
 .filter-select-arrow {
   position: absolute;
   right: 0.85rem;
@@ -881,7 +896,13 @@ h1, h2, h3, h4, h5, h6 {
 .event-source-badge {
   position: absolute;
   top: 0.75rem;
-  right: 0.75rem;
+  /* .favorite-button sits at right:8px with a 36px width; clear it plus a gap
+     instead of sharing the same top-right corner. */
+  right: calc(8px + 36px + 8px);
+  max-width: calc(100% - 8px - 36px - 8px - 0.75rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   padding: 0.25rem 0.65rem;
   border-radius: 6px;
   font-size: 0.68rem;
@@ -1552,6 +1573,15 @@ code {
   .filter-select-wrap {
     width: 100%;
     min-width: unset;
+  }
+
+  .filter-date-range {
+    width: 100%;
+  }
+
+  .filter-date-input {
+    flex: 1;
+    min-width: 0;
   }
 
   .filter-toggle {

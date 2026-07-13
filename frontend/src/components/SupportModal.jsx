@@ -76,7 +76,7 @@ const SupportModal = ({ show, handleClose }) => {
                                     </>
                                 ) : (
                                     <>
-                                        <i className="fas fa-share-nodes"></i> Paylaş
+                                        <i className="fas fa-share-alt"></i> Paylaş
                                     </>
                                 )}
                             </button>

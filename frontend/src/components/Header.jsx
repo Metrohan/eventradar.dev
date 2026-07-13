@@ -6,7 +6,7 @@ import ThemeToggle from './ThemeToggle'
 
 const DISCOVER_LINKS = [
   { to: '/', label: 'Tüm Etkinlikler', icon: 'fa-compass' },
-  { to: '/takvim', label: 'Etkinlik Takvimi', icon: 'fa-calendar-days' },
+  { to: '/takvim', label: 'Etkinlik Takvimi', icon: 'fa-calendar-alt' },
   { to: '/hackathonlar', label: 'Hackathonlar', icon: 'fa-code' },
   { to: '/bootcamplar', label: 'Bootcamp’ler', icon: 'fa-laptop-code' },
   { to: '/online-etkinlikler', label: 'Online Etkinlikler', icon: 'fa-globe' },
@@ -89,8 +89,19 @@ const Header = () => {
 
 const NavMenu = ({ label, icon, links, isActive }) => {
   const groupActive = links.some(link => isActive(link.to))
+
+  // <details> elements don't close each other natively, so opening "İçerikler"
+  // while "Keşfet" is still open leaves both panels absolutely positioned on
+  // screen at once, overlapping. Close any other open nav menu on toggle.
+  const handleToggle = e => {
+    if (!e.target.open) return
+    document.querySelectorAll('.nav-menu[open]').forEach(menu => {
+      if (menu !== e.target) menu.removeAttribute('open')
+    })
+  }
+
   return (
-    <details className="nav-menu">
+    <details className="nav-menu" onToggle={handleToggle}>
       <summary className={`button-link nav-menu-trigger ${groupActive ? 'active' : ''}`}>
         <i className={`fas ${icon}`} />
         {label}
