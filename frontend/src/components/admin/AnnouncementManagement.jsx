@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import AnnouncementForm from './AnnouncementForm'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import { getErrorMessage } from '../../utils/errorMessage'
 
 const AnnouncementManagement = ({ announcements }) => {
   const queryClient = useQueryClient()
@@ -18,7 +19,7 @@ const AnnouncementManagement = ({ announcements }) => {
       toast.success('Duyuru silindi.')
     },
     onError: (error) => {
-      toast.error(error.response?.data?.detail || 'Duyuru silinirken hata oluştu.')
+      toast.error(getErrorMessage(error, 'Duyuru silinirken hata oluştu.'))
     }
   })
 

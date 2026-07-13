@@ -1,6 +1,7 @@
 import React from 'react'
 import toast from 'react-hot-toast'
 import { publicAPI } from '../services/api'
+import { getErrorMessage } from '../utils/errorMessage'
 
 const urlBase64ToUint8Array = (base64String) => {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
@@ -33,7 +34,7 @@ const SubscribeWidget = () => {
       toast.success(data.message || 'Onay e-postası gönderildi.')
       setEmail('')
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Abonelik başarısız oldu.')
+      toast.error(getErrorMessage(err, 'Abonelik başarısız oldu.'))
     } finally {
       setSubmitting(false)
     }

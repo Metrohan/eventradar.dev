@@ -1214,6 +1214,15 @@ h1, h2, h3, h4, h5, h6 {
   filter: invert(1) grayscale(100%) brightness(200%);
 }
 
+/* Bootstrap's default .modal-header .btn-close rule pulls the button up and
+   right with a negative margin sized for a square-cornered header. With this
+   modal's 1rem border-radius + overflow:hidden, that offset lands the button
+   right under the corner curve, so it renders as if it's spilling outside
+   the modal. Cancel the negative margin so it sits inside the header padding. */
+.support-modal-content .modal-header .btn-close {
+  margin: 0;
+}
+
 /* =====================================================
    ERROR PAGES
    ===================================================== */

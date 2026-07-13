@@ -101,8 +101,12 @@ const EventListing = ({
       if (!selectedTags.some(t => eventTags.includes(t))) return false
     }
     if (freeOnly) {
+      // Events have no structured price field; this is a best-effort keyword
+      // match on title/description, not a reliable "is free" signal. Many
+      // genuinely free events won't mention price at all and still won't match.
       const text = `${event.title || ''} ${event.description || ''}`.toLocaleLowerCase('tr-TR')
-      if (!text.includes('ücretsiz')) return false
+      const freeKeywords = ['ücretsiz', 'bedava', 'ücret yok', 'ücret alınmamaktadır', 'katılım ücretsiz']
+      if (!freeKeywords.some(k => text.includes(k))) return false
     }
     if (favoritesOnly && !favorites.includes(String(event.id))) return false
     if (dateFrom) {
