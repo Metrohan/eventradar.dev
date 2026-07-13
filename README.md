@@ -1,24 +1,46 @@
+<div align="center">
+
+<img src="frontend/public/techeventradar_logo.png" alt="TechEventRadar Logo" width="96" height="96">
+
 # TechEventRadar
 
+**Türkiye'nin teknoloji etkinlik radarı** — bootcamp, hackathon, seminer ve kariyer etkinliklerini tek ekranda topla.
+
+[![Release](https://img.shields.io/github/v/release/Metrohan/eventradar.dev?style=flat-square&color=38BDF8&label=release)](https://github.com/Metrohan/eventradar.dev/releases/latest)
 [![Tests](https://github.com/Metrohan/eventradar.dev/actions/workflows/test.yml/badge.svg)](https://github.com/Metrohan/eventradar.dev/actions/workflows/test.yml)
 [![Deploy](https://github.com/Metrohan/eventradar.dev/actions/workflows/deploy.yml/badge.svg)](https://github.com/Metrohan/eventradar.dev/actions/workflows/deploy.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
-[![Docker](https://img.shields.io/badge/docker-compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg?style=flat-square)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/docker-compose-2496ED?style=flat-square&logo=docker&logoColor=white)](docker-compose.yml)
 
 [English README](README.en.md)
-
-Tek cümle amaç: **Öğrencilerin ve yeni mezunların güncel teknoloji etkinliklerini tek yerde kolayca bulması.**
-
-TechEventRadar; bootcamp, webinar, hackathon, kariyer etkinliği ve topluluk buluşmalarını farklı kaynaklardan toplayıp tek bir ekranda sunar. Böylece öğrenciler "hangi etkinlik ne zaman, nerede, nasıl başvurulur" sorularını tek tek siteleri gezmeden yanıtlayabilir.
-
-![TechEventRadar Logo](frontend/public/techeventradar_logo.png)
 
 <p>
   <a href="https://eventradar.dev"><img src="https://img.shields.io/badge/🌐_Canlı_Siteyi_Ziyaret_Et-eventradar.dev-38BDF8?style=for-the-badge" alt="Canlı Site"></a>
   <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/🤝_Katkı_Sağla-Rehberi_Oku-22C55E?style=for-the-badge" alt="Katkı Sağla"></a>
   <a href="https://github.com/Metrohan/eventradar.dev/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/Metrohan/eventradar.dev/good%20first%20issue?style=for-the-badge&label=Good%20First%20Issue&color=A855F7" alt="Good First Issue"></a>
 </p>
+
+![TechEventRadar ana sayfa ekran görüntüsü](docs/assets/eventradar-homepage.png)
+
+</div>
+
+Tek cümle amaç: **Öğrencilerin ve yeni mezunların güncel teknoloji etkinliklerini tek yerde kolayca bulması.**
+
+TechEventRadar; bootcamp, webinar, hackathon, kariyer etkinliği ve topluluk buluşmalarını farklı kaynaklardan toplayıp tek bir ekranda sunar. Böylece öğrenciler "hangi etkinlik ne zaman, nerede, nasıl başvurulur" sorularını tek tek siteleri gezmeden yanıtlayabilir.
+
+## İçindekiler
+
+- [Neden Bu Proje?](#neden-bu-proje)
+- [Öne Çıkan Özellikler](#öne-çıkan-özellikler)
+- [Mimari](#mimari)
+- [Hızlı Başlangıç (Docker)](#hızlı-başlangıç-docker)
+- [Scrapers](#scrapers)
+- [API Docs](#api-docs)
+- [Geliştirme (Local)](#geliştirme-local)
+- [Katkı Sağlama](#katkı-sağlama)
+- [Yol Haritası](#yol-haritası)
+- [Destek / Sponsorship](#destek--sponsorship)
 
 ## Neden Bu Proje?
 
@@ -32,17 +54,16 @@ TechEventRadar bu dağınıklığı azaltmak için geliştirildi.
 
 ## Öne Çıkan Özellikler
 
-- Çoklu kaynaklardan etkinlik toplama
-- **Kategori tag sistemi** — Hackathon, Seminer/Webinar, Atölye, Konferans, Bootcamp badge'leriyle filtreleme
-- Tek listede arama ve filtreleme
-- Etkinlik detayına hızlı erişim
-- Admin paneli ile içerik yönetimi
-- Öneri/şikayet ve etkinlik ekleme talepleri
-- Duyuru sistemi
+| | |
+|---|---|
+| 🔎 **Tek listede arama & filtreleme** | Kaynak, konum, tarih aralığı, ücretsiz/geçmiş etkinlik filtreleri |
+| 🏷️ **Kategori tag sistemi** | Hackathon, Seminer/Webinar, Atölye, Konferans, Bootcamp badge'leriyle filtreleme |
+| 📡 **10 kaynaktan otomatik toplama** | Günlük scraper döngüsüyle güncel kalır |
+| 🔔 **Çok kanallı bildirimler** | E-posta, tarayıcı push ve Telegram kanalı |
+| 🗓️ **Takvim & RSS** | `.ics` takvime ekleme, RSS feed, PWA desteği |
+| 🛠️ **Admin paneli** | İçerik, duyuru ve öneri/şikayet yönetimi |
 
 **🌐 Canlı Demo:** [eventradar.dev](https://eventradar.dev)
-
-![TechEventRadar ana sayfa ekran görüntüsü](docs/assets/eventradar-homepage.png)
 
 ## Mimari
 
