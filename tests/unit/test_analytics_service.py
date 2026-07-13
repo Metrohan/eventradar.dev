@@ -9,7 +9,6 @@ from app.services.analytics_service import AnalyticsService
 from app.models.traffic_log import TrafficLog
 from sqlalchemy import Text
 
-
 BINGBOT_USER_AGENT = (
     "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; "
     "bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/136.0.0.0 "
