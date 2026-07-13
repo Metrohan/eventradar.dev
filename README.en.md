@@ -160,14 +160,11 @@ docker compose up -d --force-recreate backend scraper
 curl http://localhost:8000/api/push/vapid-public-key
 ```
 
-The returned `key` must not be empty. Server cron example that generates the post at 08:55 and emails the same content to confirmed subscribers at 09:00:
+The returned `key` must not be empty. Server cron example for the weekly email digest:
 
 ```cron
-55 8 * * 1 cd /path/to/eventradar.dev && docker compose exec -T backend python scripts/generate_weekly_blog_post.py >> /var/log/eventradar-weekly-blog.log 2>&1
 0 9 * * 1 cd /path/to/eventradar.dev && docker compose exec -T backend python scripts/send_weekly_email_digest.py >> /var/log/eventradar-email-digest.log 2>&1
 ```
-
-The email script also generates a missing post and does not resend a weekly post that was already delivered successfully.
 
 Never commit secrets or place them in `.env.example`.
 

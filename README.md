@@ -293,14 +293,11 @@ docker compose up -d --force-recreate backend scraper
 curl http://localhost:8000/api/push/vapid-public-key
 ```
 
-Yanıttaki `key` boş olmamalı. Blog yazısını 08:55'te üretip 09:00'da aynı içeriği onaylı abonelere gönderen sunucu cron örneği:
+Yanıttaki `key` boş olmamalı. Haftalık e-posta özeti için sunucu cron örneği:
 
 ```cron
-55 8 * * 1 cd /path/to/eventradar.dev && docker compose exec -T backend python scripts/generate_weekly_blog_post.py >> /var/log/eventradar-weekly-blog.log 2>&1
 0 9 * * 1 cd /path/to/eventradar.dev && docker compose exec -T backend python scripts/send_weekly_email_digest.py >> /var/log/eventradar-email-digest.log 2>&1
 ```
-
-E-posta scripti blog yazısı eksikse kendisi de üretir ve aynı haftanın başarıyla gönderilmiş yazısını tekrar göndermez.
 
 Secret değerlerini repoya veya `.env.example` dosyasına yazma.
 
