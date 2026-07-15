@@ -2,6 +2,7 @@ import smtplib
 import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.utils import formatdate, make_msgid, parseaddr
 from sqlalchemy.orm import Session
 from ..models.subscriber import Subscriber
 from ..schemas.subscriber import BroadcastRequest
@@ -49,7 +50,10 @@ class NotificationService:
             try:
                 if sub.channel == "email":
                     self._send_email(
-                        str(sub.contact_info), "EventRadar Bildirimi", request.message
+                        str(sub.contact_info),
+                        "EventRadar Bildirimi",
+                        request.message,
+                        unsubscribe_token=sub.unsubscribe_token,
                     )
                 elif sub.channel == "telegram":
                     self._send_telegram(str(sub.contact_info), request.message)
@@ -65,21 +69,33 @@ class NotificationService:
             "failed_count": failed,
         }
 
-    def _send_email(self, to: str, subject: str, body: str) -> None:
+    def _send_email(
+        self, to: str, subject: str, body: str, unsubscribe_token: str | None = None
+    ) -> None:
         if settings.debug or not settings.smtp_host:
             logger.info("[DEV] Email to %s: %s", to, body)
             return
 
+        from_addr = settings.smtp_from
+        _, from_email = parseaddr(from_addr)
+        domain = from_email.split("@")[-1] if "@" in from_email else "eventradar.dev"
+
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
-        msg["From"] = settings.smtp_from
+        msg["From"] = from_addr
         msg["To"] = to
+        msg["Date"] = formatdate(localtime=True)
+        msg["Message-ID"] = make_msgid(domain=domain)
+        if unsubscribe_token:
+            unsubscribe_url = f"https://eventradar.dev/abone-iptal?token={unsubscribe_token}"
+            msg["List-Unsubscribe"] = f"<{unsubscribe_url}>"
+            body = f"{body}\n\nAbonelikten çık: {unsubscribe_url}"
         msg.attach(MIMEText(body, "plain", "utf-8"))
 
         with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
             server.starttls()
             server.login(settings.smtp_user, settings.smtp_pass)
-            server.sendmail(settings.smtp_from, to, msg.as_string())
+            server.sendmail(from_email, to, msg.as_string())
 
     def _send_telegram(self, chat_id: str, message: str) -> None:
         if settings.debug or not settings.telegram_bot_token:

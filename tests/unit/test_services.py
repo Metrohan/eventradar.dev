@@ -58,7 +58,10 @@ def test_broadcast_email_calls_send_email(test_db):
         result = service.broadcast_message(req)
 
     mock_send.assert_called_once_with(
-        "test@example.com", "EventRadar Bildirimi", "Hello there!"
+        "test@example.com",
+        "EventRadar Bildirimi",
+        "Hello there!",
+        unsubscribe_token=None,
     )
     assert result["recipient_count"] == 1
     assert result["failed_count"] == 0
