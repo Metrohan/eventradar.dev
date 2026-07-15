@@ -286,7 +286,19 @@ docker compose run --rm scraper python scripts/run_daily_scrape.py
 
 ## E-posta ve Tarayıcı Bildirimleri
 
-E-posta aboneliği double opt-in ile çalışır: kullanıcı onay bağlantısını açtıktan sonra haftalık özete dahil edilir. Gmail SMTP kullanıyorsan normal hesap şifresi yerine Google Uygulama Şifresi kullan:
+E-posta aboneliği double opt-in ile çalışır: kullanıcı onay bağlantısını açtıktan sonra haftalık özete dahil edilir.
+
+**Önerilen: Resend (kendi domain'inden gönderim).** `eventradar.dev`'i [resend.com](https://resend.com) üzerinde doğrulayıp (SPF/DKIM/DMARC kayıtları) API key aldıktan sonra:
+
+```env
+SMTP_HOST=smtp.resend.com
+SMTP_PORT=587
+SMTP_USER=resend
+SMTP_PASS=<Resend API key>
+SMTP_FROM=TechEventRadar <noreply@eventradar.dev>
+```
+
+**Alternatif: Gmail SMTP** (domain doğrulaması yapmak istemiyorsan, normal hesap şifresi yerine Google Uygulama Şifresi kullan — bu durumda `SMTP_FROM` mutlaka kimlik doğrulanan Gmail adresiyle aynı olmalı, aksi halde SPF/DKIM eşleşmez ve mailler spam'e düşer):
 
 ```env
 SMTP_HOST=smtp.gmail.com
