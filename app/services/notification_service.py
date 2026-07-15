@@ -53,7 +53,11 @@ class NotificationService:
                         str(sub.contact_info),
                         "EventRadar Bildirimi",
                         request.message,
-                        unsubscribe_token=sub.unsubscribe_token,
+                        unsubscribe_token=(
+                            str(sub.unsubscribe_token)
+                            if sub.unsubscribe_token is not None
+                            else None
+                        ),
                     )
                 elif sub.channel == "telegram":
                     self._send_telegram(str(sub.contact_info), request.message)
