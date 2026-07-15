@@ -87,7 +87,9 @@ class NotificationService:
         msg["Date"] = formatdate(localtime=True)
         msg["Message-ID"] = make_msgid(domain=domain)
         if unsubscribe_token:
-            unsubscribe_url = f"https://eventradar.dev/abone-iptal?token={unsubscribe_token}"
+            unsubscribe_url = (
+                f"https://eventradar.dev/abone-iptal?token={unsubscribe_token}"
+            )
             msg["List-Unsubscribe"] = f"<{unsubscribe_url}>"
             body = f"{body}\n\nAbonelikten çık: {unsubscribe_url}"
         msg.attach(MIMEText(body, "plain", "utf-8"))
