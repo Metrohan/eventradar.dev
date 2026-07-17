@@ -11,7 +11,7 @@
   --bg-input: #1E293B;
   --text-primary: #F1F5F9;
   --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  --text-muted: #8291A8;
   --action-primary: #38BDF8;
   --action-primary-dark: #0EA5E9;
   --accent-purple: #818CF8;
@@ -1136,7 +1136,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 300px;
+  min-height: 60vh;
 }
 
 .spinner-ring {

@@ -323,9 +323,9 @@ const EventListing = ({
         >
           <i className="fas fa-plus"></i>
         </div>
-        <h5 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>
+        <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>
           Bir etkinlik mi kaçırdık?
-        </h5>
+        </h4>
         <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '1.25rem' }}>
           Eklenmesini istediğiniz bir etkinlik varsa bize bildirin.
         </p>

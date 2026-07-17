@@ -55,7 +55,7 @@ const Header = () => {
       <header className="main-header">
         <div className="container header-shell">
           <Link to="/" className="logo-link" aria-label="TechEventRadar anasayfa">
-            <img src="/techeventradar_logo.png" alt="" className="header-logo" width="36" height="36" />
+            <img src="/techeventradar_logo.png" alt="" className="header-logo" width="69" height="36" />
             <span className="logo-text gradient-text">TechEventRadar</span>
           </Link>
 
