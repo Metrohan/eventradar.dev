@@ -1,6 +1,7 @@
 # Optimize/proxy oversized third-party event images
 
 Status: needs-triage
+GitHub: https://github.com/Metrohan/eventradar.dev/issues/76
 
 ## Context
 
