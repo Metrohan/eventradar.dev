@@ -1,6 +1,7 @@
 # Mobile FCP/LCP stuck around 5s: no SSR, blank until JS boots
 
 Status: needs-triage
+GitHub: https://github.com/Metrohan/eventradar.dev/issues/77
 
 ## Context
 
