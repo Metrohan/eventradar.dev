@@ -81,6 +81,13 @@ const EventDetailPage = () => {
     canonical.setAttribute('href', canonicalUrl)
 
     // JSON-LD Event schema
+    let organizerUrl
+    try {
+      organizerUrl = new URL(event.url).origin
+    } catch {
+      organizerUrl = undefined
+    }
+
     const schema = {
       '@context': 'https://schema.org',
       '@type': 'Event',
@@ -91,10 +98,21 @@ const EventDetailPage = () => {
       url: `https://eventradar.dev/etkinlik/${id}`,
       isAccessibleForFree: true,
       eventStatus: 'https://schema.org/EventScheduled',
-      ...(event.location && {
-        location: { '@type': 'Place', name: event.location },
-      }),
-      organizer: { '@type': 'Organization', name: event.source },
+      location: event.location
+        ? { '@type': 'Place', name: event.location }
+        : { '@type': 'VirtualLocation', url: event.url },
+      organizer: {
+        '@type': 'Organization',
+        name: event.source,
+        ...(organizerUrl && { url: organizerUrl }),
+      },
+      offers: {
+        '@type': 'Offer',
+        price: 0,
+        priceCurrency: 'TRY',
+        url: event.url,
+        availability: 'https://schema.org/InStock',
+      },
     }
     document.getElementById('event-jsonld')?.remove()
     const script = document.createElement('script')
