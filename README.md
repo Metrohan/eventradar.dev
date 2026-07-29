@@ -1,3 +1,7 @@
+> **Project Status: Active — Production**
+>
+> This is a live production project. Current work focuses on reliability, performance, deployment safety, and maintainability.
+
 <div align="center">
 
 <img src="frontend/public/techeventradar_logo.png" alt="TechEventRadar Logo" width="96" height="96">
