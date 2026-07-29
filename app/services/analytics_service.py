@@ -9,7 +9,9 @@ class AnalyticsService:
         self.db = db
 
     def log_request(self, path: str, method: str, ip: str, user_agent: str):
-        log = TrafficLog(path=path, method=method, ip_address=ip, user_agent=user_agent)
+        log = TrafficLog(
+            path=path[:255], method=method, ip_address=ip, user_agent=user_agent
+        )
         self.db.add(log)
         self.db.commit()
 
