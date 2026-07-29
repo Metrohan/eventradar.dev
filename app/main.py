@@ -157,14 +157,11 @@ async def sitemap():
         ("/blog", "weekly", "0.7"),
     ]
 
-    urls = [
-        f"""  <url>
+    urls = [f"""  <url>
     <loc>{BASE_URL}{path}</loc>
     <changefreq>{changefreq}</changefreq>
     <priority>{priority}</priority>
-  </url>"""
-        for path, changefreq, priority in static_pages
-    ]
+  </url>""" for path, changefreq, priority in static_pages]
 
     for event_id, scraped_at in events:
         lastmod = scraped_at.strftime("%Y-%m-%d") if scraped_at else ""
