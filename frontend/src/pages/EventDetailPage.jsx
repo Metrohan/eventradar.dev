@@ -106,6 +106,11 @@ const EventDetailPage = () => {
         name: event.source,
         ...(organizerUrl && { url: organizerUrl }),
       },
+      performer: {
+        '@type': 'Organization',
+        name: event.source,
+        ...(organizerUrl && { url: organizerUrl }),
+      },
       offers: {
         '@type': 'Offer',
         price: 0,
