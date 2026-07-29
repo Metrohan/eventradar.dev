@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
+import { setPageSEO } from '../utils/seo'
 
 const CATEGORIES = [
   { key: 'bulut',    label: '☁️ Bulut',     color: '#38bdf8' },
@@ -152,6 +153,14 @@ const trainings = [
 const FreeTrainingsPage = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState(null)
+
+  useEffect(() => {
+    setPageSEO({
+      title: 'Ücretsiz Eğitim Kaynakları | TechEventRadar',
+      description: 'Google, AWS, Microsoft ve diğer teknoloji şirketlerinin sunduğu ücretsiz eğitim, sertifika ve öğrenme kaynaklarını tek listede keşfet.',
+      path: '/egitim-kaynaklari',
+    })
+  }, [])
 
   const filtered = useMemo(() => {
     const q = searchQuery.toLowerCase()

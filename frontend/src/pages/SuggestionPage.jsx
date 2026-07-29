@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import toast from 'react-hot-toast'
 import { formAPI } from '../services/api'
 import { getErrorMessage } from '../utils/errorMessage'
+import { setPageSEO } from '../utils/seo'
 
 const TYPES = [
   { value: 'öneri',          label: '💡 Öneri',          color: '#6366f1', bg: 'rgba(99,102,241,0.15)',  border: 'rgba(99,102,241,0.4)'  },
@@ -50,6 +51,14 @@ const SuggestionPage = () => {
   } = useForm()
 
   const selectedType = watch('suggestion_type')
+
+  useEffect(() => {
+    setPageSEO({
+      title: 'Öneri ve Şikayet Bildir | TechEventRadar',
+      description: 'TechEventRadar hakkında öneri, hata bildirimi veya şikayetinizi bize iletin.',
+      path: '/oneri-sikayet',
+    })
+  }, [])
 
   const submitMutation = useMutation(formAPI.submitSuggestion, {
     onSuccess: () => {

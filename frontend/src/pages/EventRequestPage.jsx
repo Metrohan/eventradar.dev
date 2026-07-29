@@ -1,12 +1,21 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import toast from 'react-hot-toast'
 import { formAPI } from '../services/api'
 import { getErrorMessage } from '../utils/errorMessage'
+import { setPageSEO } from '../utils/seo'
 
 const EventRequestPage = () => {
   const [step, setStep] = useState(1)
+
+  useEffect(() => {
+    setPageSEO({
+      title: 'Etkinlik Ekleme Talebi | TechEventRadar',
+      description: 'Kaçırdığımız bir hackathon, bootcamp veya kariyer etkinliği mi var? TechEventRadar\'a ekleyelim.',
+      path: '/etkinlik-talep',
+    })
+  }, [])
   const {
     register,
     handleSubmit,

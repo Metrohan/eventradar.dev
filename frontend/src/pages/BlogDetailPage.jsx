@@ -13,7 +13,36 @@ const BlogDetailPage = () => {
   const post = data?.data
 
   React.useEffect(() => {
-    if (post) setPageSEO({ title: `${post.title} | TechEventRadar`, description: post.summary, path: `/blog/${post.slug}` })
+    if (!post) return
+
+    setPageSEO({ title: `${post.title} | TechEventRadar`, description: post.summary, path: `/blog/${post.slug}` })
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.title,
+      description: post.summary,
+      image: 'https://eventradar.dev/banner.png',
+      datePublished: post.published_at,
+      author: { '@type': 'Organization', name: 'TechEventRadar' },
+      publisher: { '@type': 'Organization', name: 'TechEventRadar' },
+      mainEntityOfPage: `https://eventradar.dev/blog/${post.slug}`,
+    }
+    document.getElementById('blog-jsonld')?.remove()
+    const script = document.createElement('script')
+    script.id = 'blog-jsonld'
+    script.type = 'application/ld+json'
+    script.text = JSON.stringify(schema)
+      .replace(/</g, '\\u003c')
+      .replace(/>/g, '\\u003e')
+      .replace(/&/g, '\\u0026')
+      .replace(/\u2028/g, '\\u2028')
+      .replace(/\u2029/g, '\\u2029')
+    document.head.appendChild(script)
+
+    return () => {
+      document.getElementById('blog-jsonld')?.remove()
+    }
   }, [post])
 
   if (isLoading) return <LoadingSpinner />
