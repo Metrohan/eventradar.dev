@@ -14,6 +14,7 @@ from .location_normalizer import normalize_location
 SessionFactory = Callable[[], Session]
 NotificationAdapter = Callable[[list[dict[str, Any]]], None]
 Clock = Callable[[], datetime]
+ThumbnailFn = Callable[[str], "str | None"]
 
 
 class IngestionError(RuntimeError):
@@ -95,16 +96,27 @@ class EventIngestion:
         session_factory: SessionFactory,
         notification_adapter: NotificationAdapter | None = None,
         clock: Clock = datetime.now,
+        thumbnail_fn: ThumbnailFn | None = None,
     ):
         self._session_factory = session_factory
         self._notification_adapter = notification_adapter
         self._clock = clock
+        self._thumbnail_fn = thumbnail_fn
 
     def ingest(self, events: Iterable[ScrapedEvent]) -> IngestionResult:
         items = list(events)
         result = IngestionResult()
         db = self._session_factory()
         new_events: list[ScrapedEvent] = []
+
+        # Thumbnail generation touches the network/filesystem; run it
+        # up front (once per unique image_url, cache-hits are file checks
+        # only) so it never happens inside a DB transaction/savepoint.
+        thumbnails: dict[str, str | None] = {}
+        if self._thumbnail_fn:
+            unique_image_urls = {item.image_url for item in items if item.image_url}
+            for image_url in unique_image_urls:
+                thumbnails[image_url] = self._thumbnail_fn(image_url)
 
         try:
             urls = [item.url for item in items if item.url]
@@ -123,6 +135,10 @@ class EventIngestion:
                     continue
                 seen_urls.add(item.url)
 
+                thumbnail_url = (
+                    thumbnails.get(item.image_url) if item.image_url else None
+                )
+
                 try:
                     is_new = False
                     with db.begin_nested():
@@ -138,10 +154,17 @@ class EventIngestion:
                                 deadline_value,
                                 now,
                                 all_tags,
+                                thumbnail_url,
                             )
                         else:
                             self._create_event(
-                                db, item, date_value, deadline_value, now, all_tags
+                                db,
+                                item,
+                                date_value,
+                                deadline_value,
+                                now,
+                                all_tags,
+                                thumbnail_url,
                             )
                             is_new = True
 
@@ -222,6 +245,7 @@ class EventIngestion:
         deadline_value: datetime | None,
         now: datetime,
         all_tags: dict[str, Tag],
+        thumbnail_url: str | None = None,
     ) -> None:
         event.title = item.title or cast(str, event.title)  # type: ignore[assignment]
         event.description = item.description or cast(  # type: ignore[assignment]
@@ -240,6 +264,12 @@ class EventIngestion:
         event.image_url = item.image_url or cast(  # type: ignore[assignment]
             str | None, event.image_url
         )
+        if item.image_url:
+            # Only touch thumbnail_url when this scrape actually reported an
+            # image; a missing thumbnail_url here means generation failed
+            # (bad/unreachable source, SSRF-rejected, oversize, etc.) and
+            # the frontend falls back to image_url or the static placeholder.
+            event.thumbnail_url = thumbnail_url  # type: ignore[assignment]
         event.scraped_at = now  # type: ignore[assignment]
         event.last_seen_at = now  # type: ignore[assignment]
         tag_names = classify_event(
@@ -255,6 +285,7 @@ class EventIngestion:
         deadline_value: datetime | None,
         now: datetime,
         all_tags: dict[str, Tag],
+        thumbnail_url: str | None = None,
     ) -> None:
         event = Event(
             title=item.title,
@@ -264,6 +295,7 @@ class EventIngestion:
             location=item.location,
             url=item.url,
             image_url=item.image_url,
+            thumbnail_url=thumbnail_url,
             source=item.source,
             is_active=date_value is None or date_value >= now,
             scraped_at=now,
@@ -276,9 +308,13 @@ class EventIngestion:
 
 
 def build_event_ingestion() -> EventIngestion:
+    from pathlib import Path
+
+    from ..core.config import settings
     from ..core.database import SessionLocal
     from .telegram_service import notify_new_events as notify_telegram
     from . import push_service
+    from . import image_pipeline
 
     def notify_all(events: list[dict]) -> None:
         notify_telegram(events)
@@ -288,4 +324,11 @@ def build_event_ingestion() -> EventIngestion:
         finally:
             db.close()
 
-    return EventIngestion(SessionLocal, notify_all)
+    thumbnail_dir = Path(settings.thumbnail_dir)
+
+    def make_thumbnail(image_url: str) -> str | None:
+        return image_pipeline.ensure_thumbnail(
+            image_url, thumbnail_dir, settings.thumbnail_public_prefix
+        )
+
+    return EventIngestion(SessionLocal, notify_all, thumbnail_fn=make_thumbnail)

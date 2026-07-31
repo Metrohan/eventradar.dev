@@ -36,6 +36,7 @@ class EventResponse(EventBase):
 
     id: int
     scraped_at: datetime
+    thumbnail_url: Optional[str] = None
     tags: list[str] = Field(default_factory=list)
 
     @field_validator("tags", mode="before")

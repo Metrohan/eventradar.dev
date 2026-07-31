@@ -52,7 +52,7 @@ const EventCard = ({ event }) => {
       {/* Image */}
       <div className="event-image-wrapper">
         <img
-          src={event.image_url || '/placeholder-image-colored.webp'}
+          src={event.thumbnail_url || event.image_url || '/placeholder-image-colored.webp'}
           alt={event.title}
           className="event-image"
           width="400"

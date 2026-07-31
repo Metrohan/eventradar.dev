@@ -36,6 +36,15 @@ class Settings(BaseSettings):
     # Telegram
     telegram_bot_token: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
+    # Event thumbnails (see docs/adr/0005-scrape-time-image-resize.md)
+    # Relative default (mirrors database_url's "./instance/events.db")
+    # so it works outside the container (local dev, CI); docker-compose.yml
+    # overrides this to an absolute path backed by a named volume.
+    thumbnail_dir: str = os.getenv("THUMBNAIL_DIR", "./data/thumbnails")
+    thumbnail_public_prefix: str = os.getenv(
+        "THUMBNAIL_PUBLIC_PREFIX", "/media/thumbnails"
+    )
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # Parse CORS origins if it's a string

@@ -1,6 +1,9 @@
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from .core.config import settings
 from .core.database import engine, Base
@@ -59,6 +62,15 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(api_router)
+
+# Scrape-time event thumbnails (see docs/adr/0005-scrape-time-image-resize.md)
+_thumbnail_dir = Path(settings.thumbnail_dir)
+_thumbnail_dir.mkdir(parents=True, exist_ok=True)
+app.mount(
+    settings.thumbnail_public_prefix,
+    StaticFiles(directory=_thumbnail_dir),
+    name="thumbnails",
+)
 
 # Traffic Logging Middleware
 from fastapi import Request

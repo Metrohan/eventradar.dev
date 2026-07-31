@@ -12,6 +12,7 @@ venv/
 *.db
 *.sqlite3
 instance/
+data/
 
 .vscode/
 .idea/
