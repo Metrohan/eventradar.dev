@@ -141,10 +141,16 @@ def test_ingest_calls_thumbnail_fn_once_per_unique_image_url(test_db):
     shared_image = "https://coderspace.io/events/shared.png"
     events = [
         ScrapedEvent(
-            title="A", url="https://example.com/a", source="test", image_url=shared_image
+            title="A",
+            url="https://example.com/a",
+            source="test",
+            image_url=shared_image,
         ),
         ScrapedEvent(
-            title="B", url="https://example.com/b", source="test", image_url=shared_image
+            title="B",
+            url="https://example.com/b",
+            source="test",
+            image_url=shared_image,
         ),
     ]
 

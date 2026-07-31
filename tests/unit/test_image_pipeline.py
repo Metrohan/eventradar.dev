@@ -119,7 +119,9 @@ def test_ensure_thumbnail_generates_and_caches(mock_get, mock_getaddrinfo, tmp_p
 
 @patch("app.services.image_pipeline.socket.getaddrinfo")
 @patch("app.services.image_pipeline.requests.get")
-def test_cache_invalidates_when_source_url_changes(mock_get, mock_getaddrinfo, tmp_path):
+def test_cache_invalidates_when_source_url_changes(
+    mock_get, mock_getaddrinfo, tmp_path
+):
     mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
     mock_get.return_value = _fake_response(_make_image_bytes())
 
@@ -148,7 +150,9 @@ def test_ensure_thumbnail_falls_back_on_disallowed_host(tmp_path):
 
 @patch("app.services.image_pipeline.socket.getaddrinfo")
 @patch("app.services.image_pipeline.requests.get")
-def test_ensure_thumbnail_falls_back_on_oversized_body(mock_get, mock_getaddrinfo, tmp_path, monkeypatch):
+def test_ensure_thumbnail_falls_back_on_oversized_body(
+    mock_get, mock_getaddrinfo, tmp_path, monkeypatch
+):
     monkeypatch.setattr(image_pipeline, "MAX_IMAGE_BYTES", 100)
     mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
     mock_get.return_value = _fake_response(_make_image_bytes(), chunk_size=16)
@@ -161,9 +165,13 @@ def test_ensure_thumbnail_falls_back_on_oversized_body(mock_get, mock_getaddrinf
 
 @patch("app.services.image_pipeline.socket.getaddrinfo")
 @patch("app.services.image_pipeline.requests.get")
-def test_ensure_thumbnail_falls_back_on_non_image_content_type(mock_get, mock_getaddrinfo, tmp_path):
+def test_ensure_thumbnail_falls_back_on_non_image_content_type(
+    mock_get, mock_getaddrinfo, tmp_path
+):
     mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
-    mock_get.return_value = _fake_response(b"<html>not an image</html>", content_type="text/html")
+    mock_get.return_value = _fake_response(
+        b"<html>not an image</html>", content_type="text/html"
+    )
 
     result = image_pipeline.ensure_thumbnail(
         "https://coderspace.io/events/oops.html", tmp_path, "/media/thumbnails"
@@ -173,7 +181,9 @@ def test_ensure_thumbnail_falls_back_on_non_image_content_type(mock_get, mock_ge
 
 @patch("app.services.image_pipeline.socket.getaddrinfo")
 @patch("app.services.image_pipeline.requests.get")
-def test_ensure_thumbnail_falls_back_when_source_unreachable(mock_get, mock_getaddrinfo, tmp_path):
+def test_ensure_thumbnail_falls_back_when_source_unreachable(
+    mock_get, mock_getaddrinfo, tmp_path
+):
     mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
     mock_get.side_effect = requests.ConnectionError("boom")
 
@@ -185,9 +195,13 @@ def test_ensure_thumbnail_falls_back_when_source_unreachable(mock_get, mock_geta
 
 @patch("app.services.image_pipeline.socket.getaddrinfo")
 @patch("app.services.image_pipeline.requests.get")
-def test_ensure_thumbnail_falls_back_on_corrupt_image_bytes(mock_get, mock_getaddrinfo, tmp_path):
+def test_ensure_thumbnail_falls_back_on_corrupt_image_bytes(
+    mock_get, mock_getaddrinfo, tmp_path
+):
     mock_getaddrinfo.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
-    mock_get.return_value = _fake_response(b"not actually an image", content_type="image/png")
+    mock_get.return_value = _fake_response(
+        b"not actually an image", content_type="image/png"
+    )
 
     result = image_pipeline.ensure_thumbnail(
         "https://coderspace.io/events/corrupt.png", tmp_path, "/media/thumbnails"
