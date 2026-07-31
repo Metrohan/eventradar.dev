@@ -15,9 +15,9 @@ jobs:
       ADMIN_PASSWORD: "testpassword"
       DATABASE_URL: "sqlite:///./test.db"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4
         with:
           python-version: "3.11"
           cache: "pip"
@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: SSH and Deploy
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -47,6 +47,11 @@ jobs:
           script: |
             set -euo pipefail
             cd /home/${{ secrets.SSH_USERNAME }}/TechEventRadar/
+
+            COMPOSE="docker compose -f docker-compose.yml -f docker-compose.prod.yml"
+
+            PREV_COMMIT="$(git rev-parse HEAD)"
+
             git fetch --all
             git checkout main
             if ! git pull --rebase origin main; then
@@ -54,11 +59,29 @@ jobs:
               git rebase --abort || true
               exit 1
             fi
-            docker compose up -d db
-            docker compose build backend frontend
-            docker compose run --rm backend alembic upgrade head
-            docker compose up -d --force-recreate
 
-            BASE_URL=http://127.0.0.1:8000 bash scripts/verify_deploy.sh
+            $COMPOSE up -d db
+
+            mkdir -p backups
+            BACKUP_FILE="backups/pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz"
+            $COMPOSE exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB"' | gzip > "$BACKUP_FILE"
+            echo "DB backup: $BACKUP_FILE"
+            find backups -name 'pre_deploy_*.sql.gz' -mtime +7 -delete
+
+            $COMPOSE build backend frontend
+            $COMPOSE run --rm backend alembic upgrade head
+            $COMPOSE up -d --force-recreate
+
+            if ! BASE_URL=http://127.0.0.1:8000 bash scripts/verify_deploy.sh; then
+              echo "::error::verify_deploy basarisiz oldu, koda $PREV_COMMIT'e (bir onceki commit) donuluyor."
+              echo "::warning::Bu rollback yalnizca kodu/image'i geri aliyor. Yeni migration eski koddan geri alinmiyor (otomatik 'alembic downgrade' calistirilmadi, guvenli olmadigi icin) - gerekirse $BACKUP_FILE dosyasindan DB'yi elle geri yukle: gunzip -c $BACKUP_FILE | docker compose exec -T db psql -U \$POSTGRES_USER -d \$POSTGRES_DB"
+
+              git checkout "$PREV_COMMIT"
+              $COMPOSE build backend frontend
+              $COMPOSE up -d --force-recreate
+
+              echo "--- Rollback tamamlandi ($PREV_COMMIT'e donuldu). Deploy basarisiz sayiliyor. ---"
+              exit 1
+            fi
 
             echo "--- Deploy tamamlandi ---"
