@@ -46,9 +46,8 @@ const CalendarPage = () => {
     () => publicAPI.getEvents(true)
   )
 
-  const allEvents = eventsData?.data?.events || []
-
   const eventsByDay = React.useMemo(() => {
+    const allEvents = eventsData?.data?.events || []
     const map = new Map()
     for (const event of allEvents) {
       if (!event.date) continue
@@ -59,7 +58,7 @@ const CalendarPage = () => {
       map.get(key).push(event)
     }
     return map
-  }, [allEvents])
+  }, [eventsData])
 
   if (isLoading) return <LoadingSpinner />
   if (error) return <ErrorMessage message="Etkinlikler yüklenirken bir sorun oluştu." />

@@ -1,0 +1,6 @@
+services:
+  backend:
+    volumes: !reset []
+
+  scraper:
+    volumes: !reset []
