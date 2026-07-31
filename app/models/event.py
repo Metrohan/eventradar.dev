@@ -15,6 +15,7 @@ class Event(Base):
     location = Column(String(255))
     url = Column(String(500), unique=True, nullable=False, index=True)
     image_url = Column(String(500))
+    thumbnail_url = Column(String(500))
     source = Column(String(100), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     scraped_at = Column(DateTime, default=func.now(), nullable=False)

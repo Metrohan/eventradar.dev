@@ -1,6 +1,8 @@
 services:
   backend:
-    volumes: !reset []
+    volumes: !override
+      - thumbnail_data:/app/data/thumbnails
 
   scraper:
-    volumes: !reset []
+    volumes: !override
+      - thumbnail_data:/app/data/thumbnails

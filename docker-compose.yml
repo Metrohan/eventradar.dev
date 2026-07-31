@@ -38,6 +38,7 @@ services:
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
       PYTHONUNBUFFERED: 1
+      THUMBNAIL_DIR: /app/data/thumbnails
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
@@ -46,6 +47,7 @@ services:
     volumes:
       - ./app:/app/app
       - ./scripts:/app/scripts
+      - thumbnail_data:/app/data/thumbnails
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     restart: unless-stopped
 
@@ -68,9 +70,11 @@ services:
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
       PYTHONUNBUFFERED: 1
+      THUMBNAIL_DIR: /app/data/thumbnails
     volumes:
       - ./app:/app/app
       - ./scripts:/app/scripts
+      - thumbnail_data:/app/data/thumbnails
     command: python scripts/run_daily_scrape.py
     profiles:
       - scraper
@@ -88,3 +92,4 @@ services:
 
 volumes:
   postgres_data:
+  thumbnail_data:
