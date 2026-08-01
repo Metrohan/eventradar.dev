@@ -137,16 +137,18 @@ const EventCard = ({ event }) => {
           <span className={`event-status ${isActive ? 'status-acik' : 'status-kapali'}`}>
             {isActive ? 'Açık' : 'Kapalı'}
           </span>
-          <a
-            href={safeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
             className="btn-event"
-            onClick={e => e.stopPropagation()}
+            onClick={e => {
+              e.preventDefault()
+              e.stopPropagation()
+              window.open(safeUrl, '_blank', 'noopener,noreferrer')
+            }}
           >
             Başvur
             <i className="fas fa-arrow-right" style={{ fontSize: '0.7rem' }}></i>
-          </a>
+          </button>
         </div>
       </div>
     </div>

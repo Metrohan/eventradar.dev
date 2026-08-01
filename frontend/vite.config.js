@@ -27,6 +27,29 @@ export default defineConfig({
       }
     }
   },
+  preview: {
+    // Lets `vite preview` (and the prerender PoC script that runs on top
+    // of it — see docs/adr/0006-prerender-poc.md) reach a real backend the
+    // same way the dev server does. Override for local runs outside
+    // Docker, e.g. VITE_PREVIEW_API_TARGET=http://localhost:8000
+    proxy: {
+      '/api': {
+        target: process.env.VITE_PREVIEW_API_TARGET || 'http://backend:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/sitemap.xml': {
+        target: process.env.VITE_PREVIEW_API_TARGET || 'http://backend:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/media': {
+        target: process.env.VITE_PREVIEW_API_TARGET || 'http://backend:8000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,

@@ -14,7 +14,16 @@ self.addEventListener('activate', (event) => {
       Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
     )
   )
-  self.clients.claim()
+  // Deliberately NOT calling self.clients.claim() here. Combined with
+  // main.jsx's skipWaiting-driven `window.location.reload()` on
+  // 'controllerchange', claim()ing immediately fires that event for the
+  // page that's *currently loading* too — not just already-open tabs from
+  // a previous visit. That means every first-time visitor gets a surprise
+  // full-page reload ~1-2s after their first load (verified: it was firing
+  // the app's hydration path twice, discarding/re-fetching everything —
+  // see docs/adr/0006-prerender-poc.md). Without claim(), a new SW only
+  // takes control on the *next* navigation, so first-time visitors are
+  // unaffected; returning visitors still pick up the update normally.
 })
 
 self.addEventListener('push', (event) => {

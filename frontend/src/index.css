@@ -1019,9 +1019,11 @@ h1, h2, h3, h4, h5, h6 {
   color: #fff !important;
   border: none;
   border-radius: var(--radius-btn);
+  font-family: inherit;
   font-size: 0.8rem;
   font-weight: 600;
   text-decoration: none;
+  cursor: pointer;
   transition: all 0.25s ease;
   white-space: nowrap;
 }
