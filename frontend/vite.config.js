@@ -24,6 +24,11 @@ export default defineConfig({
         target: 'http://backend:8000',
         changeOrigin: true,
         secure: false,
+      },
+      '/health': {
+        target: 'http://backend:8000',
+        changeOrigin: true,
+        secure: false,
       }
     }
   },
@@ -44,6 +49,11 @@ export default defineConfig({
         secure: false,
       },
       '/media': {
+        target: process.env.VITE_PREVIEW_API_TARGET || 'http://backend:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/health': {
         target: process.env.VITE_PREVIEW_API_TARGET || 'http://backend:8000',
         changeOrigin: true,
         secure: false,
