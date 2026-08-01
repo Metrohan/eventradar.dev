@@ -50,6 +50,24 @@ jobs:
 
             COMPOSE="docker compose -f docker-compose.yml -f docker-compose.prod.yml"
 
+            # Reuses the same TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID already in
+            # .env for scripts/monitor_alerts.py's admin alerts — no new
+            # secrets needed. Never fails the deploy job on its own account.
+            notify_telegram() {
+              local text="$1"
+              local token chat_id
+              token="$(grep -m1 '^TELEGRAM_BOT_TOKEN=' .env | cut -d= -f2-)"
+              chat_id="$(grep -m1 '^TELEGRAM_CHAT_ID=' .env | cut -d= -f2-)"
+              if [ -z "$token" ] || [ -z "$chat_id" ]; then
+                echo "::warning::TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID .env icinde yok, deploy bildirimi atlanamadi (uyari degil, bildirim gonderilemedi)."
+                return 0
+              fi
+              curl -s --max-time 10 -X POST "https://api.telegram.org/bot${token}/sendMessage" \
+                -d chat_id="${chat_id}" \
+                --data-urlencode text="${text}" \
+                > /dev/null || echo "::warning::Telegram bildirimi gonderilemedi."
+            }
+
             PREV_COMMIT="$(git rev-parse HEAD)"
 
             git fetch --all
@@ -57,6 +75,7 @@ jobs:
             if ! git pull --rebase origin main; then
               echo "::error::git pull --rebase failed (local changes or conflict on server) — aborting deploy without rebuilding stale containers."
               git rebase --abort || true
+              notify_telegram "🔴 TechEventRadar deploy basarisiz: git pull --rebase catisti, hicbir sey degistirilmedi (${PREV_COMMIT:0:7} calisiyor)."
               exit 1
             fi
 
@@ -75,12 +94,14 @@ jobs:
             if ! BASE_URL=http://127.0.0.1:8000 bash scripts/verify_deploy.sh; then
               echo "::error::verify_deploy basarisiz oldu, koda $PREV_COMMIT'e (bir onceki commit) donuluyor."
               echo "::warning::Bu rollback yalnizca kodu/image'i geri aliyor. Yeni migration eski koddan geri alinmiyor (otomatik 'alembic downgrade' calistirilmadi, guvenli olmadigi icin) - gerekirse $BACKUP_FILE dosyasindan DB'yi elle geri yukle: gunzip -c $BACKUP_FILE | docker compose exec -T db psql -U \$POSTGRES_USER -d \$POSTGRES_DB"
+              notify_telegram "🔴 TechEventRadar deploy basarisiz: verify_deploy gecmedi, ${PREV_COMMIT:0:7}'e rollback yapiliyor. DB yedegi: $BACKUP_FILE"
 
               git checkout "$PREV_COMMIT"
               $COMPOSE build backend frontend
               $COMPOSE up -d --force-recreate
 
               echo "--- Rollback tamamlandi ($PREV_COMMIT'e donuldu). Deploy basarisiz sayiliyor. ---"
+              notify_telegram "🟡 TechEventRadar: rollback tamamlandi, ${PREV_COMMIT:0:7} tekrar calisiyor. Deploy basarisiz kaydedildi, kok neden incelenmeli."
               exit 1
             fi
 
