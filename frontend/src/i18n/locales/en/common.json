@@ -1,0 +1,77 @@
+{
+  "nav": {
+    "discover": "Discover",
+    "content": "Content",
+    "status": "Status",
+    "addEvent": "Add Event",
+    "github": "GitHub repository",
+    "menuToggle": "Open or close menu",
+    "discoverLinks": {
+      "all": "All Events",
+      "calendar": "Event Calendar",
+      "hackathons": "Hackathons",
+      "bootcamps": "Bootcamps",
+      "online": "Online Events",
+      "thisWeek": "This Week",
+      "lastCall": "Last Call"
+    },
+    "contentLinks": {
+      "weeklyGuide": "Weekly Guide",
+      "bootcampGuide": "Bootcamp Guide",
+      "freeTrainings": "Free Trainings"
+    }
+  },
+  "header": {
+    "logoAlt": "TechEventRadar home",
+    "supportButton": "Support"
+  },
+  "footer": {
+    "tagline": "Follow Turkey's tech events, hackathons, and free trainings in one place.",
+    "emailPlaceholder": "Your email",
+    "subscribeButton": "Subscribe",
+    "subscribing": "...",
+    "subscribeSuccess": "Confirmation email sent.",
+    "subscribeError": "Subscription failed.",
+    "githubAria": "GitHub",
+    "emailAria": "Email",
+    "rssAria": "RSS Feed",
+    "pagesHeading": "Pages",
+    "sourcesHeading": "Sources",
+    "quickLinks": {
+      "home": "Home",
+      "freeTrainings": "Free Trainings",
+      "feedback": "Feedback",
+      "addEvent": "Add Event"
+    },
+    "openSourceHeading": "Open Source",
+    "openSourceSubtitle": "Star us on GitHub ⭐",
+    "copyright": "© {{year}} TechEventRadar — an open-source community project",
+    "madeWith": "Made by developers, for developers"
+  },
+  "home": {
+    "hero": {
+      "badge": "Turkey's Tech Event Radar",
+      "titleLine1": "Discover All Events",
+      "titleLine2": "In One Platform",
+      "titleSuffix": "",
+      "subtitle": "Discover hackathon, seminar, and workshop announcements published across the web, all in one place.",
+      "searchPlaceholder": "Search events, platforms, or topics...",
+      "statActive": "Active Events",
+      "statPlatforms": "Platforms",
+      "statUpdateValue": "Daily",
+      "statUpdateLabel": "Updates"
+    }
+  },
+  "eventCard": {
+    "noDate": "Date not specified",
+    "noLocation": "Location not specified",
+    "deadlineToday": "Deadline: today",
+    "deadlineDaysLeft": "{{count}} days left to apply",
+    "deadlinePrefix": "Deadline: {{date}}",
+    "favoriteAdd": "Add to favorites",
+    "favoriteRemove": "Remove from favorites",
+    "statusOpen": "Open",
+    "statusClosed": "Closed",
+    "applyButton": "Apply"
+  }
+}

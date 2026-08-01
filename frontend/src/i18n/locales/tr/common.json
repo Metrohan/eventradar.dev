@@ -1,0 +1,77 @@
+{
+  "nav": {
+    "discover": "Keşfet",
+    "content": "İçerikler",
+    "status": "Durum",
+    "addEvent": "Etkinlik Ekle",
+    "github": "GitHub deposu",
+    "menuToggle": "Menüyü aç veya kapat",
+    "discoverLinks": {
+      "all": "Tüm Etkinlikler",
+      "calendar": "Etkinlik Takvimi",
+      "hackathons": "Hackathonlar",
+      "bootcamps": "Bootcamp'ler",
+      "online": "Online Etkinlikler",
+      "thisWeek": "Bu Hafta",
+      "lastCall": "Son Başvurular"
+    },
+    "contentLinks": {
+      "weeklyGuide": "Haftalık Rehber",
+      "bootcampGuide": "Bootcamp Rehberi",
+      "freeTrainings": "Ücretsiz Eğitimler"
+    }
+  },
+  "header": {
+    "logoAlt": "TechEventRadar anasayfa",
+    "supportButton": "Destek Ol"
+  },
+  "footer": {
+    "tagline": "Türkiye'deki teknoloji etkinliklerini, hackathon'ları ve ücretsiz eğitimleri tek platformda takip edin.",
+    "emailPlaceholder": "E-posta adresin",
+    "subscribeButton": "Abone Ol",
+    "subscribing": "...",
+    "subscribeSuccess": "Onay e-postası gönderildi.",
+    "subscribeError": "Abonelik başarısız oldu.",
+    "githubAria": "GitHub",
+    "emailAria": "E-posta",
+    "rssAria": "RSS Feed",
+    "pagesHeading": "Sayfalar",
+    "sourcesHeading": "Kaynaklar",
+    "quickLinks": {
+      "home": "Anasayfa",
+      "freeTrainings": "Ücretsiz Eğitimler",
+      "feedback": "Öneri & Şikayet",
+      "addEvent": "Etkinlik Ekle"
+    },
+    "openSourceHeading": "Açık Kaynak",
+    "openSourceSubtitle": "GitHub'da yıldız bırak ⭐",
+    "copyright": "© {{year}} TechEventRadar — Açık kaynak topluluk projesi",
+    "madeWith": "Yazılımcılar için, yazılımcılar tarafından"
+  },
+  "home": {
+    "hero": {
+      "badge": "Türkiye'nin Teknoloji Etkinlik Radarı",
+      "titleLine1": "Tüm Etkinlikleri",
+      "titleLine2": "Tek Platformda",
+      "titleSuffix": "Keşfet",
+      "subtitle": "Herkese açık farklı kaynaklarda yayımlanan hackathon, seminer ve atölye duyurularını tek yerde keşfet.",
+      "searchPlaceholder": "Etkinlik, platform veya konu ara...",
+      "statActive": "Aktif Etkinlik",
+      "statPlatforms": "Platform",
+      "statUpdateValue": "Günlük",
+      "statUpdateLabel": "Güncelleme"
+    }
+  },
+  "eventCard": {
+    "noDate": "Tarih belirtilmemiş",
+    "noLocation": "Konum belirtilmemiş",
+    "deadlineToday": "Son başvuru: bugün",
+    "deadlineDaysLeft": "Son başvuruya {{count}} gün kaldı",
+    "deadlinePrefix": "Son başvuru: {{date}}",
+    "favoriteAdd": "Favorilere ekle",
+    "favoriteRemove": "Favorilerden çıkar",
+    "statusOpen": "Açık",
+    "statusClosed": "Kapalı",
+    "applyButton": "Başvur"
+  }
+}
