@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
-import SupportModal from './SupportModal'
 import ThemeToggle from './ThemeToggle'
+
+// Lazy: only needed once a user clicks "support", not for first paint —
+// keeps its ~2KB out of the initial JS every visitor downloads (see
+// docs/adr/0006-prerender-poc.md's bundle-analyzer step).
+const SupportModal = lazy(() => import('./SupportModal'))
 
 const DISCOVER_LINKS = [
   { to: '/', label: 'Tüm Etkinlikler', icon: 'fa-compass' },
@@ -81,7 +85,11 @@ const Header = () => {
             <i className={`fas fa-${mobileOpen ? 'times' : 'bars'}`} />
           </button>
         </div>
-        <SupportModal show={showSupport} handleClose={() => setShowSupport(false)} />
+        {showSupport && (
+          <Suspense fallback={null}>
+            <SupportModal show={showSupport} handleClose={() => setShowSupport(false)} />
+          </Suspense>
+        )}
       </header>
     </>
   )

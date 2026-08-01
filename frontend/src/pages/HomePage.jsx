@@ -8,6 +8,7 @@ import useSources from '../hooks/useSources'
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = React.useState('')
   const { sources } = useSources()
+  const isPrerenderPass = new URLSearchParams(window.location.search).get('__prerender') === '1'
 
   const { data: eventsData } = useQuery(
     'events',
@@ -84,7 +85,18 @@ const HomePage = () => {
       {/* ── Main content ─────────────────────────────────── */}
       <EventListing searchTerm={searchTerm} onSearchTermChange={setSearchTerm} />
 
-      {announcement && <AnnouncementModal announcement={announcement} />}
+      {/*
+        AnnouncementModal reveals itself via a post-mount setTimeout, so its
+        rendered output legitimately differs between "settled" (what the
+        prerender snapshot captures) and "just mounted" (the client's first
+        hydration render) — an unavoidable mismatch for any timer-driven UI
+        under snapshot-based prerendering (see docs/adr/0006-prerender-poc.md).
+        The prerender script navigates with ?__prerender=1; skipping the
+        modal in that pass keeps the snapshot in the same state the client's
+        first render starts from, so hydration has nothing to reconcile here
+        and the timer-driven reveal happens the same way it always did.
+      */}
+      {announcement && !isPrerenderPass && <AnnouncementModal announcement={announcement} />}
     </>
   )
 }
