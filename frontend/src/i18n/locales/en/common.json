@@ -75,5 +75,27 @@
     "statusOpen": "Open",
     "statusClosed": "Closed",
     "applyButton": "Apply"
+  },
+  "eventListing": {
+    "defaultTitle": "Events",
+    "defaultEmptyStateText": "Try changing your search criteria.",
+    "loadError": "There was a problem loading events.",
+    "selectPlatform": "Select platform",
+    "allPlatforms": "All Platforms",
+    "selectLocation": "Select location",
+    "allLocations": "All Locations",
+    "showPast": "Show Past Events",
+    "freeOnly": "Free",
+    "favoritesOnly": "My Favorites",
+    "dateFrom": "Start date",
+    "dateTo": "End date",
+    "clear": "Clear",
+    "categoryLabel": "CATEGORY:",
+    "resultsCount_one": "{{count}} result",
+    "resultsCount_other": "{{count}} results",
+    "noEventsFound": "No events found",
+    "clearFilters": "Clear Filters",
+    "ctaHeading": "Did we miss an event?",
+    "ctaText": "Let us know if there's an event you'd like added."
   }
 }

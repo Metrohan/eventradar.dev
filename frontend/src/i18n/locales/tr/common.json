@@ -74,5 +74,26 @@
     "statusOpen": "Açık",
     "statusClosed": "Kapalı",
     "applyButton": "Başvur"
+  },
+  "eventListing": {
+    "defaultTitle": "Etkinlikler",
+    "defaultEmptyStateText": "Arama kriterlerinizi değiştirerek tekrar deneyin.",
+    "loadError": "Etkinlikler yüklenirken bir sorun oluştu.",
+    "selectPlatform": "Platform seçin",
+    "allPlatforms": "Tüm Platformlar",
+    "selectLocation": "Konum seçin",
+    "allLocations": "Tüm Konumlar",
+    "showPast": "Geçmişleri Göster",
+    "freeOnly": "Ücretsiz",
+    "favoritesOnly": "Favorilerim",
+    "dateFrom": "Başlangıç tarihi",
+    "dateTo": "Bitiş tarihi",
+    "clear": "Temizle",
+    "categoryLabel": "KATEGORİ:",
+    "resultsCount": "{{count}} sonuç",
+    "noEventsFound": "Etkinlik bulunamadı",
+    "clearFilters": "Filtreleri Temizle",
+    "ctaHeading": "Bir etkinlik mi kaçırdık?",
+    "ctaText": "Eklenmesini istediğiniz bir etkinlik varsa bize bildirin."
   }
 }
