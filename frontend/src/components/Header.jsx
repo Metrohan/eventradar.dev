@@ -66,7 +66,7 @@ const Header = () => {
             <span className="logo-text gradient-text">TechEventRadar</span>
           </Link>
 
-          <nav className={`header-nav ${mobileOpen ? 'open' : ''}`} aria-label={t('nav.discover')}>
+          <nav className={`header-nav ${mobileOpen ? 'open' : ''}`} aria-label={t('nav.mainMenu')}>
             <NavMenu label={t('nav.discover')} icon="fa-compass" links={DISCOVER_LINKS} isActive={isActive} />
             <NavMenu label={t('nav.content')} icon="fa-layer-group" links={CONTENT_LINKS} isActive={isActive} />
             <Link to="/status" className={`button-link ${isActive('/status') ? 'active' : ''}`}>{t('nav.status')}</Link>
