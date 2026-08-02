@@ -149,5 +149,74 @@
     "notFound": "Yazı bulunamadı",
     "backToBlog": "Bloga dön",
     "allPosts": "Tüm yazılar"
+  },
+  "eventRequest": {
+    "pageTitle": "Etkinlik Ekleme Talebi",
+    "pageSubtitle": "Kaçırdığımız bir etkinlik mi var? Bize bildirin, en kısa sürede ekleyelim.",
+    "stepsAriaLabel": "Form adımları",
+    "stepLink": "Link",
+    "stepDetails": "Detaylar",
+    "step1Heading": "Etkinlik Linkini Gir",
+    "step1Subtitle": "Etkinliğin bağlantısını yapıştır",
+    "linkLabel": "Etkinlik Linki",
+    "linkRequired": "Etkinlik linki gereklidir",
+    "linkInvalid": "Geçerli bir URL giriniz",
+    "continueButton": "Devam",
+    "step2Heading": "Etkinlik Detayları",
+    "step2Subtitle": "Başlık zorunlu, diğer alanlar isteğe bağlıdır.",
+    "titleLabel": "Etkinlik Başlığı",
+    "titlePlaceholder": "Etkinlik başlığını giriniz",
+    "titleRequired": "Etkinlik başlığı gereklidir",
+    "titleMinLength": "Başlık en az 5 karakter olmalıdır",
+    "dateLabel": "Etkinlik Tarihi",
+    "descLabel": "Açıklama",
+    "descPlaceholder": "Etkinlik hakkında detaylı bilgi veriniz...",
+    "emailLabel": "E-posta",
+    "emailOptional": "isteğe bağlı",
+    "emailPlaceholder": "Geri dönüş için e-posta adresiniz",
+    "backButton": "Geri",
+    "submitButton": "Talep Gönder",
+    "submitting": "Gönderiliyor...",
+    "toastSuccess": "Etkinlik ekleme talebiniz başarıyla alındı. Teşekkür ederiz!",
+    "toastErrorFallback": "Talebiniz gönderilirken bir hata oluştu."
+  },
+  "suggestion": {
+    "pageTitle": "Bize Ulaş",
+    "pageSubtitle": "Geri bildiriminiz TechEventRadar'ı daha iyi yapar.",
+    "typeLabel": "Talep Türü",
+    "typeRequired": "Talep türü seçilmelidir",
+    "types": {
+      "suggestion": "Öneri",
+      "bug": "Hata Bildirimi",
+      "complaint": "Şikayet",
+      "other": "Diğer"
+    },
+    "titleLabel": "Başlık",
+    "titlePlaceholder": "Öneri/şikayet başlığını giriniz",
+    "titleRequired": "Başlık gereklidir",
+    "titleMinLength": "Başlık en az 5 karakter olmalıdır",
+    "descLabel": "Açıklama",
+    "descPlaceholder": "Öneri/şikayetinizi detaylı olarak açıklayınız...",
+    "descRequired": "Açıklama gereklidir",
+    "descMinLength": "Açıklama en az 10 karakter olmalıdır",
+    "submitButton": "Gönder",
+    "submitting": "Gönderiliyor...",
+    "toastSuccess": "Öneri/Şikayetiniz başarıyla gönderildi.",
+    "toastErrorFallback": "Gönderilirken bir hata oluştu.",
+    "infoCards": {
+      "suggestion": {
+        "title": "Öneri",
+        "desc": "Yeni özellik veya iyileştirme fikirlerin"
+      },
+      "bug": {
+        "title": "Hata Bildirimi",
+        "desc": "Karşılaştığın bir sorunu bildir"
+      },
+      "eventRequest": {
+        "title": "Etkinlik Talebi",
+        "desc": "Eklenmesini istediğin bir etkinlik mi var?",
+        "linkLabel": "Talep Oluştur →"
+      }
+    }
   }
 }

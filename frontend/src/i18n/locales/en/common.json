@@ -152,5 +152,74 @@
     "notFound": "Post not found",
     "backToBlog": "Back to blog",
     "allPosts": "All posts"
+  },
+  "eventRequest": {
+    "pageTitle": "Add Event Request",
+    "pageSubtitle": "Did we miss an event? Let us know and we'll add it as soon as possible.",
+    "stepsAriaLabel": "Form steps",
+    "stepLink": "Link",
+    "stepDetails": "Details",
+    "step1Heading": "Enter the Event Link",
+    "step1Subtitle": "Paste the event's link",
+    "linkLabel": "Event Link",
+    "linkRequired": "Event link is required",
+    "linkInvalid": "Please enter a valid URL",
+    "continueButton": "Continue",
+    "step2Heading": "Event Details",
+    "step2Subtitle": "Title is required, other fields are optional.",
+    "titleLabel": "Event Title",
+    "titlePlaceholder": "Enter the event title",
+    "titleRequired": "Event title is required",
+    "titleMinLength": "Title must be at least 5 characters",
+    "dateLabel": "Event Date",
+    "descLabel": "Description",
+    "descPlaceholder": "Provide detailed information about the event...",
+    "emailLabel": "Email",
+    "emailOptional": "optional",
+    "emailPlaceholder": "Your email for follow-up",
+    "backButton": "Back",
+    "submitButton": "Send Request",
+    "submitting": "Sending...",
+    "toastSuccess": "Your event request has been received. Thank you!",
+    "toastErrorFallback": "There was a problem sending your request."
+  },
+  "suggestion": {
+    "pageTitle": "Contact Us",
+    "pageSubtitle": "Your feedback makes TechEventRadar better.",
+    "typeLabel": "Request Type",
+    "typeRequired": "Request type must be selected",
+    "types": {
+      "suggestion": "Suggestion",
+      "bug": "Bug Report",
+      "complaint": "Complaint",
+      "other": "Other"
+    },
+    "titleLabel": "Title",
+    "titlePlaceholder": "Enter the suggestion/complaint title",
+    "titleRequired": "Title is required",
+    "titleMinLength": "Title must be at least 5 characters",
+    "descLabel": "Description",
+    "descPlaceholder": "Describe your suggestion/complaint in detail...",
+    "descRequired": "Description is required",
+    "descMinLength": "Description must be at least 10 characters",
+    "submitButton": "Send",
+    "submitting": "Sending...",
+    "toastSuccess": "Your suggestion/complaint was sent successfully.",
+    "toastErrorFallback": "There was a problem sending it.",
+    "infoCards": {
+      "suggestion": {
+        "title": "Suggestion",
+        "desc": "Ideas for new features or improvements"
+      },
+      "bug": {
+        "title": "Bug Report",
+        "desc": "Report an issue you ran into"
+      },
+      "eventRequest": {
+        "title": "Event Request",
+        "desc": "Is there an event you'd like added?",
+        "linkLabel": "Create Request →"
+      }
+    }
   }
 }
