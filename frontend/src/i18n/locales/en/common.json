@@ -306,7 +306,9 @@
   "errorBoundary": {
     "title": "Error",
     "heading": "An Unexpected Error Occurred",
-    "description": "The app ran into an unexpected error. You can try again by reloading the page."
+    "description": "The app ran into an unexpected error. You can try again by reloading the page.",
+    "reload": "Reload Page",
+    "backHome": "Back to Home"
   },
   "errorMessage": {
     "title": "An Error Occurred",

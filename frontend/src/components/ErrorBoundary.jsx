@@ -46,13 +46,13 @@ class ErrorBoundary extends React.Component {
                                 className="btn btn-primary btn-lg error-btn"
                             >
                                 <i className="fas fa-redo me-2"></i>
-                                {i18n.t('serverError.reload')}
+                                {i18n.t('errorBoundary.reload')}
                             </button>
                             <Link to="/" className="btn btn-outline-secondary btn-lg error-btn"
                                 onClick={() => this.setState({ hasError: false, error: null })}
                             >
                                 <i className="fas fa-home me-2"></i>
-                                {i18n.t('notFound.backHome')}
+                                {i18n.t('errorBoundary.backHome')}
                             </Link>
                         </div>
                     </div>

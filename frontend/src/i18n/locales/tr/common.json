@@ -301,7 +301,9 @@
   "errorBoundary": {
     "title": "Hata",
     "heading": "Beklenmeyen Bir Hata Oluştu",
-    "description": "Uygulama beklenmeyen bir hatayla karşılaştı. Sayfayı yenileyerek tekrar deneyebilirsiniz."
+    "description": "Uygulama beklenmeyen bir hatayla karşılaştı. Sayfayı yenileyerek tekrar deneyebilirsiniz.",
+    "reload": "Sayfayı Yenile",
+    "backHome": "Ana Sayfaya Dön"
   },
   "errorMessage": {
     "title": "Hata Oluştu",
