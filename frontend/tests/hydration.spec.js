@@ -151,11 +151,25 @@ test('language toggle switches UI text and persists across reload', async ({ pag
   const languageToggle = page.locator('header button', { hasText: /^(TR|EN)$/ })
   await expect(languageToggle).toBeVisible()
 
+  // Assert real page content switches too, not just the toggle's own label —
+  // a toggle that flips its own text while the rest of the page silently
+  // stays in the old language would not be caught by label-only assertions.
+  // The header's "Durum"/"Status" nav link (nav.status) is always visible
+  // regardless of viewport/scroll state and isn't dynamic API data, so it's
+  // a reliable, unambiguous stand-in for "did the page actually translate".
+  const statusLink = page.getByRole('link', { name: /^(Durum|Status)$/ })
+  const initialStatusText = await statusLink.textContent()
+  expect(['Durum', 'Status']).toContain(initialStatusText)
+
   const initialLabel = await languageToggle.textContent()
   await languageToggle.click()
 
   const newLabel = await languageToggle.textContent()
   expect(newLabel).not.toBe(initialLabel)
+
+  // The nav link must flip to the OTHER language, not just re-render.
+  const expectedStatusText = initialStatusText === 'Durum' ? 'Status' : 'Durum'
+  await expect(statusLink).toHaveText(expectedStatusText)
 
   const storedLang = await page.evaluate(() => localStorage.getItem('eventradar:lang'))
   expect(['tr', 'en']).toContain(storedLang)
