@@ -129,3 +129,53 @@ test('favorite toggle works after hydration and persists across reload', async (
   await expect(page.locator('.event-card')).toHaveCount(2)
   await expect(page.locator('.favorite-button').first()).toHaveClass(/active/)
 });
+
+test('language toggle switches UI text and persists across reload', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('.event-card')).toHaveCount(2)
+
+  // Explicitly clear localStorage first so this test doesn't depend on
+  // whatever language a previous test run left behind, and don't assert
+  // which language that leaves as the "default" — verified directly (see
+  // frontend/tests/hydration.spec.js commit notes) that this sandbox's
+  // headless Chromium reports navigator.language as 'en-US' consistently,
+  // so with localStorage empty, src/i18n/index.js's detectedLanguage
+  // resolves to 'en' (not the 'tr' fallbackLng one might expect at a
+  // glance) and main.jsx applies it right after hydration. That's an
+  // environment property, not an app guarantee worth pinning a test to —
+  // this test only checks that toggling flips the label and persists.
+  await page.evaluate(() => localStorage.removeItem('eventradar:lang'))
+  await page.reload()
+  await expect(page.locator('.event-card')).toHaveCount(2)
+
+  const languageToggle = page.locator('header button', { hasText: /^(TR|EN)$/ })
+  await expect(languageToggle).toBeVisible()
+
+  // Assert real page content switches too, not just the toggle's own label —
+  // a toggle that flips its own text while the rest of the page silently
+  // stays in the old language would not be caught by label-only assertions.
+  // The header's "Durum"/"Status" nav link (nav.status) is always visible
+  // regardless of viewport/scroll state and isn't dynamic API data, so it's
+  // a reliable, unambiguous stand-in for "did the page actually translate".
+  const statusLink = page.getByRole('link', { name: /^(Durum|Status)$/ })
+  const initialStatusText = await statusLink.textContent()
+  expect(['Durum', 'Status']).toContain(initialStatusText)
+
+  const initialLabel = await languageToggle.textContent()
+  await languageToggle.click()
+
+  const newLabel = await languageToggle.textContent()
+  expect(newLabel).not.toBe(initialLabel)
+
+  // The nav link must flip to the OTHER language, not just re-render.
+  const expectedStatusText = initialStatusText === 'Durum' ? 'Status' : 'Durum'
+  await expect(statusLink).toHaveText(expectedStatusText)
+
+  const storedLang = await page.evaluate(() => localStorage.getItem('eventradar:lang'))
+  expect(['tr', 'en']).toContain(storedLang)
+
+  await page.reload()
+  await expect(page.locator('.event-card')).toHaveCount(2)
+  const persistedLabel = await page.locator('header button', { hasText: /^(TR|EN)$/ }).textContent()
+  expect(persistedLabel).toBe(newLabel)
+})

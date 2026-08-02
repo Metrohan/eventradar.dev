@@ -1,11 +1,13 @@
 import React from 'react'
 import { useQuery } from 'react-query'
+import { useTranslation } from 'react-i18next'
 import { publicAPI } from '../services/api'
 import AnnouncementModal from '../components/AnnouncementModal'
 import EventListing from '../components/EventListing'
 import useSources from '../hooks/useSources'
 
 const HomePage = () => {
+  const { t } = useTranslation()
   const [searchTerm, setSearchTerm] = React.useState('')
   const { sources } = useSources()
   const isPrerenderPass = new URLSearchParams(window.location.search).get('__prerender') === '1'
@@ -36,17 +38,16 @@ const HomePage = () => {
           <div className="hero-content">
             <div className="hero-badge">
               <i className="fas fa-bolt"></i>
-              Türkiye'nin Teknoloji Etkinlik Radarı
+              {t('home.hero.badge')}
             </div>
 
             <h1 className="hero-title">
-              Tüm Etkinlikleri<br />
-              <span className="gradient-text">Tek Platformda</span> Keşfet
+              {t('home.hero.titleLine1')}<br />
+              <span className="gradient-text">{t('home.hero.titleLine2')}</span> {t('home.hero.titleSuffix')}
             </h1>
 
             <p className="hero-subtitle">
-              Herkese açık farklı kaynaklarda yayımlanan hackathon, seminer ve atölye
-              duyurularını tek yerde keşfet.
+              {t('home.hero.subtitle')}
             </p>
 
             {/* Quick search */}
@@ -55,7 +56,7 @@ const HomePage = () => {
               <input
                 type="text"
                 className="hero-search-input"
-                placeholder="Etkinlik, platform veya konu ara..."
+                placeholder={t('home.hero.searchPlaceholder')}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
@@ -65,17 +66,17 @@ const HomePage = () => {
             <div className="hero-stats">
               <div className="hero-stat">
                 <span className="hero-stat-number">{totalCount}+</span>
-                <span className="hero-stat-label">Aktif Etkinlik</span>
+                <span className="hero-stat-label">{t('home.hero.statActive')}</span>
               </div>
               <div className="hero-stat-divider" />
               <div className="hero-stat">
                 <span className="hero-stat-number">{sources.length}</span>
-                <span className="hero-stat-label">Platform</span>
+                <span className="hero-stat-label">{t('home.hero.statPlatforms')}</span>
               </div>
               <div className="hero-stat-divider" />
               <div className="hero-stat">
-                <span className="hero-stat-number">Günlük</span>
-                <span className="hero-stat-label">Güncelleme</span>
+                <span className="hero-stat-number">{t('home.hero.statUpdateValue')}</span>
+                <span className="hero-stat-label">{t('home.hero.statUpdateLabel')}</span>
               </div>
             </div>
           </div>

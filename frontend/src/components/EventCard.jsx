@@ -1,23 +1,26 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
-import { tr } from 'date-fns/locale'
+import { useTranslation } from 'react-i18next'
 import TagBadge from './TagBadge'
 import ShareButtons from './ShareButtons'
 import { getSourceStyle } from '../utils/sourceColor'
 import { useFavorites } from '../hooks/useBrowserPreferences'
+import { useDateLocale } from '../hooks/useDateLocale'
 
 const EventCard = ({ event }) => {
+  const { t } = useTranslation()
+  const dateLocale = useDateLocale()
   const { isFavorite, toggleFavorite } = useFavorites()
   const safeUrl = /^https?:\/\//i.test(event.url) ? event.url : '#'
   const canonicalUrl = `https://eventradar.dev/etkinlik/${event.id}`
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Tarih belirtilmemiş'
+    if (!dateString) return t('eventCard.noDate')
     try {
-      return format(new Date(dateString), 'dd MMM yyyy · HH:mm', { locale: tr })
+      return format(new Date(dateString), 'dd MMM yyyy · HH:mm', { locale: dateLocale })
     } catch {
-      return 'Tarih belirtilmemiş'
+      return t('eventCard.noDate')
     }
   }
 
@@ -26,11 +29,11 @@ const EventCard = ({ event }) => {
     try {
       const deadline = new Date(dateString)
       const daysLeft = Math.ceil((deadline - new Date()) / (1000 * 60 * 60 * 24))
-      const formatted = format(deadline, 'dd MMM yyyy', { locale: tr })
+      const formatted = format(deadline, 'dd MMM yyyy', { locale: dateLocale })
       if (daysLeft < 0) return null
-      if (daysLeft === 0) return `Son başvuru: bugün`
-      if (daysLeft <= 3) return `Son başvuruya ${daysLeft} gün kaldı`
-      return `Son başvuru: ${formatted}`
+      if (daysLeft === 0) return t('eventCard.deadlineToday')
+      if (daysLeft <= 3) return t('eventCard.deadlineDaysLeft', { count: daysLeft })
+      return t('eventCard.deadlinePrefix', { date: formatted })
     } catch {
       return null
     }
@@ -77,8 +80,8 @@ const EventCard = ({ event }) => {
         <button
           type="button"
           className={`favorite-button ${isFavorite(event.id) ? 'active' : ''}`}
-          aria-label={isFavorite(event.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
-          title={isFavorite(event.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+          aria-label={isFavorite(event.id) ? t('eventCard.favoriteRemove') : t('eventCard.favoriteAdd')}
+          title={isFavorite(event.id) ? t('eventCard.favoriteRemove') : t('eventCard.favoriteAdd')}
           onClick={e => {
             e.preventDefault()
             e.stopPropagation()
@@ -120,7 +123,7 @@ const EventCard = ({ event }) => {
           </div>
           <div className="event-meta-item">
             <i className="fas fa-map-marker-alt"></i>
-            <span>{event.location || 'Konum belirtilmemiş'}</span>
+            <span>{event.location || t('eventCard.noLocation')}</span>
           </div>
           {deadlineText && (
             <div
@@ -135,7 +138,7 @@ const EventCard = ({ event }) => {
 
         <div className="event-footer">
           <span className={`event-status ${isActive ? 'status-acik' : 'status-kapali'}`}>
-            {isActive ? 'Açık' : 'Kapalı'}
+            {isActive ? t('eventCard.statusOpen') : t('eventCard.statusClosed')}
           </span>
           <button
             type="button"
@@ -146,7 +149,7 @@ const EventCard = ({ event }) => {
               window.open(safeUrl, '_blank', 'noopener,noreferrer')
             }}
           >
-            Başvur
+            {t('eventCard.applyButton')}
             <i className="fas fa-arrow-right" style={{ fontSize: '0.7rem' }}></i>
           </button>
         </div>

@@ -1,22 +1,24 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import useSources from '../hooks/useSources'
 import { publicAPI } from '../services/api'
 import { getErrorMessage } from '../utils/errorMessage'
 import PushNotificationToggle from './PushNotificationToggle'
 
-const QUICK_LINKS = [
-  { to: '/', label: 'Anasayfa' },
-  { to: '/egitim-kaynaklari', label: 'Ücretsiz Eğitimler' },
-  { to: '/oneri-sikayet', label: 'Öneri & Şikayet' },
-  { to: '/etkinlik-talep', label: 'Etkinlik Ekle' },
-]
-
 const Footer = () => {
+  const { t } = useTranslation()
   const { sources } = useSources()
   const [email, setEmail] = React.useState('')
   const [submitting, setSubmitting] = React.useState(false)
+
+  const QUICK_LINKS = [
+    { to: '/', label: t('footer.quickLinks.home') },
+    { to: '/egitim-kaynaklari', label: t('footer.quickLinks.freeTrainings') },
+    { to: '/oneri-sikayet', label: t('footer.quickLinks.feedback') },
+    { to: '/etkinlik-talep', label: t('footer.quickLinks.addEvent') },
+  ]
 
   const handleSubscribe = async (e) => {
     e.preventDefault()
@@ -24,10 +26,10 @@ const Footer = () => {
     setSubmitting(true)
     try {
       const { data } = await publicAPI.subscribeEmail(email)
-      toast.success(data.message || 'Onay e-postası gönderildi.')
+      toast.success(data.message || t('footer.subscribeSuccess'))
       setEmail('')
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Abonelik başarısız oldu.'))
+      toast.error(getErrorMessage(err, t('footer.subscribeError')))
     } finally {
       setSubmitting(false)
     }
@@ -51,14 +53,14 @@ const Footer = () => {
             </span>
           </Link>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: 1.7, maxWidth: 280, marginBottom: '1.25rem' }}>
-            Türkiye'deki teknoloji etkinliklerini, hackathon'ları ve ücretsiz eğitimleri tek platformda takip edin.
+            {t('footer.tagline')}
           </p>
 
           <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: '0.5rem', maxWidth: 320, marginBottom: '1.25rem' }}>
             <input
               type="email"
               required
-              placeholder="E-posta adresin"
+              placeholder={t('footer.emailPlaceholder')}
               value={email}
               onChange={e => setEmail(e.target.value)}
               style={{
@@ -87,7 +89,7 @@ const Footer = () => {
                 cursor: submitting ? 'default' : 'pointer',
               }}
             >
-              {submitting ? '...' : 'Abone Ol'}
+              {submitting ? t('footer.subscribing') : t('footer.subscribeButton')}
             </button>
           </form>
 
@@ -98,14 +100,14 @@ const Footer = () => {
               href="https://github.com/Metrohan/eventradar.dev"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="GitHub"
+              aria-label={t('footer.githubAria')}
               style={socialLinkStyle}
             >
               <i className="fab fa-github"></i>
             </a>
             <a
               href="mailto:metehangnn@outlook.com"
-              aria-label="E-posta"
+              aria-label={t('footer.emailAria')}
               style={socialLinkStyle}
             >
               <i className="fas fa-envelope"></i>
@@ -114,7 +116,7 @@ const Footer = () => {
               href="/api/events/rss"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="RSS Feed"
+              aria-label={t('footer.rssAria')}
               style={socialLinkStyle}
             >
               <i className="fas fa-rss"></i>
@@ -124,7 +126,7 @@ const Footer = () => {
 
         {/* Quick links */}
         <div className="col-lg-2 col-md-3 col-6">
-          <p style={sectionHeadStyle}>Sayfalar</p>
+          <p style={sectionHeadStyle}>{t('footer.pagesHeading')}</p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {QUICK_LINKS.map(({ to, label }) => (
               <li key={to} style={{ marginBottom: '0.5rem' }}>
@@ -136,7 +138,7 @@ const Footer = () => {
 
         {/* Sources */}
         <div className="col-lg-2 col-md-3 col-6">
-          <p style={sectionHeadStyle}>Kaynaklar</p>
+          <p style={sectionHeadStyle}>{t('footer.sourcesHeading')}</p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {sources.map(source => (
               <li key={source.key} style={{ marginBottom: '0.5rem' }}>
@@ -178,8 +180,8 @@ const Footer = () => {
           >
             <i className="fab fa-github" style={{ fontSize: '1.5rem', color: 'var(--text-secondary)' }}></i>
             <span>
-              <span style={{ display: 'block', fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>Açık Kaynak</span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>GitHub'da yıldız bırak ⭐</span>
+              <span style={{ display: 'block', fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{t('footer.openSourceHeading')}</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t('footer.openSourceSubtitle')}</span>
             </span>
           </a>
 
@@ -197,10 +199,10 @@ const Footer = () => {
         justifyContent: 'space-between',
       }}>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0 }}>
-          © {new Date().getFullYear()} TechEventRadar — Açık kaynak topluluk projesi
+          {t('footer.copyright', { year: new Date().getFullYear() })}
         </p>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0 }}>
-          Yazılımcılar için, yazılımcılar tarafından{' '}
+          {t('footer.madeWith')}{' '}
           <i className="fas fa-heart" style={{ color: 'var(--danger)', margin: '0 2px' }}></i>
         </p>
       </div>

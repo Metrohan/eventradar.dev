@@ -48,6 +48,8 @@ output/
 !frontend/package.json
 !frontend/package-lock.json
 !frontend/public/manifest.json
+!frontend/src/i18n/locales/tr/common.json
+!frontend/src/i18n/locales/en/common.json
 
 chromedriver/
 geckodriver/
