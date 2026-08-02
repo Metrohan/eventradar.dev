@@ -1,33 +1,36 @@
 import React, { Suspense, lazy } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import ThemeToggle from './ThemeToggle'
+import LanguageToggle from './LanguageToggle'
 
 // Lazy: only needed once a user clicks "support", not for first paint —
 // keeps its ~2KB out of the initial JS every visitor downloads (see
 // docs/adr/0006-prerender-poc.md's bundle-analyzer step).
 const SupportModal = lazy(() => import('./SupportModal'))
 
-const DISCOVER_LINKS = [
-  { to: '/', label: 'Tüm Etkinlikler', icon: 'fa-compass' },
-  { to: '/takvim', label: 'Etkinlik Takvimi', icon: 'fa-calendar-alt' },
-  { to: '/hackathonlar', label: 'Hackathonlar', icon: 'fa-code' },
-  { to: '/bootcamplar', label: 'Bootcamp’ler', icon: 'fa-laptop-code' },
-  { to: '/online-etkinlikler', label: 'Online Etkinlikler', icon: 'fa-globe' },
-  { to: '/bu-haftaki-etkinlikler', label: 'Bu Hafta', icon: 'fa-bolt' },
-  { to: '/son-basvurular', label: 'Son Başvurular', icon: 'fa-hourglass-half' },
-]
-
-const CONTENT_LINKS = [
-  { to: '/blog', label: 'Haftalık Rehber', icon: 'fa-newspaper' },
-  { to: '/bootcamp-rehberi', label: 'Bootcamp Rehberi', icon: 'fa-book-open' },
-  { to: '/egitim-kaynaklari', label: 'Ücretsiz Eğitimler', icon: 'fa-graduation-cap' },
-]
-
 const Header = () => {
+  const { t } = useTranslation()
   const [showSupport, setShowSupport] = React.useState(false)
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const location = useLocation()
+
+  const DISCOVER_LINKS = [
+    { to: '/', label: t('nav.discoverLinks.all'), icon: 'fa-compass' },
+    { to: '/takvim', label: t('nav.discoverLinks.calendar'), icon: 'fa-calendar-alt' },
+    { to: '/hackathonlar', label: t('nav.discoverLinks.hackathons'), icon: 'fa-code' },
+    { to: '/bootcamplar', label: t('nav.discoverLinks.bootcamps'), icon: 'fa-laptop-code' },
+    { to: '/online-etkinlikler', label: t('nav.discoverLinks.online'), icon: 'fa-globe' },
+    { to: '/bu-haftaki-etkinlikler', label: t('nav.discoverLinks.thisWeek'), icon: 'fa-bolt' },
+    { to: '/son-basvurular', label: t('nav.discoverLinks.lastCall'), icon: 'fa-hourglass-half' },
+  ]
+
+  const CONTENT_LINKS = [
+    { to: '/blog', label: t('nav.contentLinks.weeklyGuide'), icon: 'fa-newspaper' },
+    { to: '/bootcamp-rehberi', label: t('nav.contentLinks.bootcampGuide'), icon: 'fa-book-open' },
+    { to: '/egitim-kaynaklari', label: t('nav.contentLinks.freeTrainings'), icon: 'fa-graduation-cap' },
+  ]
 
   React.useEffect(() => {
     setMobileOpen(false)
@@ -58,30 +61,31 @@ const Header = () => {
       {mobileOpen && <div className="nav-overlay" onClick={() => setMobileOpen(false)} aria-hidden="true" />}
       <header className="main-header">
         <div className="container header-shell">
-          <Link to="/" className="logo-link" aria-label="TechEventRadar anasayfa">
+          <Link to="/" className="logo-link" aria-label={t('header.logoAlt')}>
             <img src="/techeventradar_logo.png" alt="" className="header-logo" width="69" height="36" />
             <span className="logo-text gradient-text">TechEventRadar</span>
           </Link>
 
-          <nav className={`header-nav ${mobileOpen ? 'open' : ''}`} aria-label="Ana menü">
-            <NavMenu label="Keşfet" icon="fa-compass" links={DISCOVER_LINKS} isActive={isActive} />
-            <NavMenu label="İçerikler" icon="fa-layer-group" links={CONTENT_LINKS} isActive={isActive} />
-            <Link to="/status" className={`button-link ${isActive('/status') ? 'active' : ''}`}>Durum</Link>
-            <Link to="/etkinlik-talep" className={`button-link ${isActive('/etkinlik-talep') ? 'active' : ''}`}>Etkinlik Ekle</Link>
+          <nav className={`header-nav ${mobileOpen ? 'open' : ''}`} aria-label={t('nav.discover')}>
+            <NavMenu label={t('nav.discover')} icon="fa-compass" links={DISCOVER_LINKS} isActive={isActive} />
+            <NavMenu label={t('nav.content')} icon="fa-layer-group" links={CONTENT_LINKS} isActive={isActive} />
+            <Link to="/status" className={`button-link ${isActive('/status') ? 'active' : ''}`}>{t('nav.status')}</Link>
+            <Link to="/etkinlik-talep" className={`button-link ${isActive('/etkinlik-talep') ? 'active' : ''}`}>{t('nav.addEvent')}</Link>
 
             <div className="header-actions">
-              <a href="https://github.com/Metrohan/eventradar.dev" target="_blank" rel="noopener noreferrer" className="header-icon-button" aria-label="GitHub deposu" title="GitHub">
+              <a href="https://github.com/Metrohan/eventradar.dev" target="_blank" rel="noopener noreferrer" className="header-icon-button" aria-label={t('nav.github')} title="GitHub">
                 <i className="fab fa-github" />
               </a>
+              <LanguageToggle />
               <ThemeToggle />
               <button type="button" onClick={() => setShowSupport(true)} className="support-btn-link">
                 <img src="/coffee.svg" className="bmc-icon" alt="" width="18" height="18" />
-                <span>Destek Ol</span>
+                <span>{t('header.supportButton')}</span>
               </button>
             </div>
           </nav>
 
-          <button className="nav-mobile-toggle" onClick={() => setMobileOpen(value => !value)} aria-expanded={mobileOpen} aria-label="Menüyü aç veya kapat">
+          <button className="nav-mobile-toggle" onClick={() => setMobileOpen(value => !value)} aria-expanded={mobileOpen} aria-label={t('nav.menuToggle')}>
             <i className={`fas fa-${mobileOpen ? 'times' : 'bars'}`} />
           </button>
         </div>
