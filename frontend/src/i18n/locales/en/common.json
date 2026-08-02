@@ -129,5 +129,13 @@
       "introText": "Don't miss events whose application deadline is within the next 7 days.",
       "emptyState": "No event's deadline is closing this week — you can browse all events instead."
     }
+  },
+  "calendar": {
+    "title": "Event Calendar",
+    "subtitle": "Discover tech events in Turkey in a monthly calendar view.",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "moreEvents": "+{{count}} more"
   }
 }

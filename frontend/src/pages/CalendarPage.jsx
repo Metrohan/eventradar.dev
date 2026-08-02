@@ -1,17 +1,27 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from 'react-query'
+import { useTranslation } from 'react-i18next'
+import { format } from 'date-fns'
 import { publicAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import { TAG_STYLES } from '../components/TagBadge'
 import { setPageSEO } from '../utils/seo'
+import { useDateLocale } from '../hooks/useDateLocale'
 
-const WEEKDAY_LABELS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
-const MONTH_LABELS = [
-  'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-  'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık',
-]
+// Weekday/month names come from date-fns's own locale data (via
+// useDateLocale) instead of a separate hardcoded translation array — one
+// source of truth for date localization, reused from EventCard's pattern.
+// Monday-first week to match this app's existing grid convention.
+const buildWeekdayLabels = (dateLocale) => {
+  const monday = new Date(2027, 0, 4) // a known Monday
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday)
+    d.setDate(monday.getDate() + i)
+    return format(d, 'EEE', { locale: dateLocale })
+  })
+}
 
 const dateKey = (d) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
 
@@ -30,16 +40,21 @@ const buildMonthGrid = (year, month) => {
 }
 
 const CalendarPage = () => {
+  const { t, i18n } = useTranslation()
+  const dateLocale = useDateLocale()
   const now = new Date()
   const [cursor, setCursor] = React.useState({ year: now.getFullYear(), month: now.getMonth() })
+  const weekdayLabels = React.useMemo(() => buildWeekdayLabels(dateLocale), [dateLocale])
 
   useEffect(() => {
     setPageSEO({
       title: 'Etkinlik Takvimi | TechEventRadar',
+      tabTitle: `${t('calendar.title')} | TechEventRadar`,
       description: 'Türkiye\'deki teknoloji etkinliklerini aylık takvim görünümünde keşfet.',
       path: '/takvim',
     })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language])
 
   const { data: eventsData, isLoading, error } = useQuery(
     'events',
@@ -61,7 +76,7 @@ const CalendarPage = () => {
   }, [eventsData])
 
   if (isLoading) return <LoadingSpinner />
-  if (error) return <ErrorMessage message="Etkinlikler yüklenirken bir sorun oluştu." />
+  if (error) return <ErrorMessage message={t('eventListing.loadError')} />
 
   const grid = buildMonthGrid(cursor.year, cursor.month)
   const today = new Date()
@@ -84,27 +99,27 @@ const CalendarPage = () => {
     <div className="container py-4">
       <div className="mb-4">
         <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-          Etkinlik Takvimi
+          {t('calendar.title')}
         </h1>
         <p className="text-muted" style={{ maxWidth: '640px' }}>
-          Türkiye'deki teknoloji etkinliklerini aylık takvimde keşfet.
+          {t('calendar.subtitle')}
         </p>
       </div>
 
       <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
         <div className="d-flex align-items-center gap-2">
-          <button className="filter-toggle" onClick={goToPrevMonth} aria-label="Önceki ay">
+          <button className="filter-toggle" onClick={goToPrevMonth} aria-label={t('calendar.prevMonth')}>
             <i className="fas fa-chevron-left"></i>
           </button>
           <h2 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, minWidth: '160px', textAlign: 'center' }}>
-            {MONTH_LABELS[cursor.month]} {cursor.year}
+            {format(new Date(cursor.year, cursor.month), 'LLLL yyyy', { locale: dateLocale })}
           </h2>
-          <button className="filter-toggle" onClick={goToNextMonth} aria-label="Sonraki ay">
+          <button className="filter-toggle" onClick={goToNextMonth} aria-label={t('calendar.nextMonth')}>
             <i className="fas fa-chevron-right"></i>
           </button>
         </div>
         <button className="filter-toggle" onClick={goToToday}>
-          Bugün
+          {t('calendar.today')}
         </button>
       </div>
 
@@ -119,7 +134,7 @@ const CalendarPage = () => {
           overflow: 'hidden',
         }}
       >
-        {WEEKDAY_LABELS.map((label) => (
+        {weekdayLabels.map((label) => (
           <div
             key={label}
             style={{
@@ -190,7 +205,7 @@ const CalendarPage = () => {
                 })}
                 {dayEvents.length > 3 && (
                   <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
-                    +{dayEvents.length - 3} daha
+                    {t('calendar.moreEvents', { count: dayEvents.length - 3 })}
                   </span>
                 )}
               </div>

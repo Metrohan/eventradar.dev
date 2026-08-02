@@ -127,5 +127,13 @@
       "introText": "Başvuru son tarihi önümüzdeki 7 gün içinde dolacak etkinlikleri kaçırma.",
       "emptyState": "Son başvurusu bu hafta dolacak bir etkinlik bulunmuyor, tüm etkinliklere göz atabilirsin."
     }
+  },
+  "calendar": {
+    "title": "Etkinlik Takvimi",
+    "subtitle": "Türkiye'deki teknoloji etkinliklerini aylık takvimde keşfet.",
+    "prevMonth": "Önceki ay",
+    "nextMonth": "Sonraki ay",
+    "today": "Bugün",
+    "moreEvents": "+{{count}} daha"
   }
 }
