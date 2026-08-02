@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { publicAPI } from '../services/api'
 
 const SubscribeConfirmPage = () => {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
   const [status, setStatus] = useState('loading')
@@ -21,21 +23,21 @@ const SubscribeConfirmPage = () => {
   return (
     <div className="container py-5 text-center">
       <div style={{ maxWidth: '480px', margin: '0 auto' }}>
-        {status === 'loading' && <p>Onaylanıyor...</p>}
+        {status === 'loading' && <p>{t('subscribeConfirm.loading')}</p>}
         {status === 'success' && (
           <>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Aboneliğin onaylandı 🎉</h1>
-            <p className="text-muted">Artık haftalık etkinlik özetlerini e-postanda alacaksın.</p>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{t('subscribeConfirm.successTitle')}</h1>
+            <p className="text-muted">{t('subscribeConfirm.successText')}</p>
           </>
         )}
         {status === 'error' && (
           <>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Bağlantı geçersiz</h1>
-            <p className="text-muted">Bu onay bağlantısı geçersiz ya da süresi dolmuş olabilir.</p>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{t('subscribeConfirm.errorTitle')}</h1>
+            <p className="text-muted">{t('subscribeConfirm.errorText')}</p>
           </>
         )}
         <Link to="/" className="btn-primary" style={{ display: 'inline-block', marginTop: '1rem' }}>
-          Anasayfaya Dön
+          {t('subscribeConfirm.backHome')}
         </Link>
       </div>
     </div>

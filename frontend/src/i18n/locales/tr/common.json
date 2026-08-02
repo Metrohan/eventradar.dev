@@ -234,5 +234,52 @@
     "noEventsMatch": "Şu an filtreyle eşleşen açık etkinlik bulunmuyor.",
     "browseAllEvents": "Tüm etkinliklere bak →",
     "viewAllEvents": "Tüm Etkinlikleri Gör"
+  },
+  "status": {
+    "title": "Platform Durumu",
+    "online": "Çevrimiçi",
+    "loadError": "Durum bilgisi yüklenemedi.",
+    "activeEvents": "Aktif Etkinlik",
+    "totalEvents": "Toplam Etkinlik",
+    "sourceCount": "Kaynak Sayısı",
+    "dataSources": "Veri Kaynakları",
+    "lastUpdate": "Son güncelleme:",
+    "unknown": "bilinmiyor",
+    "scraperStats": "{{newCount}} yeni · {{foundCount}} bulunan"
+  },
+  "subscribeConfirm": {
+    "loading": "Onaylanıyor...",
+    "successTitle": "Aboneliğin onaylandı 🎉",
+    "successText": "Artık haftalık etkinlik özetlerini e-postanda alacaksın.",
+    "errorTitle": "Bağlantı geçersiz",
+    "errorText": "Bu onay bağlantısı geçersiz ya da süresi dolmuş olabilir.",
+    "backHome": "Anasayfaya Dön"
+  },
+  "unsubscribe": {
+    "loading": "İşleniyor...",
+    "successTitle": "Abonelikten çıktın",
+    "successText": "Artık e-posta özeti almayacaksın. İstediğin zaman tekrar abone olabilirsin.",
+    "errorTitle": "Bağlantı geçersiz",
+    "errorText": "Bu bağlantı geçersiz olabilir.",
+    "backHome": "Anasayfaya Dön"
+  },
+  "notFound": {
+    "title": "Sayfa Bulunamadı",
+    "description": "Aradığınız sayfa mevcut değil, taşınmış veya kaldırılmış olabilir.",
+    "backHome": "Ana Sayfaya Dön",
+    "goBack": "Geri Git",
+    "suggestion": "URL adresini kontrol etmeyi deneyin veya ana sayfadan tekrar başlayın."
+  },
+  "serverError": {
+    "defaultMessage": "Sunucu tarafında beklenmeyen bir hata oluştu.",
+    "title": "Sunucu Hatası",
+    "reload": "Sayfayı Yenile",
+    "suggestion": "Sorun devam ederse lütfen daha sonra tekrar deneyin."
+  },
+  "redirectPage": {
+    "defaultMessage": "Yönlendiriliyorsunuz...",
+    "title": "Yönlendirme",
+    "countdownText": "saniye içinde yönlendirileceksiniz",
+    "goNow": "Hemen Git"
   }
 }

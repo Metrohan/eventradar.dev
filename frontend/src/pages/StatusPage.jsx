@@ -1,11 +1,14 @@
 import React from 'react'
 import { useQuery } from 'react-query'
+import { useTranslation } from 'react-i18next'
 import { formatDistanceToNow } from 'date-fns'
-import { tr } from 'date-fns/locale'
 import { publicAPI } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
+import { useDateLocale } from '../hooks/useDateLocale'
 
 const StatusPage = () => {
+  const { t } = useTranslation()
+  const dateLocale = useDateLocale()
   const { data, isLoading, error, dataUpdatedAt } = useQuery(
     'platform-status',
     () => publicAPI.getStatus(),
@@ -21,7 +24,7 @@ const StatusPage = () => {
 
           <div className="d-flex align-items-center gap-3 mb-4">
             <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-              Platform Durumu
+              {t('status.title')}
             </h1>
             {!isLoading && !error && (
               <span style={{
@@ -33,7 +36,7 @@ const StatusPage = () => {
                 fontSize: '0.8rem',
                 fontWeight: 600,
               }}>
-                Çevrimiçi
+                {t('status.online')}
               </span>
             )}
           </div>
@@ -49,7 +52,7 @@ const StatusPage = () => {
               color: '#ef4444',
               fontSize: '0.9rem',
             }}>
-              Durum bilgisi yüklenemedi.
+              {t('status.loadError')}
             </div>
           )}
 
@@ -58,30 +61,30 @@ const StatusPage = () => {
               {/* Özet kartlar */}
               <div className="row g-3 mb-4">
                 <div className="col-6 col-md-4">
-                  <StatCard label="Aktif Etkinlik" value={status.active_events} />
+                  <StatCard label={t('status.activeEvents')} value={status.active_events} />
                 </div>
                 <div className="col-6 col-md-4">
-                  <StatCard label="Toplam Etkinlik" value={status.total_events} />
+                  <StatCard label={t('status.totalEvents')} value={status.total_events} />
                 </div>
                 <div className="col-6 col-md-4">
-                  <StatCard label="Kaynak Sayısı" value={status.scrapers.length} />
+                  <StatCard label={t('status.sourceCount')} value={status.scrapers.length} />
                 </div>
               </div>
 
               {/* Scraper tablosu */}
               <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
-                Veri Kaynakları
+                {t('status.dataSources')}
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {status.scrapers.map((s) => (
-                  <ScraperRow key={s.source} scraper={s} />
+                  <ScraperRow key={s.source} scraper={s} t={t} dateLocale={dateLocale} />
                 ))}
               </div>
 
               {dataUpdatedAt > 0 && (
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '1.5rem', textAlign: 'right' }}>
-                  Son güncelleme:{' '}
-                  {formatDistanceToNow(new Date(dataUpdatedAt), { addSuffix: true, locale: tr })}
+                  {t('status.lastUpdate')}{' '}
+                  {formatDistanceToNow(new Date(dataUpdatedAt), { addSuffix: true, locale: dateLocale })}
                 </p>
               )}
             </>
@@ -105,11 +108,11 @@ const StatCard = ({ label, value }) => (
   </div>
 )
 
-const ScraperRow = ({ scraper }) => {
+const ScraperRow = ({ scraper, t, dateLocale }) => {
   const ok = scraper.status === 'success'
   const lastRun = scraper.last_run
-    ? formatDistanceToNow(new Date(scraper.last_run), { addSuffix: true, locale: tr })
-    : 'bilinmiyor'
+    ? formatDistanceToNow(new Date(scraper.last_run), { addSuffix: true, locale: dateLocale })
+    : t('status.unknown')
 
   return (
     <div style={{
@@ -134,7 +137,7 @@ const ScraperRow = ({ scraper }) => {
         {lastRun}
       </span>
       <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-        {scraper.new_events} yeni · {scraper.events_found} bulunan
+        {t('status.scraperStats', { newCount: scraper.new_events, foundCount: scraper.events_found })}
       </span>
       <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
         {scraper.duration_seconds}s

@@ -238,5 +238,53 @@
     "noEventsMatch": "No open events currently match this filter.",
     "browseAllEvents": "Browse all events →",
     "viewAllEvents": "View All Events"
+  },
+  "status": {
+    "title": "Platform Status",
+    "online": "Online",
+    "loadError": "Failed to load status information.",
+    "activeEvents": "Active Events",
+    "totalEvents": "Total Events",
+    "sourceCount": "Sources",
+    "dataSources": "Data Sources",
+    "lastUpdate": "Last updated:",
+    "unknown": "unknown",
+    "scraperStats": "{{newCount}} new · {{foundCount}} found"
+  },
+  "subscribeConfirm": {
+    "loading": "Confirming...",
+    "successTitle": "Your subscription is confirmed 🎉",
+    "successText": "You'll now receive weekly event summaries by email.",
+    "errorTitle": "Invalid link",
+    "errorText": "This confirmation link may be invalid or expired.",
+    "backHome": "Back to Home"
+  },
+  "unsubscribe": {
+    "loading": "Processing...",
+    "successTitle": "You've unsubscribed",
+    "successText": "You will no longer receive email summaries. You can subscribe again anytime.",
+    "errorTitle": "Invalid link",
+    "errorText": "This link may be invalid.",
+    "backHome": "Back to Home"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist, has moved, or was removed.",
+    "backHome": "Back to Home",
+    "goBack": "Go Back",
+    "suggestion": "Try checking the URL, or start again from the home page."
+  },
+  "serverError": {
+    "defaultMessage": "An unexpected server-side error occurred.",
+    "title": "Server Error",
+    "reload": "Reload Page",
+    "suggestion": "If the problem persists, please try again later."
+  },
+  "redirectPage": {
+    "defaultMessage": "Redirecting...",
+    "title": "Redirect",
+    "countdownText_one": "redirecting in {{count}} second",
+    "countdownText_other": "redirecting in {{count}} seconds",
+    "goNow": "Go Now"
   }
 }

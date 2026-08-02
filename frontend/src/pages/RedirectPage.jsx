@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const RedirectPage = () => {
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const location = useLocation()
     const target = location.state?.target || '/'
-    const message = location.state?.message || 'Yönlendiriliyorsunuz...'
+    const message = location.state?.message || t('redirectPage.defaultMessage')
     const [countdown, setCountdown] = useState(3)
 
     useEffect(() => {
@@ -33,14 +35,14 @@ const RedirectPage = () => {
                     <div className="redirect-spinner-ring"></div>
                 </div>
 
-                <h2 className="error-title">Yönlendirme</h2>
+                <h2 className="error-title">{t('redirectPage.title')}</h2>
                 <p className="error-description">
                     {message}
                 </p>
 
                 <div className="redirect-countdown">
                     <span className="countdown-number">{countdown}</span>
-                    <span className="countdown-text">saniye içinde yönlendirileceksiniz</span>
+                    <span className="countdown-text">{t('redirectPage.countdownText', { count: countdown })}</span>
                 </div>
 
                 <div className="error-actions">
@@ -49,7 +51,7 @@ const RedirectPage = () => {
                         className="btn btn-primary btn-lg error-btn"
                     >
                         <i className="fas fa-forward me-2"></i>
-                        Hemen Git
+                        {t('redirectPage.goNow')}
                     </button>
                 </div>
             </div>
