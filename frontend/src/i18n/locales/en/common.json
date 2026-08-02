@@ -97,5 +97,37 @@
     "clearFilters": "Clear Filters",
     "ctaHeading": "Did we miss an event?",
     "ctaText": "Let us know if there's an event you'd like added."
+  },
+  "landing": {
+    "hackathonlar": {
+      "title": "Hackathon Events",
+      "introHeading": "Hackathon Events in Turkey",
+      "introText": "Track current hackathons collected from different platforms in one place — don't miss an application deadline.",
+      "emptyState": "There's no open hackathon right now — try changing the filters to see other events."
+    },
+    "bootcamplar": {
+      "title": "Bootcamp Events",
+      "introHeading": "Bootcamp Programs in Turkey",
+      "introText": "Track current bootcamp programs collected from different platforms in one place.",
+      "emptyState": "There's no open bootcamp right now — try changing the filters to see other events."
+    },
+    "online": {
+      "title": "Online Events",
+      "introHeading": "Tech Events You Can Join Online",
+      "introText": "Current online events you can join from home, no matter the city.",
+      "emptyState": "There's no open online event right now — try changing the filters to see other events."
+    },
+    "thisWeek": {
+      "title": "This Week's Events",
+      "introHeading": "Events Happening This Week",
+      "introText": "Don't miss events happening in the next 7 days.",
+      "emptyState": "There's no event scheduled this week — you can browse all events instead."
+    },
+    "lastCall": {
+      "title": "Events With Deadlines Approaching",
+      "introHeading": "Events With Deadlines Approaching",
+      "introText": "Don't miss events whose application deadline is within the next 7 days.",
+      "emptyState": "No event's deadline is closing this week — you can browse all events instead."
+    }
   }
 }

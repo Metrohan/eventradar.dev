@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import EventListing from '../../components/EventListing'
 import { setPageSEO } from '../../utils/seo'
 
 const HackathonlarPage = () => {
+  const { t } = useTranslation()
+
   useEffect(() => {
     setPageSEO({
       title: 'Hackathon Etkinlikleri | TechEventRadar',
@@ -13,20 +16,19 @@ const HackathonlarPage = () => {
 
   return (
     <EventListing
-      title="Hackathon Etkinlikleri"
+      title={t('landing.hackathonlar.title')}
       initialTags={['hackathon']}
       intro={
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            Türkiye'deki Hackathon Etkinlikleri
+            {t('landing.hackathonlar.introHeading')}
           </h1>
           <p className="text-muted" style={{ maxWidth: '640px' }}>
-            Farklı platformlardan toplanan güncel hackathon'ları tek yerden takip et, başvuru
-            son tarihini kaçırma.
+            {t('landing.hackathonlar.introText')}
           </p>
         </div>
       }
-      emptyStateText="Şu anda açık bir hackathon bulunmuyor, filtreleri değiştirerek diğer etkinliklere göz atabilirsin."
+      emptyStateText={t('landing.hackathonlar.emptyState')}
     />
   )
 }

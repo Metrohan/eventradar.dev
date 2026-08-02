@@ -95,5 +95,37 @@
     "clearFilters": "Filtreleri Temizle",
     "ctaHeading": "Bir etkinlik mi kaçırdık?",
     "ctaText": "Eklenmesini istediğiniz bir etkinlik varsa bize bildirin."
+  },
+  "landing": {
+    "hackathonlar": {
+      "title": "Hackathon Etkinlikleri",
+      "introHeading": "Türkiye'deki Hackathon Etkinlikleri",
+      "introText": "Farklı platformlardan toplanan güncel hackathon'ları tek yerden takip et, başvuru son tarihini kaçırma.",
+      "emptyState": "Şu anda açık bir hackathon bulunmuyor, filtreleri değiştirerek diğer etkinliklere göz atabilirsin."
+    },
+    "bootcamplar": {
+      "title": "Bootcamp Etkinlikleri",
+      "introHeading": "Türkiye'deki Bootcamp Programları",
+      "introText": "Farklı platformlardan toplanan güncel bootcamp programlarını tek yerden takip et.",
+      "emptyState": "Şu anda açık bir bootcamp bulunmuyor, filtreleri değiştirerek diğer etkinliklere göz atabilirsin."
+    },
+    "online": {
+      "title": "Online Etkinlikler",
+      "introHeading": "Online Katılabileceğin Teknoloji Etkinlikleri",
+      "introText": "Şehir fark etmeksizin evden katılabileceğin güncel online etkinlikler.",
+      "emptyState": "Şu anda açık bir online etkinlik bulunmuyor, filtreleri değiştirerek diğer etkinliklere göz atabilirsin."
+    },
+    "thisWeek": {
+      "title": "Bu Haftaki Etkinlikler",
+      "introHeading": "Bu Hafta Gerçekleşecek Etkinlikler",
+      "introText": "Önümüzdeki 7 gün içinde gerçekleşecek etkinlikleri kaçırma.",
+      "emptyState": "Bu hafta içinde planlanmış bir etkinlik bulunmuyor, tüm etkinliklere göz atabilirsin."
+    },
+    "lastCall": {
+      "title": "Son Başvurusu Yaklaşan Etkinlikler",
+      "introHeading": "Son Başvurusu Yaklaşan Etkinlikler",
+      "introText": "Başvuru son tarihi önümüzdeki 7 gün içinde dolacak etkinlikleri kaçırma.",
+      "emptyState": "Son başvurusu bu hafta dolacak bir etkinlik bulunmuyor, tüm etkinliklere göz atabilirsin."
+    }
   }
 }
