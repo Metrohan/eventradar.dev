@@ -1,5 +1,6 @@
 import React from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 import { publicAPI } from '../services/api'
 
@@ -10,6 +11,7 @@ const urlBase64ToUint8Array = value => {
 }
 
 const PushNotificationToggle = () => {
+  const { t } = useTranslation()
   const supported = typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window
   const [enabled, setEnabled] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
@@ -33,7 +35,7 @@ const PushNotificationToggle = () => {
         await publicAPI.pushUnsubscribe(current.endpoint)
         await current.unsubscribe()
         setEnabled(false)
-        toast.success('Tarayıcı bildirimleri kapatıldı.')
+        toast.success(t('pushToggle.disabled'))
         return
       }
 
@@ -41,7 +43,7 @@ const PushNotificationToggle = () => {
       if (permission !== 'granted') throw new Error('permission-denied')
       const { data } = await publicAPI.getVapidPublicKey()
       if (!data.key) {
-        toast.error('Tarayıcı bildirimleri henüz yapılandırılmamış.')
+        toast.error(t('pushToggle.notConfigured'))
         return
       }
       const subscription = await registration.pushManager.subscribe({
@@ -50,9 +52,9 @@ const PushNotificationToggle = () => {
       })
       await publicAPI.pushSubscribe(subscription.toJSON())
       setEnabled(true)
-      toast.success('Tarayıcı bildirimleri açıldı.')
+      toast.success(t('pushToggle.enabled'))
     } catch (error) {
-      toast.error(error.message === 'permission-denied' ? 'Bildirim izni verilmedi.' : 'Tarayıcı bildirimi etkinleştirilemedi.')
+      toast.error(error.message === 'permission-denied' ? t('pushToggle.permissionDenied') : t('pushToggle.enableFailed'))
     } finally {
       setLoading(false)
     }
@@ -61,7 +63,7 @@ const PushNotificationToggle = () => {
   return (
     <button type="button" className={`footer-push-toggle ${enabled ? 'active' : ''}`} onClick={toggle} disabled={loading}>
       <i className={`${enabled ? 'fas' : 'far'} fa-bell`} />
-      {loading ? 'Kontrol ediliyor…' : enabled ? 'Bildirimler açık' : 'Tarayıcı bildirimlerini aç'}
+      {loading ? t('pushToggle.checking') : enabled ? t('pushToggle.on') : t('pushToggle.turnOn')}
     </button>
   )
 }

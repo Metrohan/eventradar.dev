@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { tr } from 'date-fns/locale'
+import { useDateLocale } from '../hooks/useDateLocale'
 
 const AnnouncementModal = ({ announcement }) => {
+  const { t } = useTranslation()
+  const dateLocale = useDateLocale()
   const [show, setShow] = useState(false)
 
   useEffect(() => {
@@ -20,9 +23,9 @@ const AnnouncementModal = ({ announcement }) => {
 
   const formatDate = (dateString) => {
     try {
-      return format(new Date(dateString), 'dd MMMM yyyy, HH:mm', { locale: tr })
+      return format(new Date(dateString), 'dd MMMM yyyy, HH:mm', { locale: dateLocale })
     } catch {
-      return 'Geçersiz tarih'
+      return t('announcement.invalidDate')
     }
   }
 
@@ -56,7 +59,7 @@ const AnnouncementModal = ({ announcement }) => {
                 className="btn btn-primary"
                 onClick={handleClose}
               >
-                Tamam
+                {t('announcement.ok')}
               </button>
             </div>
           </div>

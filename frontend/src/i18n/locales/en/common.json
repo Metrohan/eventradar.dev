@@ -287,5 +287,70 @@
     "countdownText_one": "second until you're redirected",
     "countdownText_other": "seconds until you're redirected",
     "goNow": "Go Now"
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "tags": {
+    "hackathon": "Hackathon",
+    "seminer": "Seminar / Webinar",
+    "atolye": "Workshop",
+    "konferans": "Conference",
+    "bootcamp": "Bootcamp",
+    "diger": "Other"
+  },
+  "announcement": {
+    "invalidDate": "Invalid date",
+    "ok": "OK"
+  },
+  "errorBoundary": {
+    "title": "Error",
+    "heading": "An Unexpected Error Occurred",
+    "description": "The app ran into an unexpected error. You can try again by reloading the page."
+  },
+  "errorMessage": {
+    "title": "An Error Occurred",
+    "retry": "Try Again"
+  },
+  "pushToggle": {
+    "disabled": "Browser notifications turned off.",
+    "notConfigured": "Browser notifications aren't configured yet.",
+    "enabled": "Browser notifications turned on.",
+    "permissionDenied": "Notification permission was denied.",
+    "enableFailed": "Couldn't enable browser notifications.",
+    "checking": "Checking…",
+    "on": "Notifications on",
+    "turnOn": "Turn on browser notifications"
+  },
+  "shareButtons": {
+    "linkCopied": "Link copied.",
+    "linkCopyFailed": "Couldn't copy the link.",
+    "shareEvent": "Share event",
+    "copyLink": "Copy Link",
+    "addToCalendar": "Add to Calendar",
+    "addToCalendarFailed": "Couldn't add to calendar because the event date is unknown."
+  },
+  "subscribeWidget": {
+    "confirmationSent": "Confirmation email sent.",
+    "subscribeFailed": "Subscription failed.",
+    "pushDisabled": "Push notifications turned off.",
+    "permissionDenied": "Notification permission was denied.",
+    "pushNotConfigured": "Push notifications aren't configured yet.",
+    "pushEnabled": "Push notifications enabled.",
+    "pushEnableFailed": "Couldn't enable push notifications.",
+    "heading": "Don't miss new events",
+    "subtitle": "Get a weekly summary email or turn on browser notifications.",
+    "emailPlaceholder": "Your email",
+    "subscribeButton": "Subscribe",
+    "turnOffPush": "Turn Off Push Notifications",
+    "turnOnPush": "Turn On Push Notifications"
+  },
+  "supportModal": {
+    "heading": "Support the Project",
+    "description": "TechEventRadar is an open-source project built entirely by volunteers. You can help by buying us a coffee or sharing the project with others.",
+    "serverCost": "Server / month",
+    "domainCost": "Domain / year",
+    "linkCopied": "Link Copied!",
+    "share": "Share"
   }
 }

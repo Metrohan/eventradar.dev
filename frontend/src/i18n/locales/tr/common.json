@@ -282,5 +282,70 @@
     "title": "Yönlendirme",
     "countdownText": "saniye içinde yönlendirileceksiniz",
     "goNow": "Hemen Git"
+  },
+  "common": {
+    "loading": "Yükleniyor..."
+  },
+  "tags": {
+    "hackathon": "Hackathon",
+    "seminer": "Seminer / Webinar",
+    "atolye": "Atölye",
+    "konferans": "Konferans",
+    "bootcamp": "Bootcamp",
+    "diger": "Diğer"
+  },
+  "announcement": {
+    "invalidDate": "Geçersiz tarih",
+    "ok": "Tamam"
+  },
+  "errorBoundary": {
+    "title": "Hata",
+    "heading": "Beklenmeyen Bir Hata Oluştu",
+    "description": "Uygulama beklenmeyen bir hatayla karşılaştı. Sayfayı yenileyerek tekrar deneyebilirsiniz."
+  },
+  "errorMessage": {
+    "title": "Hata Oluştu",
+    "retry": "Tekrar Dene"
+  },
+  "pushToggle": {
+    "disabled": "Tarayıcı bildirimleri kapatıldı.",
+    "notConfigured": "Tarayıcı bildirimleri henüz yapılandırılmamış.",
+    "enabled": "Tarayıcı bildirimleri açıldı.",
+    "permissionDenied": "Bildirim izni verilmedi.",
+    "enableFailed": "Tarayıcı bildirimi etkinleştirilemedi.",
+    "checking": "Kontrol ediliyor…",
+    "on": "Bildirimler açık",
+    "turnOn": "Tarayıcı bildirimlerini aç"
+  },
+  "shareButtons": {
+    "linkCopied": "Link kopyalandı.",
+    "linkCopyFailed": "Link kopyalanamadı.",
+    "shareEvent": "Etkinliği paylaş",
+    "copyLink": "Linki Kopyala",
+    "addToCalendar": "Takvime Ekle",
+    "addToCalendarFailed": "Etkinlik tarihi bilinmediği için takvime eklenemedi."
+  },
+  "subscribeWidget": {
+    "confirmationSent": "Onay e-postası gönderildi.",
+    "subscribeFailed": "Abonelik başarısız oldu.",
+    "pushDisabled": "Push bildirimleri kapatıldı.",
+    "permissionDenied": "Bildirim izni verilmedi.",
+    "pushNotConfigured": "Push bildirimleri şu anda yapılandırılmamış.",
+    "pushEnabled": "Push bildirimleri etkinleştirildi.",
+    "pushEnableFailed": "Push bildirimi etkinleştirilemedi.",
+    "heading": "Yeni etkinlikleri kaçırma",
+    "subtitle": "Haftalık özet e-postası al ya da tarayıcı bildirimlerini aç.",
+    "emailPlaceholder": "E-posta adresin",
+    "subscribeButton": "Abone Ol",
+    "turnOffPush": "Push Bildirimlerini Kapat",
+    "turnOnPush": "Push Bildirimlerini Aç"
+  },
+  "supportModal": {
+    "heading": "Projeye Destek Ol",
+    "description": "TechEventRadar tamamen gönüllülük esasıyla geliştirilen açık kaynaklı bir projedir. Geliştirmemize katkıda bulunmak için bize bir kahve ısmarlayabilir veya projemizi çevrenizle paylaşabilirsiniz.",
+    "serverCost": "Sunucu / ay",
+    "domainCost": "Domain / yıl",
+    "linkCopied": "Link Kopyalandı!",
+    "share": "Paylaş"
   }
 }

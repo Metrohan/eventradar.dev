@@ -1,5 +1,6 @@
 import React from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { publicAPI } from '../services/api'
 import { getErrorMessage } from '../utils/errorMessage'
 
@@ -11,6 +12,7 @@ const urlBase64ToUint8Array = (base64String) => {
 }
 
 const SubscribeWidget = () => {
+  const { t } = useTranslation()
   const [email, setEmail] = React.useState('')
   const [submitting, setSubmitting] = React.useState(false)
   const [pushEnabled, setPushEnabled] = React.useState(false)
@@ -31,10 +33,10 @@ const SubscribeWidget = () => {
     setSubmitting(true)
     try {
       const { data } = await publicAPI.subscribeEmail(email)
-      toast.success(data.message || 'Onay e-postası gönderildi.')
+      toast.success(data.message || t('subscribeWidget.confirmationSent'))
       setEmail('')
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Abonelik başarısız oldu.'))
+      toast.error(getErrorMessage(err, t('subscribeWidget.subscribeFailed')))
     } finally {
       setSubmitting(false)
     }
@@ -51,19 +53,19 @@ const SubscribeWidget = () => {
         await sub.unsubscribe()
       }
       setPushEnabled(false)
-      toast.success('Push bildirimleri kapatıldı.')
+      toast.success(t('subscribeWidget.pushDisabled'))
       return
     }
 
     try {
       const permission = await Notification.requestPermission()
       if (permission !== 'granted') {
-        toast.error('Bildirim izni verilmedi.')
+        toast.error(t('subscribeWidget.permissionDenied'))
         return
       }
       const { data } = await publicAPI.getVapidPublicKey()
       if (!data.key) {
-        toast.error('Push bildirimleri şu anda yapılandırılmamış.')
+        toast.error(t('subscribeWidget.pushNotConfigured'))
         return
       }
       const reg = await navigator.serviceWorker.ready
@@ -73,9 +75,9 @@ const SubscribeWidget = () => {
       })
       await publicAPI.pushSubscribe(sub.toJSON())
       setPushEnabled(true)
-      toast.success('Push bildirimleri etkinleştirildi.')
+      toast.success(t('subscribeWidget.pushEnabled'))
     } catch (err) {
-      toast.error('Push bildirimi etkinleştirilemedi.')
+      toast.error(t('subscribeWidget.pushEnableFailed'))
     }
   }
 
@@ -89,31 +91,31 @@ const SubscribeWidget = () => {
       }}
     >
       <h5 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>
-        Yeni etkinlikleri kaçırma
+        {t('subscribeWidget.heading')}
       </h5>
       <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '1rem' }}>
-        Haftalık özet e-postası al ya da tarayıcı bildirimlerini aç.
+        {t('subscribeWidget.subtitle')}
       </p>
 
       <form onSubmit={handleEmailSubmit} className="d-flex gap-2 mb-3" style={{ flexWrap: 'wrap' }}>
         <input
           type="email"
           required
-          placeholder="E-posta adresin"
+          placeholder={t('subscribeWidget.emailPlaceholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="filter-select"
           style={{ flex: '1 1 200px' }}
         />
         <button type="submit" className="btn-primary" disabled={submitting}>
-          {submitting ? '...' : 'Abone Ol'}
+          {submitting ? '...' : t('subscribeWidget.subscribeButton')}
         </button>
       </form>
 
       {pushSupported && (
         <button type="button" className="filter-toggle" onClick={handlePushToggle}>
           <i className={`fas fa-bell${pushEnabled ? '' : '-slash'}`}></i>
-          {pushEnabled ? ' Push Bildirimlerini Kapat' : ' Push Bildirimlerini Aç'}
+          {pushEnabled ? ` ${t('subscribeWidget.turnOffPush')}` : ` ${t('subscribeWidget.turnOnPush')}`}
         </button>
       )}
     </div>

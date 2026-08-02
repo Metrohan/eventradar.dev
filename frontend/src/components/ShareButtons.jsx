@@ -1,17 +1,19 @@
 import React from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { downloadICS } from '../utils/ics'
 
-const copyLink = async (url) => {
+const copyLink = async (url, t) => {
   try {
     await navigator.clipboard.writeText(url)
-    toast.success('Link kopyalandı.')
+    toast.success(t('shareButtons.linkCopied'))
   } catch {
-    toast.error('Link kopyalanamadı.')
+    toast.error(t('shareButtons.linkCopyFailed'))
   }
 }
 
 const ShareButtons = ({ event, detailUrl, variant = 'full' }) => {
+  const { t } = useTranslation()
   const shareText = event.title
 
   const whatsappHref = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${detailUrl}`)}`
@@ -28,7 +30,7 @@ const ShareButtons = ({ event, detailUrl, variant = 'full' }) => {
       }
       return
     }
-    copyLink(detailUrl)
+    copyLink(detailUrl, t)
   }
 
   if (variant === 'icon') {
@@ -36,7 +38,7 @@ const ShareButtons = ({ event, detailUrl, variant = 'full' }) => {
       <button
         type="button"
         onClick={handleIconShare}
-        aria-label="Etkinliği paylaş"
+        aria-label={t('shareButtons.shareEvent')}
         className="event-share-icon-btn"
         style={{
           background: 'rgba(0,0,0,0.45)',
@@ -79,19 +81,19 @@ const ShareButtons = ({ event, detailUrl, variant = 'full' }) => {
       <button
         type="button"
         className="btn-event btn-event-outline"
-        onClick={() => copyLink(detailUrl)}
+        onClick={() => copyLink(detailUrl, t)}
       >
-        <i className="fas fa-link"></i> Linki Kopyala
+        <i className="fas fa-link"></i> {t('shareButtons.copyLink')}
       </button>
       <button
         type="button"
         className="btn-event btn-event-outline"
         onClick={() => {
           const ok = downloadICS(event, detailUrl)
-          if (!ok) toast.error('Etkinlik tarihi bilinmediği için takvime eklenemedi.')
+          if (!ok) toast.error(t('shareButtons.addToCalendarFailed'))
         }}
       >
-        <i className="fas fa-calendar-plus"></i> Takvime Ekle
+        <i className="fas fa-calendar-plus"></i> {t('shareButtons.addToCalendar')}
       </button>
     </div>
   )
