@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import { formAPI } from '../services/api'
 import { getErrorMessage } from '../utils/errorMessage'
 import { setPageSEO } from '../utils/seo'
 
 const EventRequestPage = () => {
+  const { t, i18n } = useTranslation()
   const [step, setStep] = useState(1)
 
   useEffect(() => {
     setPageSEO({
       title: 'Etkinlik Ekleme Talebi | TechEventRadar',
+      tabTitle: `${t('eventRequest.pageTitle')} | TechEventRadar`,
       description: 'Kaçırdığımız bir hackathon, bootcamp veya kariyer etkinliği mi var? TechEventRadar\'a ekleyelim.',
       path: '/etkinlik-talep',
     })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language])
   const {
     register,
     handleSubmit,
@@ -25,12 +29,12 @@ const EventRequestPage = () => {
 
   const submitMutation = useMutation(formAPI.submitEventRequest, {
     onSuccess: () => {
-      toast.success('Etkinlik ekleme talebiniz başarıyla alındı. Teşekkür ederiz!')
+      toast.success(t('eventRequest.toastSuccess'))
       reset()
       setStep(1)
     },
     onError: error => {
-      toast.error(getErrorMessage(error, 'Talebiniz gönderilirken bir hata oluştu.'))
+      toast.error(getErrorMessage(error, t('eventRequest.toastErrorFallback')))
     },
   })
 
@@ -57,27 +61,27 @@ const EventRequestPage = () => {
   return (
     <div className="container py-4">
       <div className="page-hero" style={{ textAlign: 'center' }}>
-        <h1 className="page-hero-title">Etkinlik Ekleme Talebi</h1>
+        <h1 className="page-hero-title">{t('eventRequest.pageTitle')}</h1>
         <p className="page-hero-subtitle" style={{ margin: '0 auto' }}>
-          Kaçırdığımız bir etkinlik mi var? Bize bildirin, en kısa sürede ekleyelim.
+          {t('eventRequest.pageSubtitle')}
         </p>
       </div>
 
       <div className="wizard-card">
         {/* Step indicator */}
-        <div className="step-indicator" role="list" aria-label="Form adımları">
+        <div className="step-indicator" role="list" aria-label={t('eventRequest.stepsAriaLabel')}>
           <div className="step-item" role="listitem" aria-current={step === 1 ? 'step' : undefined}>
             <div className={`step-circle ${step === 1 ? 'active' : 'done'}`}>
               {step > 1
                 ? <i className="fas fa-check" style={{ fontSize: '10px' }} aria-hidden="true" />
                 : '1'}
             </div>
-            <span className={`step-label ${step === 1 ? 'active' : 'inactive'}`}>Link</span>
+            <span className={`step-label ${step === 1 ? 'active' : 'inactive'}`}>{t('eventRequest.stepLink')}</span>
           </div>
           <div className={`step-line ${step > 1 ? 'done' : 'inactive'}`} aria-hidden="true" />
           <div className="step-item" role="listitem" aria-current={step === 2 ? 'step' : undefined}>
             <div className={`step-circle ${step === 2 ? 'active' : 'inactive'}`}>2</div>
-            <span className={`step-label ${step === 2 ? 'active' : 'inactive'}`}>Detaylar</span>
+            <span className={`step-label ${step === 2 ? 'active' : 'inactive'}`}>{t('eventRequest.stepDetails')}</span>
           </div>
         </div>
 
@@ -86,14 +90,14 @@ const EventRequestPage = () => {
           {step === 1 && (
             <div>
               <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '6px' }}>
-                Etkinlik Linkini Gir
+                {t('eventRequest.step1Heading')}
               </h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '20px' }}>
-                Etkinliğin bağlantısını yapıştır
+                {t('eventRequest.step1Subtitle')}
               </p>
               <div style={{ marginBottom: '24px' }}>
                 <label className="form-label-dark" htmlFor="event_link">
-                  Etkinlik Linki <span style={{ color: 'var(--danger)' }}>*</span>
+                  {t('eventRequest.linkLabel')} <span style={{ color: 'var(--danger)' }}>*</span>
                 </label>
                 <input
                   id="event_link"
@@ -101,8 +105,8 @@ const EventRequestPage = () => {
                   className="form-field-dark"
                   placeholder="https://etkinlik.com/..."
                   {...register('event_link', {
-                    required: 'Etkinlik linki gereklidir',
-                    pattern: { value: /^https?:\/\/.+/, message: 'Geçerli bir URL giriniz' },
+                    required: t('eventRequest.linkRequired'),
+                    pattern: { value: /^https?:\/\/.+/, message: t('eventRequest.linkInvalid') },
                   })}
                 />
                 {errors.event_link && (
@@ -110,7 +114,7 @@ const EventRequestPage = () => {
                 )}
               </div>
               <button type="submit" className="gradient-btn">
-                Devam <i className="fas fa-arrow-right ms-2" aria-hidden="true" />
+                {t('eventRequest.continueButton')} <i className="fas fa-arrow-right ms-2" aria-hidden="true" />
               </button>
             </div>
           )}
@@ -119,23 +123,23 @@ const EventRequestPage = () => {
           {step === 2 && (
             <div>
               <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '6px' }}>
-                Etkinlik Detayları
+                {t('eventRequest.step2Heading')}
               </h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '20px' }}>
-                Başlık zorunlu, diğer alanlar isteğe bağlıdır.
+                {t('eventRequest.step2Subtitle')}
               </p>
 
               <div style={{ marginBottom: '16px' }}>
                 <label className="form-label-dark" htmlFor="event_title">
-                  Etkinlik Başlığı <span style={{ color: 'var(--danger)' }}>*</span>
+                  {t('eventRequest.titleLabel')} <span style={{ color: 'var(--danger)' }}>*</span>
                 </label>
                 <input
                   id="event_title"
                   className="form-field-dark"
-                  placeholder="Etkinlik başlığını giriniz"
+                  placeholder={t('eventRequest.titlePlaceholder')}
                   {...register('event_title', {
-                    required: 'Etkinlik başlığı gereklidir',
-                    minLength: { value: 5, message: 'Başlık en az 5 karakter olmalıdır' },
+                    required: t('eventRequest.titleRequired'),
+                    minLength: { value: 5, message: t('eventRequest.titleMinLength') },
                   })}
                 />
                 {errors.event_title && (
@@ -144,7 +148,7 @@ const EventRequestPage = () => {
               </div>
 
               <div style={{ marginBottom: '16px' }}>
-                <label className="form-label-dark" htmlFor="event_date">Etkinlik Tarihi</label>
+                <label className="form-label-dark" htmlFor="event_date">{t('eventRequest.dateLabel')}</label>
                 <input
                   id="event_date"
                   type="date"
@@ -154,33 +158,33 @@ const EventRequestPage = () => {
               </div>
 
               <div style={{ marginBottom: '16px' }}>
-                <label className="form-label-dark" htmlFor="event_description">Açıklama</label>
+                <label className="form-label-dark" htmlFor="event_description">{t('eventRequest.descLabel')}</label>
                 <textarea
                   id="event_description"
                   className="form-field-dark"
                   rows={4}
-                  placeholder="Etkinlik hakkında detaylı bilgi veriniz..."
+                  placeholder={t('eventRequest.descPlaceholder')}
                   {...register('event_description')}
                 />
               </div>
 
               <div style={{ marginBottom: '24px' }}>
                 <label className="form-label-dark" htmlFor="contact_email">
-                  E-posta{' '}
-                  <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(isteğe bağlı)</span>
+                  {t('eventRequest.emailLabel')}{' '}
+                  <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>({t('eventRequest.emailOptional')})</span>
                 </label>
                 <input
                   id="contact_email"
                   type="email"
                   className="form-field-dark"
-                  placeholder="Geri dönüş için e-posta adresiniz"
+                  placeholder={t('eventRequest.emailPlaceholder')}
                   {...register('contact_email')}
                 />
               </div>
 
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button type="button" className="ghost-btn" onClick={() => setStep(1)}>
-                  <i className="fas fa-arrow-left me-2" aria-hidden="true" />Geri
+                  <i className="fas fa-arrow-left me-2" aria-hidden="true" />{t('eventRequest.backButton')}
                 </button>
                 <button
                   type="submit"
@@ -191,10 +195,10 @@ const EventRequestPage = () => {
                   {submitMutation.isLoading ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
-                      Gönderiliyor...
+                      {t('eventRequest.submitting')}
                     </>
                   ) : (
-                    <><i className="fas fa-paper-plane me-2" aria-hidden="true" />Talep Gönder</>
+                    <><i className="fas fa-paper-plane me-2" aria-hidden="true" />{t('eventRequest.submitButton')}</>
                   )}
                 </button>
               </div>

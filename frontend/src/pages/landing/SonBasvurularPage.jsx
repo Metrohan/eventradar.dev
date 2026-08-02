@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import EventListing from '../../components/EventListing'
 import { setPageSEO } from '../../utils/seo'
 
@@ -12,29 +13,33 @@ const deadlineSoon = (event) => {
 }
 
 const SonBasvurularPage = () => {
+  const { t, i18n } = useTranslation()
+
   useEffect(() => {
     setPageSEO({
       title: 'Son Başvuru Tarihi Yaklaşan Etkinlikler | TechEventRadar',
+      tabTitle: `${t('landing.lastCall.title')} | TechEventRadar`,
       description: 'Başvuru son tarihi bu hafta dolacak hackathon, bootcamp ve webinar etkinliklerini kaçırma.',
       path: '/son-basvurular',
     })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language])
 
   return (
     <EventListing
-      title="Son Başvurusu Yaklaşan Etkinlikler"
+      title={t('landing.lastCall.title')}
       extraFilter={deadlineSoon}
       intro={
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            Son Başvurusu Yaklaşan Etkinlikler
+            {t('landing.lastCall.introHeading')}
           </h1>
           <p className="text-muted" style={{ maxWidth: '640px' }}>
-            Başvuru son tarihi önümüzdeki 7 gün içinde dolacak etkinlikleri kaçırma.
+            {t('landing.lastCall.introText')}
           </p>
         </div>
       }
-      emptyStateText="Son başvurusu bu hafta dolacak bir etkinlik bulunmuyor, tüm etkinliklere göz atabilirsin."
+      emptyStateText={t('landing.lastCall.emptyState')}
     />
   )
 }

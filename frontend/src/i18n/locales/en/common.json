@@ -75,5 +75,284 @@
     "statusOpen": "Open",
     "statusClosed": "Closed",
     "applyButton": "Apply"
+  },
+  "eventListing": {
+    "defaultTitle": "Events",
+    "defaultEmptyStateText": "Try changing your search criteria.",
+    "loadError": "There was a problem loading events.",
+    "selectPlatform": "Select platform",
+    "allPlatforms": "All Platforms",
+    "selectLocation": "Select location",
+    "allLocations": "All Locations",
+    "showPast": "Show Past Events",
+    "freeOnly": "Free",
+    "favoritesOnly": "My Favorites",
+    "dateFrom": "Start date",
+    "dateTo": "End date",
+    "clear": "Clear",
+    "categoryLabel": "CATEGORY:",
+    "resultsCount_one": "{{count}} result",
+    "resultsCount_other": "{{count}} results",
+    "noEventsFound": "No events found",
+    "clearFilters": "Clear Filters",
+    "ctaHeading": "Did we miss an event?",
+    "ctaText": "Let us know if there's an event you'd like added."
+  },
+  "landing": {
+    "hackathonlar": {
+      "title": "Hackathon Events",
+      "introHeading": "Hackathon Events in Turkey",
+      "introText": "Track current hackathons collected from different platforms in one place — don't miss an application deadline.",
+      "emptyState": "There's no open hackathon right now — try changing the filters to see other events."
+    },
+    "bootcamplar": {
+      "title": "Bootcamp Events",
+      "introHeading": "Bootcamp Programs in Turkey",
+      "introText": "Track current bootcamp programs collected from different platforms in one place.",
+      "emptyState": "There's no open bootcamp right now — try changing the filters to see other events."
+    },
+    "online": {
+      "title": "Online Events",
+      "introHeading": "Tech Events You Can Join Online",
+      "introText": "Current online events you can join from home, no matter the city.",
+      "emptyState": "There's no open online event right now — try changing the filters to see other events."
+    },
+    "thisWeek": {
+      "title": "This Week's Events",
+      "introHeading": "Events Happening This Week",
+      "introText": "Don't miss events happening in the next 7 days.",
+      "emptyState": "There's no event scheduled this week — you can browse all events instead."
+    },
+    "lastCall": {
+      "title": "Events With Deadlines Approaching",
+      "introHeading": "Events With Deadlines Approaching",
+      "introText": "Don't miss events whose application deadline is within the next 7 days.",
+      "emptyState": "No event's deadline is closing this week — you can browse all events instead."
+    }
+  },
+  "calendar": {
+    "title": "Event Calendar",
+    "subtitle": "Discover tech events in Turkey in a monthly calendar view.",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "moreEvents": "+{{count}} more"
+  },
+  "eventDetail": {
+    "notFound": "Event not found or failed to load.",
+    "deadlineDaysLeftWithDate_one": "{{count}} day left to apply ({{date}})",
+    "deadlineDaysLeftWithDate_other": "{{count}} days left to apply ({{date}})",
+    "goToEvent": "Go to Event"
+  },
+  "blog": {
+    "title": "Weekly Event Guide",
+    "subtitle": "Follow next week's tech events with concise, up-to-date summaries.",
+    "loadError": "Failed to load blog posts.",
+    "comingSoon": "The first weekly guide is coming soon.",
+    "notFound": "Post not found",
+    "backToBlog": "Back to blog",
+    "allPosts": "All posts"
+  },
+  "eventRequest": {
+    "pageTitle": "Add Event Request",
+    "pageSubtitle": "Did we miss an event? Let us know and we'll add it as soon as possible.",
+    "stepsAriaLabel": "Form steps",
+    "stepLink": "Link",
+    "stepDetails": "Details",
+    "step1Heading": "Enter the Event Link",
+    "step1Subtitle": "Paste the event's link",
+    "linkLabel": "Event Link",
+    "linkRequired": "Event link is required",
+    "linkInvalid": "Please enter a valid URL",
+    "continueButton": "Continue",
+    "step2Heading": "Event Details",
+    "step2Subtitle": "Title is required, other fields are optional.",
+    "titleLabel": "Event Title",
+    "titlePlaceholder": "Enter the event title",
+    "titleRequired": "Event title is required",
+    "titleMinLength": "Title must be at least 5 characters",
+    "dateLabel": "Event Date",
+    "descLabel": "Description",
+    "descPlaceholder": "Provide detailed information about the event...",
+    "emailLabel": "Email",
+    "emailOptional": "optional",
+    "emailPlaceholder": "Your email for follow-up",
+    "backButton": "Back",
+    "submitButton": "Send Request",
+    "submitting": "Sending...",
+    "toastSuccess": "Your event request has been received. Thank you!",
+    "toastErrorFallback": "There was a problem sending your request."
+  },
+  "suggestion": {
+    "pageTitle": "Contact Us",
+    "pageSubtitle": "Your feedback makes TechEventRadar better.",
+    "typeLabel": "Request Type",
+    "typeRequired": "Request type must be selected",
+    "types": {
+      "suggestion": "Suggestion",
+      "bug": "Bug Report",
+      "complaint": "Complaint",
+      "other": "Other"
+    },
+    "titleLabel": "Title",
+    "titlePlaceholder": "Enter the suggestion/complaint title",
+    "titleRequired": "Title is required",
+    "titleMinLength": "Title must be at least 5 characters",
+    "descLabel": "Description",
+    "descPlaceholder": "Describe your suggestion/complaint in detail...",
+    "descRequired": "Description is required",
+    "descMinLength": "Description must be at least 10 characters",
+    "submitButton": "Send",
+    "submitting": "Sending...",
+    "toastSuccess": "Your suggestion/complaint was sent successfully.",
+    "toastErrorFallback": "There was a problem sending it.",
+    "infoCards": {
+      "suggestion": {
+        "title": "Suggestion",
+        "desc": "Ideas for new features or improvements"
+      },
+      "bug": {
+        "title": "Bug Report",
+        "desc": "Report an issue you ran into"
+      },
+      "eventRequest": {
+        "title": "Event Request",
+        "desc": "Is there an event you'd like added?",
+        "linkLabel": "Create Request →"
+      }
+    }
+  },
+  "freeTrainings": {
+    "title": "Free Training Resources",
+    "subtitle": "Add value to your career with free training offered by the world's leading tech companies.",
+    "searchPlaceholder": "Search platform or topic...",
+    "resultsCount_one": "{{count}} resource",
+    "resultsCount_other": "{{count}} resources",
+    "noResults": "No resources match your search.",
+    "ctaButton": "Start Learning",
+    "infoHeading": "About These Resources"
+  },
+  "bootcampGuide": {
+    "liveEventsHeading": "Currently Open Events",
+    "liveEventsIntro": "Live open-for-applications events pulled from TechEventRadar:",
+    "noEventsMatch": "No open events currently match this filter.",
+    "browseAllEvents": "Browse all events →",
+    "viewAllEvents": "View All Events"
+  },
+  "status": {
+    "title": "Platform Status",
+    "online": "Online",
+    "loadError": "Failed to load status information.",
+    "activeEvents": "Active Events",
+    "totalEvents": "Total Events",
+    "sourceCount": "Sources",
+    "dataSources": "Data Sources",
+    "lastUpdate": "Last updated:",
+    "unknown": "unknown",
+    "scraperStats": "{{newCount}} new · {{foundCount}} found"
+  },
+  "subscribeConfirm": {
+    "loading": "Confirming...",
+    "successTitle": "Your subscription is confirmed 🎉",
+    "successText": "You'll now receive weekly event summaries by email.",
+    "errorTitle": "Invalid link",
+    "errorText": "This confirmation link may be invalid or expired.",
+    "backHome": "Back to Home"
+  },
+  "unsubscribe": {
+    "loading": "Processing...",
+    "successTitle": "You've unsubscribed",
+    "successText": "You will no longer receive email summaries. You can subscribe again anytime.",
+    "errorTitle": "Invalid link",
+    "errorText": "This link may be invalid.",
+    "backHome": "Back to Home"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist, has moved, or was removed.",
+    "backHome": "Back to Home",
+    "goBack": "Go Back",
+    "suggestion": "Try checking the URL, or start again from the home page."
+  },
+  "serverError": {
+    "defaultMessage": "An unexpected server-side error occurred.",
+    "title": "Server Error",
+    "reload": "Reload Page",
+    "backHome": "Back to Home",
+    "suggestion": "If the problem persists, please try again later."
+  },
+  "redirectPage": {
+    "defaultMessage": "Redirecting...",
+    "title": "Redirect",
+    "countdownText_one": "second until you're redirected",
+    "countdownText_other": "seconds until you're redirected",
+    "goNow": "Go Now"
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "tags": {
+    "hackathon": "Hackathon",
+    "seminer": "Seminar / Webinar",
+    "atolye": "Workshop",
+    "konferans": "Conference",
+    "bootcamp": "Bootcamp",
+    "diger": "Other"
+  },
+  "announcement": {
+    "invalidDate": "Invalid date",
+    "ok": "OK"
+  },
+  "errorBoundary": {
+    "title": "Error",
+    "heading": "An Unexpected Error Occurred",
+    "description": "The app ran into an unexpected error. You can try again by reloading the page.",
+    "reload": "Reload Page",
+    "backHome": "Back to Home"
+  },
+  "errorMessage": {
+    "title": "An Error Occurred",
+    "retry": "Try Again"
+  },
+  "pushToggle": {
+    "disabled": "Browser notifications turned off.",
+    "notConfigured": "Browser notifications aren't configured yet.",
+    "enabled": "Browser notifications turned on.",
+    "permissionDenied": "Notification permission was denied.",
+    "enableFailed": "Couldn't enable browser notifications.",
+    "checking": "Checking…",
+    "on": "Notifications on",
+    "turnOn": "Turn on browser notifications"
+  },
+  "shareButtons": {
+    "linkCopied": "Link copied.",
+    "linkCopyFailed": "Couldn't copy the link.",
+    "shareEvent": "Share event",
+    "copyLink": "Copy Link",
+    "addToCalendar": "Add to Calendar",
+    "addToCalendarFailed": "Couldn't add to calendar because the event date is unknown."
+  },
+  "subscribeWidget": {
+    "confirmationSent": "Confirmation email sent.",
+    "subscribeFailed": "Subscription failed.",
+    "pushDisabled": "Push notifications turned off.",
+    "permissionDenied": "Notification permission was denied.",
+    "pushNotConfigured": "Push notifications aren't configured yet.",
+    "pushEnabled": "Push notifications enabled.",
+    "pushEnableFailed": "Couldn't enable push notifications.",
+    "heading": "Don't miss new events",
+    "subtitle": "Get a weekly summary email or turn on browser notifications.",
+    "emailPlaceholder": "Your email",
+    "subscribeButton": "Subscribe",
+    "turnOffPush": "Turn Off Push Notifications",
+    "turnOnPush": "Turn On Push Notifications"
+  },
+  "supportModal": {
+    "heading": "Support the Project",
+    "description": "TechEventRadar is an open-source project built entirely by volunteers. You can help by buying us a coffee or sharing the project with others.",
+    "serverCost": "Server / month",
+    "domainCost": "Domain / year",
+    "linkCopied": "Link Copied!",
+    "share": "Share"
   }
 }

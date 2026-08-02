@@ -1,6 +1,7 @@
 import React from 'react'
 import { useQuery } from 'react-query'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { publicAPI } from '../services/api'
 import EventCard from './EventCard'
 import LoadingSpinner from './LoadingSpinner'
@@ -15,15 +16,22 @@ import { readSavedFilters, saveFilters, useFavorites } from '../hooks/useBrowser
  * tarih bazlı süzgeci (extraFilter) belirler.
  */
 const EventListing = ({
-  title = 'Etkinlikler',
+  title,
   intro = null,
   initialTags = [],
   initialLocation = '',
   extraFilter = null,
-  emptyStateText = 'Arama kriterlerinizi değiştirerek tekrar deneyin.',
+  emptyStateText,
   searchTerm: controlledSearchTerm,
   onSearchTermChange,
 }) => {
+  const { t } = useTranslation()
+  // title/emptyStateText can't default via destructuring (`= '...'`) if the
+  // default needs t() — hooks can't run before the component body starts.
+  // HomePage passes neither prop, so these translated defaults are what it
+  // shows; landing pages override both with their own translated values.
+  const effectiveTitle = title ?? t('eventListing.defaultTitle')
+  const effectiveEmptyStateText = emptyStateText ?? t('eventListing.defaultEmptyStateText')
   const [searchParams, setSearchParams] = useSearchParams()
   const usesPresetFilters = initialTags.length > 0 || Boolean(initialLocation) || Boolean(extraFilter)
   const savedFilters = React.useMemo(
@@ -83,7 +91,7 @@ const EventListing = ({
   }, [eventsData])
 
   if (isLoading) return <LoadingSpinner />
-  if (error) return <ErrorMessage message="Etkinlikler yüklenirken bir sorun oluştu." />
+  if (error) return <ErrorMessage message={t('eventListing.loadError')} />
 
   const now = new Date()
   const allEvents = eventsData?.data?.events || []
@@ -159,9 +167,9 @@ const EventListing = ({
               className="filter-select"
               value={selectedSource}
               onChange={e => setSelectedSource(e.target.value)}
-              aria-label="Platform seçin"
+              aria-label={t('eventListing.selectPlatform')}
             >
-              <option value="">Tüm Platformlar</option>
+              <option value="">{t('eventListing.allPlatforms')}</option>
               {filterOptions.sources.map(src => (
                 <option key={src} value={src}>{src}</option>
               ))}
@@ -175,9 +183,9 @@ const EventListing = ({
                 className="filter-select"
                 value={selectedLocation}
                 onChange={e => setSelectedLocation(e.target.value)}
-                aria-label="Konum seçin"
+                aria-label={t('eventListing.selectLocation')}
               >
-                <option value="">Tüm Konumlar</option>
+                <option value="">{t('eventListing.allLocations')}</option>
                 {filterOptions.locations.map(loc => (
                   <option key={loc} value={loc}>{loc}</option>
                 ))}
@@ -193,7 +201,7 @@ const EventListing = ({
               onChange={e => setShowPastEvents(e.target.checked)}
             />
             <i className="fas fa-history"></i>
-            Geçmişleri Göster
+            {t('eventListing.showPast')}
           </label>
 
           <label className={`filter-toggle ${freeOnly ? 'active' : ''}`}>
@@ -203,7 +211,7 @@ const EventListing = ({
               onChange={e => setFreeOnly(e.target.checked)}
             />
             <i className="fas fa-tag"></i>
-            Ücretsiz
+            {t('eventListing.freeOnly')}
           </label>
 
           <label className={`filter-toggle ${favoritesOnly ? 'active' : ''}`}>
@@ -213,7 +221,7 @@ const EventListing = ({
               onChange={e => setFavoritesOnly(e.target.checked)}
             />
             <i className="fas fa-bookmark"></i>
-            Favorilerim
+            {t('eventListing.favoritesOnly')}
           </label>
           <div className="filter-date-range">
             <input
@@ -221,7 +229,7 @@ const EventListing = ({
               className="filter-select filter-date-input"
               value={dateFrom}
               onChange={e => setDateFrom(e.target.value)}
-              aria-label="Başlangıç tarihi"
+              aria-label={t('eventListing.dateFrom')}
             />
             <span style={{ color: 'var(--text-muted)' }}>–</span>
             <input
@@ -229,7 +237,7 @@ const EventListing = ({
               className="filter-select filter-date-input"
               value={dateTo}
               onChange={e => setDateTo(e.target.value)}
-              aria-label="Bitiş tarihi"
+              aria-label={t('eventListing.dateTo')}
             />
           </div>
 
@@ -240,14 +248,14 @@ const EventListing = ({
               style={{ marginLeft: 'auto', color: 'var(--danger)', borderColor: 'rgba(239,68,68,0.3)' }}
             >
               <i className="fas fa-times"></i>
-              Temizle
+              {t('eventListing.clear')}
             </button>
           )}
         </div>
 
         <div className="filter-row" style={{ marginTop: '10px', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
           <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.05em', flexShrink: 0 }}>
-            KATEGORİ:
+            {t('eventListing.categoryLabel')}
           </span>
           {Object.keys(TAG_STYLES).map(name => (
             <TagBadge
@@ -267,10 +275,10 @@ const EventListing = ({
           <span className="section-title-icon">
             <i className="fas fa-calendar-alt"></i>
           </span>
-          {title}
+          {effectiveTitle}
         </div>
         <span className="results-count">
-          {filteredEvents.length} sonuç
+          {t('eventListing.resultsCount', { count: filteredEvents.length })}
         </span>
       </div>
 
@@ -280,12 +288,12 @@ const EventListing = ({
           <div className="empty-state-icon">
             <i className="fas fa-search"></i>
           </div>
-          <h4>Etkinlik bulunamadı</h4>
-          <p>{emptyStateText}</p>
+          <h4>{t('eventListing.noEventsFound')}</h4>
+          <p>{effectiveEmptyStateText}</p>
           {hasFilters && (
             <button className="btn-outline-primary" onClick={clearFilters}>
               <i className="fas fa-times me-1"></i>
-              Filtreleri Temizle
+              {t('eventListing.clearFilters')}
             </button>
           )}
         </div>
@@ -324,13 +332,13 @@ const EventListing = ({
           <i className="fas fa-plus"></i>
         </div>
         <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>
-          Bir etkinlik mi kaçırdık?
+          {t('eventListing.ctaHeading')}
         </h4>
         <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '1.25rem' }}>
-          Eklenmesini istediğiniz bir etkinlik varsa bize bildirin.
+          {t('eventListing.ctaText')}
         </p>
         <a href="/etkinlik-talep" className="btn-primary">
-          Etkinlik Ekle
+          {t('footer.quickLinks.addEvent')}
           <i className="fas fa-arrow-right" style={{ fontSize: '0.8rem' }}></i>
         </a>
       </div>

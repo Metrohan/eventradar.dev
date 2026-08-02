@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { setPageSEO } from '../utils/seo'
 
 const CATEGORIES = [
@@ -151,25 +152,28 @@ const trainings = [
 ]
 
 const FreeTrainingsPage = () => {
+  const { t, i18n } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState(null)
 
   useEffect(() => {
     setPageSEO({
       title: 'Ücretsiz Eğitim Kaynakları | TechEventRadar',
+      tabTitle: `${t('freeTrainings.title')} | TechEventRadar`,
       description: 'Google, AWS, Microsoft ve diğer teknoloji şirketlerinin sunduğu ücretsiz eğitim, sertifika ve öğrenme kaynaklarını tek listede keşfet.',
       path: '/egitim-kaynaklari',
     })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language])
 
   const filtered = useMemo(() => {
     const q = searchQuery.toLowerCase()
-    return trainings.filter(t => {
+    return trainings.filter(item => {
       const matchesSearch =
         !q ||
-        t.title.toLowerCase().includes(q) ||
-        t.description.toLowerCase().includes(q)
-      const matchesCategory = !selectedCategory || t.category === selectedCategory
+        item.title.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q)
+      const matchesCategory = !selectedCategory || item.category === selectedCategory
       return matchesSearch && matchesCategory
     })
   }, [searchQuery, selectedCategory])
@@ -180,9 +184,9 @@ const FreeTrainingsPage = () => {
   return (
     <div className="container py-4">
       <div className="page-hero">
-        <h1 className="page-hero-title">Ücretsiz Eğitim Kaynakları</h1>
+        <h1 className="page-hero-title">{t('freeTrainings.title')}</h1>
         <p className="page-hero-subtitle">
-          Dünyanın önde gelen teknoloji şirketlerinin sunduğu ücretsiz eğitimler ile kariyerinize değer katın.
+          {t('freeTrainings.subtitle')}
         </p>
       </div>
 
@@ -193,7 +197,7 @@ const FreeTrainingsPage = () => {
           <input
             type="text"
             className="filter-input"
-            placeholder="Platform veya konu ara..."
+            placeholder={t('freeTrainings.searchPlaceholder')}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
@@ -203,7 +207,7 @@ const FreeTrainingsPage = () => {
       {/* Category badges */}
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '1.5rem' }}>
         <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          KATEGORİ:
+          {t('eventListing.categoryLabel')}
         </span>
         {CATEGORIES.map(cat => {
           const active = selectedCategory === cat.key
@@ -228,14 +232,14 @@ const FreeTrainingsPage = () => {
 
       {/* Result count */}
       <div style={{ marginBottom: '1rem' }}>
-        <span className="results-count">{filtered.length} kaynak</span>
+        <span className="results-count">{t('freeTrainings.resultsCount', { count: filtered.length })}</span>
       </div>
 
       {/* Grid */}
       <div className="row g-3">
         {filtered.length === 0 && (
           <div className="col-12 text-center py-5">
-            <p style={{ color: 'var(--text-muted)' }}>Aramanızla eşleşen kaynak bulunamadı.</p>
+            <p style={{ color: 'var(--text-muted)' }}>{t('freeTrainings.noResults')}</p>
           </div>
         )}
         {filtered.map(training => {
@@ -282,7 +286,7 @@ const FreeTrainingsPage = () => {
                   className="training-cta"
                   style={{ background: training.color }}
                 >
-                  Eğitime Başla <i className="fas fa-external-link-alt" aria-hidden="true" style={{ fontSize: '0.75rem', marginLeft: '6px' }} />
+                  {t('freeTrainings.ctaButton')} <i className="fas fa-external-link-alt" aria-hidden="true" style={{ fontSize: '0.75rem', marginLeft: '6px' }} />
                 </a>
               </div>
             </div>
@@ -295,7 +299,7 @@ const FreeTrainingsPage = () => {
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
           <i className="fas fa-info-circle" style={{ color: 'var(--action-primary)', fontSize: '1.25rem', marginTop: '2px', flexShrink: 0 }} />
           <div>
-            <h5 style={{ fontWeight: 700, marginBottom: '6px', fontSize: '0.95rem' }}>Bu Kaynaklar Hakkında</h5>
+            <h5 style={{ fontWeight: 700, marginBottom: '6px', fontSize: '0.95rem' }}>{t('freeTrainings.infoHeading')}</h5>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', margin: 0 }}>
               Listelenen eğitim platformları, ilgili teknoloji devlerinin resmi ve ücretsiz öğrenme merkezleridir.
               Sertifikasyon sınavları genellikle ücretli olsa da, eğitim içeriklerinin büyük kısmı ücretsizdir.

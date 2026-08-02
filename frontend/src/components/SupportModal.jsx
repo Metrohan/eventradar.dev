@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 
 const SupportModal = ({ show, handleClose }) => {
+    const { t } = useTranslation()
     const [copySuccess, setCopySuccess] = useState(false)
 
     const handleCopyLink = () => {
@@ -33,10 +35,9 @@ const SupportModal = ({ show, handleClose }) => {
                                 style={{ width: '80px', height: '80px', backgroundColor: '#F0F9FF', border: '2px solid #38BDF8' }}>
                                 <i className="fas fa-heart fa-2x" style={{ color: '#38BDF8' }}></i>
                             </div>
-                            <h3 id="support-modal-title" className="fw-bold mb-3">Projeye Destek Ol</h3>
+                            <h3 id="support-modal-title" className="fw-bold mb-3">{t('supportModal.heading')}</h3>
                             <p className="text-muted">
-                                TechEventRadar tamamen gönüllülük esasıyla geliştirilen açık kaynaklı bir projedir.
-                                Geliştirmemize katkıda bulunmak için bize bir kahve ısmarlayabilir veya projemizi çevrenizle paylaşabilirsiniz.
+                                {t('supportModal.description')}
                             </p>
                             <div
                                 className="d-flex justify-content-center gap-4 mt-3 pt-3"
@@ -44,11 +45,11 @@ const SupportModal = ({ show, handleClose }) => {
                             >
                                 <div className="text-center">
                                     <div className="fw-bold" style={{ fontSize: '1.1rem', color: 'var(--action-primary)' }}>~180₺</div>
-                                    <div className="text-muted" style={{ fontSize: '0.72rem' }}>Sunucu / ay</div>
+                                    <div className="text-muted" style={{ fontSize: '0.72rem' }}>{t('supportModal.serverCost')}</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="fw-bold" style={{ fontSize: '1.1rem', color: 'var(--action-primary)' }}>~1.700₺</div>
-                                    <div className="text-muted" style={{ fontSize: '0.72rem' }}>Domain / yıl</div>
+                                    <div className="text-muted" style={{ fontSize: '0.72rem' }}>{t('supportModal.domainCost')}</div>
                                 </div>
                             </div>
                         </div>
@@ -72,11 +73,11 @@ const SupportModal = ({ show, handleClose }) => {
                             >
                                 {copySuccess ? (
                                     <>
-                                        <i className="fas fa-check-circle"></i> Link Kopyalandı!
+                                        <i className="fas fa-check-circle"></i> {t('supportModal.linkCopied')}
                                     </>
                                 ) : (
                                     <>
-                                        <i className="fas fa-share-alt"></i> Paylaş
+                                        <i className="fas fa-share-alt"></i> {t('supportModal.share')}
                                     </>
                                 )}
                             </button>

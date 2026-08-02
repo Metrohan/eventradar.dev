@@ -74,5 +74,280 @@
     "statusOpen": "Açık",
     "statusClosed": "Kapalı",
     "applyButton": "Başvur"
+  },
+  "eventListing": {
+    "defaultTitle": "Etkinlikler",
+    "defaultEmptyStateText": "Arama kriterlerinizi değiştirerek tekrar deneyin.",
+    "loadError": "Etkinlikler yüklenirken bir sorun oluştu.",
+    "selectPlatform": "Platform seçin",
+    "allPlatforms": "Tüm Platformlar",
+    "selectLocation": "Konum seçin",
+    "allLocations": "Tüm Konumlar",
+    "showPast": "Geçmişleri Göster",
+    "freeOnly": "Ücretsiz",
+    "favoritesOnly": "Favorilerim",
+    "dateFrom": "Başlangıç tarihi",
+    "dateTo": "Bitiş tarihi",
+    "clear": "Temizle",
+    "categoryLabel": "KATEGORİ:",
+    "resultsCount": "{{count}} sonuç",
+    "noEventsFound": "Etkinlik bulunamadı",
+    "clearFilters": "Filtreleri Temizle",
+    "ctaHeading": "Bir etkinlik mi kaçırdık?",
+    "ctaText": "Eklenmesini istediğiniz bir etkinlik varsa bize bildirin."
+  },
+  "landing": {
+    "hackathonlar": {
+      "title": "Hackathon Etkinlikleri",
+      "introHeading": "Türkiye'deki Hackathon Etkinlikleri",
+      "introText": "Farklı platformlardan toplanan güncel hackathon'ları tek yerden takip et, başvuru son tarihini kaçırma.",
+      "emptyState": "Şu anda açık bir hackathon bulunmuyor, filtreleri değiştirerek diğer etkinliklere göz atabilirsin."
+    },
+    "bootcamplar": {
+      "title": "Bootcamp Etkinlikleri",
+      "introHeading": "Türkiye'deki Bootcamp Programları",
+      "introText": "Farklı platformlardan toplanan güncel bootcamp programlarını tek yerden takip et.",
+      "emptyState": "Şu anda açık bir bootcamp bulunmuyor, filtreleri değiştirerek diğer etkinliklere göz atabilirsin."
+    },
+    "online": {
+      "title": "Online Etkinlikler",
+      "introHeading": "Online Katılabileceğin Teknoloji Etkinlikleri",
+      "introText": "Şehir fark etmeksizin evden katılabileceğin güncel online etkinlikler.",
+      "emptyState": "Şu anda açık bir online etkinlik bulunmuyor, filtreleri değiştirerek diğer etkinliklere göz atabilirsin."
+    },
+    "thisWeek": {
+      "title": "Bu Haftaki Etkinlikler",
+      "introHeading": "Bu Hafta Gerçekleşecek Etkinlikler",
+      "introText": "Önümüzdeki 7 gün içinde gerçekleşecek etkinlikleri kaçırma.",
+      "emptyState": "Bu hafta içinde planlanmış bir etkinlik bulunmuyor, tüm etkinliklere göz atabilirsin."
+    },
+    "lastCall": {
+      "title": "Son Başvurusu Yaklaşan Etkinlikler",
+      "introHeading": "Son Başvurusu Yaklaşan Etkinlikler",
+      "introText": "Başvuru son tarihi önümüzdeki 7 gün içinde dolacak etkinlikleri kaçırma.",
+      "emptyState": "Son başvurusu bu hafta dolacak bir etkinlik bulunmuyor, tüm etkinliklere göz atabilirsin."
+    }
+  },
+  "calendar": {
+    "title": "Etkinlik Takvimi",
+    "subtitle": "Türkiye'deki teknoloji etkinliklerini aylık takvimde keşfet.",
+    "prevMonth": "Önceki ay",
+    "nextMonth": "Sonraki ay",
+    "today": "Bugün",
+    "moreEvents": "+{{count}} daha"
+  },
+  "eventDetail": {
+    "notFound": "Etkinlik bulunamadı veya yüklenirken hata oluştu.",
+    "deadlineDaysLeftWithDate": "Son başvuruya {{count}} gün kaldı ({{date}})",
+    "goToEvent": "Etkinliğe Git"
+  },
+  "blog": {
+    "title": "Haftalık Etkinlik Rehberi",
+    "subtitle": "Önümüzdeki haftanın teknoloji etkinliklerini kısa ve güncel özetlerle takip et.",
+    "loadError": "Blog yazıları yüklenemedi.",
+    "comingSoon": "İlk haftalık rehber yakında burada.",
+    "notFound": "Yazı bulunamadı",
+    "backToBlog": "Bloga dön",
+    "allPosts": "Tüm yazılar"
+  },
+  "eventRequest": {
+    "pageTitle": "Etkinlik Ekleme Talebi",
+    "pageSubtitle": "Kaçırdığımız bir etkinlik mi var? Bize bildirin, en kısa sürede ekleyelim.",
+    "stepsAriaLabel": "Form adımları",
+    "stepLink": "Link",
+    "stepDetails": "Detaylar",
+    "step1Heading": "Etkinlik Linkini Gir",
+    "step1Subtitle": "Etkinliğin bağlantısını yapıştır",
+    "linkLabel": "Etkinlik Linki",
+    "linkRequired": "Etkinlik linki gereklidir",
+    "linkInvalid": "Geçerli bir URL giriniz",
+    "continueButton": "Devam",
+    "step2Heading": "Etkinlik Detayları",
+    "step2Subtitle": "Başlık zorunlu, diğer alanlar isteğe bağlıdır.",
+    "titleLabel": "Etkinlik Başlığı",
+    "titlePlaceholder": "Etkinlik başlığını giriniz",
+    "titleRequired": "Etkinlik başlığı gereklidir",
+    "titleMinLength": "Başlık en az 5 karakter olmalıdır",
+    "dateLabel": "Etkinlik Tarihi",
+    "descLabel": "Açıklama",
+    "descPlaceholder": "Etkinlik hakkında detaylı bilgi veriniz...",
+    "emailLabel": "E-posta",
+    "emailOptional": "isteğe bağlı",
+    "emailPlaceholder": "Geri dönüş için e-posta adresiniz",
+    "backButton": "Geri",
+    "submitButton": "Talep Gönder",
+    "submitting": "Gönderiliyor...",
+    "toastSuccess": "Etkinlik ekleme talebiniz başarıyla alındı. Teşekkür ederiz!",
+    "toastErrorFallback": "Talebiniz gönderilirken bir hata oluştu."
+  },
+  "suggestion": {
+    "pageTitle": "Bize Ulaş",
+    "pageSubtitle": "Geri bildiriminiz TechEventRadar'ı daha iyi yapar.",
+    "typeLabel": "Talep Türü",
+    "typeRequired": "Talep türü seçilmelidir",
+    "types": {
+      "suggestion": "Öneri",
+      "bug": "Hata Bildirimi",
+      "complaint": "Şikayet",
+      "other": "Diğer"
+    },
+    "titleLabel": "Başlık",
+    "titlePlaceholder": "Öneri/şikayet başlığını giriniz",
+    "titleRequired": "Başlık gereklidir",
+    "titleMinLength": "Başlık en az 5 karakter olmalıdır",
+    "descLabel": "Açıklama",
+    "descPlaceholder": "Öneri/şikayetinizi detaylı olarak açıklayınız...",
+    "descRequired": "Açıklama gereklidir",
+    "descMinLength": "Açıklama en az 10 karakter olmalıdır",
+    "submitButton": "Gönder",
+    "submitting": "Gönderiliyor...",
+    "toastSuccess": "Öneri/Şikayetiniz başarıyla gönderildi.",
+    "toastErrorFallback": "Gönderilirken bir hata oluştu.",
+    "infoCards": {
+      "suggestion": {
+        "title": "Öneri",
+        "desc": "Yeni özellik veya iyileştirme fikirlerin"
+      },
+      "bug": {
+        "title": "Hata Bildirimi",
+        "desc": "Karşılaştığın bir sorunu bildir"
+      },
+      "eventRequest": {
+        "title": "Etkinlik Talebi",
+        "desc": "Eklenmesini istediğin bir etkinlik mi var?",
+        "linkLabel": "Talep Oluştur →"
+      }
+    }
+  },
+  "freeTrainings": {
+    "title": "Ücretsiz Eğitim Kaynakları",
+    "subtitle": "Dünyanın önde gelen teknoloji şirketlerinin sunduğu ücretsiz eğitimler ile kariyerinize değer katın.",
+    "searchPlaceholder": "Platform veya konu ara...",
+    "resultsCount": "{{count}} kaynak",
+    "noResults": "Aramanızla eşleşen kaynak bulunamadı.",
+    "ctaButton": "Eğitime Başla",
+    "infoHeading": "Bu Kaynaklar Hakkında"
+  },
+  "bootcampGuide": {
+    "liveEventsHeading": "Şu An Açık Etkinlikler",
+    "liveEventsIntro": "TechEventRadar'dan canlı çekilen, başvuruya açık etkinlikler:",
+    "noEventsMatch": "Şu an filtreyle eşleşen açık etkinlik bulunmuyor.",
+    "browseAllEvents": "Tüm etkinliklere bak →",
+    "viewAllEvents": "Tüm Etkinlikleri Gör"
+  },
+  "status": {
+    "title": "Platform Durumu",
+    "online": "Çevrimiçi",
+    "loadError": "Durum bilgisi yüklenemedi.",
+    "activeEvents": "Aktif Etkinlik",
+    "totalEvents": "Toplam Etkinlik",
+    "sourceCount": "Kaynak Sayısı",
+    "dataSources": "Veri Kaynakları",
+    "lastUpdate": "Son güncelleme:",
+    "unknown": "bilinmiyor",
+    "scraperStats": "{{newCount}} yeni · {{foundCount}} bulunan"
+  },
+  "subscribeConfirm": {
+    "loading": "Onaylanıyor...",
+    "successTitle": "Aboneliğin onaylandı 🎉",
+    "successText": "Artık haftalık etkinlik özetlerini e-postanda alacaksın.",
+    "errorTitle": "Bağlantı geçersiz",
+    "errorText": "Bu onay bağlantısı geçersiz ya da süresi dolmuş olabilir.",
+    "backHome": "Anasayfaya Dön"
+  },
+  "unsubscribe": {
+    "loading": "İşleniyor...",
+    "successTitle": "Abonelikten çıktın",
+    "successText": "Artık e-posta özeti almayacaksın. İstediğin zaman tekrar abone olabilirsin.",
+    "errorTitle": "Bağlantı geçersiz",
+    "errorText": "Bu bağlantı geçersiz olabilir.",
+    "backHome": "Anasayfaya Dön"
+  },
+  "notFound": {
+    "title": "Sayfa Bulunamadı",
+    "description": "Aradığınız sayfa mevcut değil, taşınmış veya kaldırılmış olabilir.",
+    "backHome": "Ana Sayfaya Dön",
+    "goBack": "Geri Git",
+    "suggestion": "URL adresini kontrol etmeyi deneyin veya ana sayfadan tekrar başlayın."
+  },
+  "serverError": {
+    "defaultMessage": "Sunucu tarafında beklenmeyen bir hata oluştu.",
+    "title": "Sunucu Hatası",
+    "reload": "Sayfayı Yenile",
+    "backHome": "Ana Sayfaya Dön",
+    "suggestion": "Sorun devam ederse lütfen daha sonra tekrar deneyin."
+  },
+  "redirectPage": {
+    "defaultMessage": "Yönlendiriliyorsunuz...",
+    "title": "Yönlendirme",
+    "countdownText": "saniye içinde yönlendirileceksiniz",
+    "goNow": "Hemen Git"
+  },
+  "common": {
+    "loading": "Yükleniyor..."
+  },
+  "tags": {
+    "hackathon": "Hackathon",
+    "seminer": "Seminer / Webinar",
+    "atolye": "Atölye",
+    "konferans": "Konferans",
+    "bootcamp": "Bootcamp",
+    "diger": "Diğer"
+  },
+  "announcement": {
+    "invalidDate": "Geçersiz tarih",
+    "ok": "Tamam"
+  },
+  "errorBoundary": {
+    "title": "Hata",
+    "heading": "Beklenmeyen Bir Hata Oluştu",
+    "description": "Uygulama beklenmeyen bir hatayla karşılaştı. Sayfayı yenileyerek tekrar deneyebilirsiniz.",
+    "reload": "Sayfayı Yenile",
+    "backHome": "Ana Sayfaya Dön"
+  },
+  "errorMessage": {
+    "title": "Hata Oluştu",
+    "retry": "Tekrar Dene"
+  },
+  "pushToggle": {
+    "disabled": "Tarayıcı bildirimleri kapatıldı.",
+    "notConfigured": "Tarayıcı bildirimleri henüz yapılandırılmamış.",
+    "enabled": "Tarayıcı bildirimleri açıldı.",
+    "permissionDenied": "Bildirim izni verilmedi.",
+    "enableFailed": "Tarayıcı bildirimi etkinleştirilemedi.",
+    "checking": "Kontrol ediliyor…",
+    "on": "Bildirimler açık",
+    "turnOn": "Tarayıcı bildirimlerini aç"
+  },
+  "shareButtons": {
+    "linkCopied": "Link kopyalandı.",
+    "linkCopyFailed": "Link kopyalanamadı.",
+    "shareEvent": "Etkinliği paylaş",
+    "copyLink": "Linki Kopyala",
+    "addToCalendar": "Takvime Ekle",
+    "addToCalendarFailed": "Etkinlik tarihi bilinmediği için takvime eklenemedi."
+  },
+  "subscribeWidget": {
+    "confirmationSent": "Onay e-postası gönderildi.",
+    "subscribeFailed": "Abonelik başarısız oldu.",
+    "pushDisabled": "Push bildirimleri kapatıldı.",
+    "permissionDenied": "Bildirim izni verilmedi.",
+    "pushNotConfigured": "Push bildirimleri şu anda yapılandırılmamış.",
+    "pushEnabled": "Push bildirimleri etkinleştirildi.",
+    "pushEnableFailed": "Push bildirimi etkinleştirilemedi.",
+    "heading": "Yeni etkinlikleri kaçırma",
+    "subtitle": "Haftalık özet e-postası al ya da tarayıcı bildirimlerini aç.",
+    "emailPlaceholder": "E-posta adresin",
+    "subscribeButton": "Abone Ol",
+    "turnOffPush": "Push Bildirimlerini Kapat",
+    "turnOnPush": "Push Bildirimlerini Aç"
+  },
+  "supportModal": {
+    "heading": "Projeye Destek Ol",
+    "description": "TechEventRadar tamamen gönüllülük esasıyla geliştirilen açık kaynaklı bir projedir. Geliştirmemize katkıda bulunmak için bize bir kahve ısmarlayabilir veya projemizi çevrenizle paylaşabilirsiniz.",
+    "serverCost": "Sunucu / ay",
+    "domainCost": "Domain / yıl",
+    "linkCopied": "Link Kopyalandı!",
+    "share": "Paylaş"
   }
 }
