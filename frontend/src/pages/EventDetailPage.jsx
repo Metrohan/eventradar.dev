@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from 'react-query'
+import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { publicAPI } from '../services/api'
@@ -8,6 +9,7 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import TagBadge from '../components/TagBadge'
 import ShareButtons from '../components/ShareButtons'
+import { useDateLocale } from '../hooks/useDateLocale'
 
 const DEFAULT_TITLE = 'TechEventRadar | Bootcamp, Hackathon & Kariyer Etkinlikleri'
 const DEFAULT_DESC = 'Türkiye\'deki bootcamp, hackathon ve kariyer etkinliklerini tek yerden ücretsiz takip et. 8 kaynaktan günlük güncellenen etkinlik platformu.'
@@ -24,6 +26,8 @@ function setMeta(name, content, property = false) {
 }
 
 const EventDetailPage = () => {
+  const { t } = useTranslation()
+  const dateLocale = useDateLocale()
   const { id } = useParams()
 
   const { data, isLoading, error } = useQuery(
@@ -147,17 +151,17 @@ const EventDetailPage = () => {
   }, [event, id])
 
   if (isLoading) return <LoadingSpinner />
-  if (error || !event) return <ErrorMessage message="Etkinlik bulunamadı veya yüklenirken hata oluştu." />
+  if (error || !event) return <ErrorMessage message={t('eventDetail.notFound')} />
 
   const safeUrl = /^https?:\/\//i.test(event.url) ? event.url : '#'
   const safeImageUrl = event.image_url && /^https?:\/\//i.test(event.image_url) ? event.image_url : null
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Tarih belirtilmemiş'
+    if (!dateString) return t('eventCard.noDate')
     try {
-      return format(new Date(dateString), 'dd MMMM yyyy · HH:mm', { locale: tr })
+      return format(new Date(dateString), 'dd MMMM yyyy · HH:mm', { locale: dateLocale })
     } catch {
-      return 'Tarih belirtilmemiş'
+      return t('eventCard.noDate')
     }
   }
 
@@ -166,11 +170,11 @@ const EventDetailPage = () => {
     try {
       const deadline = new Date(dateString)
       const daysLeft = Math.ceil((deadline - new Date()) / (1000 * 60 * 60 * 24))
-      const formatted = format(deadline, 'dd MMMM yyyy', { locale: tr })
+      const formatted = format(deadline, 'dd MMMM yyyy', { locale: dateLocale })
       if (daysLeft < 0) return null
-      if (daysLeft === 0) return 'Son başvuru: bugün'
-      if (daysLeft <= 3) return `Son başvuruya ${daysLeft} gün kaldı (${formatted})`
-      return `Son başvuru: ${formatted}`
+      if (daysLeft === 0) return t('eventCard.deadlineToday')
+      if (daysLeft <= 3) return t('eventDetail.deadlineDaysLeftWithDate', { count: daysLeft, date: formatted })
+      return t('eventCard.deadlinePrefix', { date: formatted })
     } catch {
       return null
     }
@@ -191,7 +195,7 @@ const EventDetailPage = () => {
             style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.9rem' }}
           >
             <i className="fas fa-arrow-left" style={{ fontSize: '0.75rem' }}></i>
-            Tüm Etkinlikler
+            {t('nav.discoverLinks.all')}
           </Link>
 
           {/* Görsel */}
@@ -219,7 +223,7 @@ const EventDetailPage = () => {
             </span>
             <span>
               <i className="fas fa-map-marker-alt me-2" style={{ color: 'var(--action-primary)' }}></i>
-              {event.location || 'Konum belirtilmemiş'}
+              {event.location || t('eventCard.noLocation')}
             </span>
             <span>
               <i className="fas fa-globe me-2" style={{ color: 'var(--action-primary)' }}></i>
@@ -267,7 +271,7 @@ const EventDetailPage = () => {
             className="btn-event"
             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.75rem 1.5rem', fontSize: '1rem' }}
           >
-            Etkinliğe Git
+            {t('eventDetail.goToEvent')}
             <i className="fas fa-external-link-alt" style={{ fontSize: '0.8rem' }}></i>
           </a>
 

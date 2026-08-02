@@ -135,5 +135,10 @@
     "nextMonth": "Sonraki ay",
     "today": "Bugün",
     "moreEvents": "+{{count}} daha"
+  },
+  "eventDetail": {
+    "notFound": "Etkinlik bulunamadı veya yüklenirken hata oluştu.",
+    "deadlineDaysLeftWithDate": "Son başvuruya {{count}} gün kaldı ({{date}})",
+    "goToEvent": "Etkinliğe Git"
   }
 }

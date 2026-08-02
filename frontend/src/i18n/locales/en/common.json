@@ -137,5 +137,11 @@
     "nextMonth": "Next month",
     "today": "Today",
     "moreEvents": "+{{count}} more"
+  },
+  "eventDetail": {
+    "notFound": "Event not found or failed to load.",
+    "deadlineDaysLeftWithDate_one": "{{count}} day left to apply ({{date}})",
+    "deadlineDaysLeftWithDate_other": "{{count}} days left to apply ({{date}})",
+    "goToEvent": "Go to Event"
   }
 }
