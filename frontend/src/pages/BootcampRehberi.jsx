@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from 'react-query'
+import { useTranslation } from 'react-i18next'
 import { publicAPI } from '../services/api'
 import EventCard from '../components/EventCard'
 import LoadingSpinner from '../components/LoadingSpinner'
@@ -61,6 +62,8 @@ const STEPS = [
 ]
 
 const BootcampRehberi = () => {
+  const { t } = useTranslation()
+
   useEffect(() => {
     document.title = 'Türkiye Ücretsiz Bootcamp Rehberi 2026 | TechEventRadar'
     const desc = 'Türkiye\'deki ücretsiz bootcamp, hackathon ve kariyer etkinliklerinin tam listesi. 2026 güncel.'
@@ -101,9 +104,9 @@ const BootcampRehberi = () => {
 
           {/* Breadcrumb */}
           <nav style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>
-            <Link to="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Anasayfa</Link>
+            <Link to="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>{t('footer.quickLinks.home')}</Link>
             <span className="mx-2">/</span>
-            <span>Bootcamp Rehberi</span>
+            <span>{t('nav.contentLinks.bootcampGuide')}</span>
           </nav>
 
           {/* H1 */}
@@ -234,13 +237,13 @@ const BootcampRehberi = () => {
               </div>
             ) : (
               <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                Şu an filtreyle eşleşen açık etkinlik bulunmuyor.{' '}
-                <Link to="/" style={{ color: 'var(--action-primary)' }}>Tüm etkinliklere bak →</Link>
+                {t('bootcampGuide.noEventsMatch')}{' '}
+                <Link to="/" style={{ color: 'var(--action-primary)' }}>{t('bootcampGuide.browseAllEvents')}</Link>
               </p>
             )}
             <div className="text-center mt-4">
               <Link to="/" className="btn-event" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                Tüm Etkinlikleri Gör
+                {t('bootcampGuide.viewAllEvents')}
                 <i className="fas fa-arrow-right" style={{ fontSize: '0.75rem' }}></i>
               </Link>
             </div>

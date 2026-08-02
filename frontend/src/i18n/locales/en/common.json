@@ -221,5 +221,20 @@
         "linkLabel": "Create Request →"
       }
     }
+  },
+  "freeTrainings": {
+    "title": "Free Training Resources",
+    "subtitle": "Add value to your career with free training offered by the world's leading tech companies.",
+    "searchPlaceholder": "Search platform or topic...",
+    "resultsCount_one": "{{count}} resource",
+    "resultsCount_other": "{{count}} resources",
+    "noResults": "No resources match your search.",
+    "ctaButton": "Start Learning",
+    "infoHeading": "About These Resources"
+  },
+  "bootcampGuide": {
+    "noEventsMatch": "No open events currently match this filter.",
+    "browseAllEvents": "Browse all events →",
+    "viewAllEvents": "View All Events"
   }
 }

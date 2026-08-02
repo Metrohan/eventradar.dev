@@ -218,5 +218,19 @@
         "linkLabel": "Talep Oluştur →"
       }
     }
+  },
+  "freeTrainings": {
+    "title": "Ücretsiz Eğitim Kaynakları",
+    "subtitle": "Dünyanın önde gelen teknoloji şirketlerinin sunduğu ücretsiz eğitimler ile kariyerinize değer katın.",
+    "searchPlaceholder": "Platform veya konu ara...",
+    "resultsCount": "{{count}} kaynak",
+    "noResults": "Aramanızla eşleşen kaynak bulunamadı.",
+    "ctaButton": "Eğitime Başla",
+    "infoHeading": "Bu Kaynaklar Hakkında"
+  },
+  "bootcampGuide": {
+    "noEventsMatch": "Şu an filtreyle eşleşen açık etkinlik bulunmuyor.",
+    "browseAllEvents": "Tüm etkinliklere bak →",
+    "viewAllEvents": "Tüm Etkinlikleri Gör"
   }
 }
