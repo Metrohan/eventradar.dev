@@ -140,5 +140,14 @@
     "notFound": "Etkinlik bulunamadı veya yüklenirken hata oluştu.",
     "deadlineDaysLeftWithDate": "Son başvuruya {{count}} gün kaldı ({{date}})",
     "goToEvent": "Etkinliğe Git"
+  },
+  "blog": {
+    "title": "Haftalık Etkinlik Rehberi",
+    "subtitle": "Önümüzdeki haftanın teknoloji etkinliklerini kısa ve güncel özetlerle takip et.",
+    "loadError": "Blog yazıları yüklenemedi.",
+    "comingSoon": "İlk haftalık rehber yakında burada.",
+    "notFound": "Yazı bulunamadı",
+    "backToBlog": "Bloga dön",
+    "allPosts": "Tüm yazılar"
   }
 }

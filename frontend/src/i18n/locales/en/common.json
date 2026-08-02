@@ -143,5 +143,14 @@
     "deadlineDaysLeftWithDate_one": "{{count}} day left to apply ({{date}})",
     "deadlineDaysLeftWithDate_other": "{{count}} days left to apply ({{date}})",
     "goToEvent": "Go to Event"
+  },
+  "blog": {
+    "title": "Weekly Event Guide",
+    "subtitle": "Follow next week's tech events with concise, up-to-date summaries.",
+    "loadError": "Failed to load blog posts.",
+    "comingSoon": "The first weekly guide is coming soon.",
+    "notFound": "Post not found",
+    "backToBlog": "Back to blog",
+    "allPosts": "All posts"
   }
 }
