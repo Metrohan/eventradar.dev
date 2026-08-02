@@ -229,6 +229,8 @@
     "infoHeading": "Bu Kaynaklar Hakkında"
   },
   "bootcampGuide": {
+    "liveEventsHeading": "Şu An Açık Etkinlikler",
+    "liveEventsIntro": "TechEventRadar'dan canlı çekilen, başvuruya açık etkinlikler:",
     "noEventsMatch": "Şu an filtreyle eşleşen açık etkinlik bulunmuyor.",
     "browseAllEvents": "Tüm etkinliklere bak →",
     "viewAllEvents": "Tüm Etkinlikleri Gör"

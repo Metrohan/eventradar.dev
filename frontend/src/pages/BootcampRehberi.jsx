@@ -221,9 +221,9 @@ const BootcampRehberi = () => {
 
           {/* Canlı etkinlikler */}
           <section>
-            <h2 style={h2Style}>Şu An Açık Etkinlikler</h2>
+            <h2 style={h2Style}>{t('bootcampGuide.liveEventsHeading')}</h2>
             <p style={{ ...pStyle, marginBottom: '1.5rem' }}>
-              TechEventRadar'dan canlı çekilen, başvuruya açık etkinlikler:
+              {t('bootcampGuide.liveEventsIntro')}
             </p>
             {isLoading ? (
               <LoadingSpinner />

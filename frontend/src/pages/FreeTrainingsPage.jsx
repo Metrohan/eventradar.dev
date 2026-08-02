@@ -168,12 +168,12 @@ const FreeTrainingsPage = () => {
 
   const filtered = useMemo(() => {
     const q = searchQuery.toLowerCase()
-    return trainings.filter(t => {
+    return trainings.filter(item => {
       const matchesSearch =
         !q ||
-        t.title.toLowerCase().includes(q) ||
-        t.description.toLowerCase().includes(q)
-      const matchesCategory = !selectedCategory || t.category === selectedCategory
+        item.title.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q)
+      const matchesCategory = !selectedCategory || item.category === selectedCategory
       return matchesSearch && matchesCategory
     })
   }, [searchQuery, selectedCategory])

@@ -233,6 +233,8 @@
     "infoHeading": "About These Resources"
   },
   "bootcampGuide": {
+    "liveEventsHeading": "Currently Open Events",
+    "liveEventsIntro": "Live open-for-applications events pulled from TechEventRadar:",
     "noEventsMatch": "No open events currently match this filter.",
     "browseAllEvents": "Browse all events →",
     "viewAllEvents": "View All Events"
