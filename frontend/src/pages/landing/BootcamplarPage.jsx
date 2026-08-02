@@ -4,15 +4,17 @@ import EventListing from '../../components/EventListing'
 import { setPageSEO } from '../../utils/seo'
 
 const BootcamplarPage = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   useEffect(() => {
     setPageSEO({
       title: 'Bootcamp Etkinlikleri | TechEventRadar',
+      tabTitle: `${t('landing.bootcamplar.title')} | TechEventRadar`,
       description: 'Türkiye\'deki ücretsiz ve ücretli bootcamp programlarını tek listede keşfet. Yazılım, veri bilimi ve daha fazlası için güncel bootcamp takvimi.',
       path: '/bootcamplar',
     })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language])
 
   return (
     <EventListing

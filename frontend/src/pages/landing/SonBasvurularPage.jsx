@@ -13,15 +13,17 @@ const deadlineSoon = (event) => {
 }
 
 const SonBasvurularPage = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   useEffect(() => {
     setPageSEO({
       title: 'Son Başvuru Tarihi Yaklaşan Etkinlikler | TechEventRadar',
+      tabTitle: `${t('landing.lastCall.title')} | TechEventRadar`,
       description: 'Başvuru son tarihi bu hafta dolacak hackathon, bootcamp ve webinar etkinliklerini kaçırma.',
       path: '/son-basvurular',
     })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language])
 
   return (
     <EventListing

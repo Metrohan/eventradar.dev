@@ -4,15 +4,19 @@ import EventListing from '../../components/EventListing'
 import { setPageSEO } from '../../utils/seo'
 
 const HackathonlarPage = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   useEffect(() => {
     setPageSEO({
       title: 'Hackathon Etkinlikleri | TechEventRadar',
+      tabTitle: `${t('landing.hackathonlar.title')} | TechEventRadar`,
       description: 'Türkiye\'deki güncel hackathon etkinliklerini tek listede keşfet. TechCareer, Kodluyoruz, Youthall ve daha fazla kaynaktan otomatik güncellenen hackathon takvimi.',
       path: '/hackathonlar',
     })
-  }, [])
+    // Re-run on language change so the tab title stays in sync — otherwise
+    // it only ever reflects whatever language was active on first mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language])
 
   return (
     <EventListing

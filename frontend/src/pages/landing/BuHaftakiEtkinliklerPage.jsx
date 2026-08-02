@@ -13,15 +13,17 @@ const isThisWeek = (event) => {
 }
 
 const BuHaftakiEtkinliklerPage = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   useEffect(() => {
     setPageSEO({
       title: 'Bu Hafta Başvurabileceğin Etkinlikler | TechEventRadar',
+      tabTitle: `${t('landing.thisWeek.title')} | TechEventRadar`,
       description: 'Önümüzdeki 7 gün içinde gerçekleşecek hackathon, bootcamp ve webinar etkinliklerini tek listede keşfet.',
       path: '/bu-haftaki-etkinlikler',
     })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language])
 
   return (
     <EventListing

@@ -4,15 +4,17 @@ import EventListing from '../../components/EventListing'
 import { setPageSEO } from '../../utils/seo'
 
 const OnlineEtkinliklerPage = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   useEffect(() => {
     setPageSEO({
       title: 'Online Teknoloji Etkinlikleri | TechEventRadar',
+      tabTitle: `${t('landing.online.title')} | TechEventRadar`,
       description: 'Evden katılabileceğin online hackathon, webinar ve bootcamp etkinliklerini tek listede keşfet.',
       path: '/online-etkinlikler',
     })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language])
 
   return (
     <EventListing
