@@ -34,7 +34,7 @@ const ServerErrorPage = () => {
                     </button>
                     <Link to="/" className="btn btn-outline-secondary btn-lg error-btn">
                         <i className="fas fa-home me-2"></i>
-                        {t('notFound.backHome')}
+                        {t('serverError.backHome')}
                     </Link>
                 </div>
 

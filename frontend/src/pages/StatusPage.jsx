@@ -77,7 +77,7 @@ const StatusPage = () => {
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {status.scrapers.map((s) => (
-                  <ScraperRow key={s.source} scraper={s} t={t} dateLocale={dateLocale} />
+                  <ScraperRow key={s.source} scraper={s} />
                 ))}
               </div>
 
@@ -108,7 +108,9 @@ const StatCard = ({ label, value }) => (
   </div>
 )
 
-const ScraperRow = ({ scraper, t, dateLocale }) => {
+const ScraperRow = ({ scraper }) => {
+  const { t } = useTranslation()
+  const dateLocale = useDateLocale()
   const ok = scraper.status === 'success'
   const lastRun = scraper.last_run
     ? formatDistanceToNow(new Date(scraper.last_run), { addSuffix: true, locale: dateLocale })

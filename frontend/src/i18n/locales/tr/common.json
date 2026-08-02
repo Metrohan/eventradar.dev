@@ -274,6 +274,7 @@
     "defaultMessage": "Sunucu tarafında beklenmeyen bir hata oluştu.",
     "title": "Sunucu Hatası",
     "reload": "Sayfayı Yenile",
+    "backHome": "Ana Sayfaya Dön",
     "suggestion": "Sorun devam ederse lütfen daha sonra tekrar deneyin."
   },
   "redirectPage": {

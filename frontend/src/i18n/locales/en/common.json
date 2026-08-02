@@ -278,13 +278,14 @@
     "defaultMessage": "An unexpected server-side error occurred.",
     "title": "Server Error",
     "reload": "Reload Page",
+    "backHome": "Back to Home",
     "suggestion": "If the problem persists, please try again later."
   },
   "redirectPage": {
     "defaultMessage": "Redirecting...",
     "title": "Redirect",
-    "countdownText_one": "redirecting in {{count}} second",
-    "countdownText_other": "redirecting in {{count}} seconds",
+    "countdownText_one": "second until you're redirected",
+    "countdownText_other": "seconds until you're redirected",
     "goNow": "Go Now"
   }
 }
