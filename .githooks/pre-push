@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+run_check="$(
+  awk -F= '$1 ~ /^[[:space:]]*RUN_CHECK_ON_PRE_PUSH[[:space:]]*$/ {
+    v=$2; gsub(/[[:space:]"]/, "", v); print tolower(v)
+  }' .meto-ai/config 2>/dev/null | tail -1
+)"
+
+if [[ "$run_check" =~ ^(true|1|yes)$ ]]; then
+  if command -v just >/dev/null 2>&1 && just --list 2>/dev/null | grep -qE '(^|[[:space:]])check([[:space:]]|$)'; then
+    echo "[meto-ai] Running just check before push..."
+    just check
+  else
+    echo "[meto-ai] Pre-push check enabled, but no usable 'just check' found." >&2
+    exit 1
+  fi
+fi
+
+mapfile -t tasks < <(find tasks/active -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
+for task in "${tasks[@]}"; do
+  state="$task/STATE.yaml"
+  [[ -f "$state" ]] || continue
+  status="$(awk -F: '$1=="status" {gsub(/[ "'\''\r]/, "", $2); print $2; exit}' "$state")"
+  review="$(awk -F: '$1=="review_status" {gsub(/[ "'\''\r]/, "", $2); print $2; exit}' "$state")"
+  if [[ "$status" == "completed" && "$review" != "approved" ]]; then
+    echo "[meto-ai] Completed task without approved review: ${task##*/}" >&2
+    exit 1
+  fi
+done

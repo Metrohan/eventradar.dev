@@ -93,3 +93,18 @@ def auth_headers(client):
     assert resp.status_code == 200, f"Login failed: {resp.text}"
     token = resp.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
+
+
+def pytest_collection_modifyitems(config, items):
+    # Skip integration tests unless the caller explicitly selects them with -m.
+    # This keeps plain `pytest` fast and CI-safe without touching addopts
+    # (addopts + CLI -m are ANDed, which would make `pytest -m integration` select nothing).
+    m_expr = getattr(config.option, "markexpr", "")
+    if m_expr.strip():
+        return  # caller supplied their own -m; don't interfere
+    skip_marker = pytest.mark.skip(
+        reason="live scraper test — run with: pytest -m integration"
+    )
+    for item in items:
+        if "integration" in item.keywords:
+            item.add_marker(skip_marker)

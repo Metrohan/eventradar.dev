@@ -1,14 +1,18 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 
 const ThemeToggle = () => {
     const { theme, toggleTheme } = useTheme();
+    const { t } = useTranslation();
+    const label = theme === 'dark' ? t('themeToggle.toLightMode') : t('themeToggle.toDarkMode');
 
     return (
         <button
             onClick={toggleTheme}
             className="btn btn-link text-decoration-none p-2"
-            title={theme === 'dark' ? "Açık Mod'a Geç" : "Koyu Mod'a Geç"}
+            title={label}
+            aria-label={label}
             style={{ color: 'var(--text-primary)' }}
             // The prerender PoC snapshots the browser-serialized DOM (see
             // docs/adr/0006-prerender-poc.md), which normalizes this inline

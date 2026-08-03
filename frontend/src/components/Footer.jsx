@@ -56,7 +56,7 @@ const Footer = () => {
             {t('footer.tagline')}
           </p>
 
-          <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: '0.5rem', maxWidth: 320, marginBottom: '1.25rem' }}>
+          <form id="footer-subscribe" onSubmit={handleSubscribe} style={{ display: 'flex', gap: '0.5rem', maxWidth: 320, marginBottom: '1.25rem' }}>
             <input
               type="email"
               required
@@ -111,6 +111,15 @@ const Footer = () => {
               style={socialLinkStyle}
             >
               <i className="fas fa-envelope"></i>
+            </a>
+            <a
+              href="https://t.me/eventradar_tr"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t('footer.telegramAria')}
+              style={socialLinkStyle}
+            >
+              <i className="fab fa-telegram"></i>
             </a>
             <a
               href="/api/events/rss"

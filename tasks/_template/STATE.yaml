@@ -1,0 +1,27 @@
+task_id: "<TASK_ID>"
+title: "<TASK_TITLE>"
+status: "planning"
+current_owner: "architect"
+branch: "<BRANCH_NAME>"
+
+completed_steps: []
+
+current_step:
+  description: "Analyze the current flow and write PLAN.md"
+  file: "tasks/active/<TASK_ID>/PLAN.md"
+
+remaining_steps:
+  - "Approve plan"
+  - "Implement"
+  - "Test"
+  - "Review"
+  - "Human approval"
+
+modified_files: []
+commands_run: []
+known_issues: []
+assumptions: []
+
+review_status: "not_started"
+last_updated_at: "<TIMESTAMP>"
+last_updated_by: "task-creator"

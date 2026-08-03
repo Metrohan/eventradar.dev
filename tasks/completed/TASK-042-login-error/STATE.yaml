@@ -1,0 +1,21 @@
+task_id: TASK-042-login-error
+title: "fix(auth): Login error detail Turkish"
+status: "committed_pending_merge"
+current_owner: "human"
+branch: feat/i18n-foundation
+
+completed_steps:
+  - "Identify affected file (app/api/admin_auth.py)"
+  - "Change detail string"
+  - "Commit: 4422b38"
+
+modified_files:
+  - app/api/admin_auth.py
+
+commands_run: []
+known_issues: []
+assumptions: []
+
+review_status: "not_required"
+last_updated_at: "2026-08-03"
+last_updated_by: "recovery-session"

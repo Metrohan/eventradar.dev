@@ -3,6 +3,7 @@ import { useQuery } from 'react-query'
 import { useTranslation } from 'react-i18next'
 import { publicAPI } from '../services/api'
 import AnnouncementModal from '../components/AnnouncementModal'
+import ChannelsBanner from '../components/ChannelsBanner'
 import EventListing from '../components/EventListing'
 import useSources from '../hooks/useSources'
 
@@ -85,6 +86,9 @@ const HomePage = () => {
 
       {/* ── Main content ─────────────────────────────────── */}
       <EventListing searchTerm={searchTerm} onSearchTermChange={setSearchTerm} />
+
+      {/* ── Channel discovery ────────────────────────────── */}
+      <ChannelsBanner />
 
       {/*
         AnnouncementModal reveals itself via a post-mount setTimeout, so its

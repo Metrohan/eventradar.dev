@@ -35,6 +35,7 @@
     "subscribeError": "Subscription failed.",
     "githubAria": "GitHub",
     "emailAria": "Email",
+    "telegramAria": "Telegram Channel",
     "rssAria": "RSS Feed",
     "pagesHeading": "Pages",
     "sourcesHeading": "Sources",
@@ -354,5 +355,27 @@
     "domainCost": "Domain / year",
     "linkCopied": "Link Copied!",
     "share": "Share"
+  },
+  "themeToggle": {
+    "toLightMode": "Switch to Light Mode",
+    "toDarkMode": "Switch to Dark Mode"
+  },
+  "channelsBanner": {
+    "heading": "Stay Updated",
+    "email": {
+      "label": "Email Newsletter",
+      "desc": "Get new events delivered to your inbox",
+      "action": "Subscribe"
+    },
+    "telegram": {
+      "label": "Telegram Channel",
+      "desc": "Join our channel for instant updates",
+      "action": "Join Channel"
+    },
+    "rss": {
+      "label": "RSS Feed",
+      "desc": "Follow with your favourite feed reader",
+      "action": "Open Feed"
+    }
   }
 }

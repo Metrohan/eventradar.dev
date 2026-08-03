@@ -12,7 +12,7 @@ async def admin_login(login_data: LoginRequest):
     if not auth_service.authenticate_user(login_data.username, login_data.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid username or password",
+            detail="Kullanıcı adı veya şifre hatalı",
         )
 
     access_token = auth_service.create_access_token(data={"sub": login_data.username})
