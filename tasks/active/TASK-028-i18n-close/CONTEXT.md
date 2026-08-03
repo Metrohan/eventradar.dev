@@ -1,6 +1,6 @@
 # Generated Continuation Context
 
-Generated at: 2026-08-03T22:04:17+03:00
+Generated at: 2026-08-03T22:09:23+03:00
 
 ## Repository
 
@@ -13,23 +13,12 @@ Branch: feat/i18n-foundation
  M frontend/package-lock.json
  M scripts/convert_images.sh
  M scripts/verify_deploy.sh
-?? .claude/
-?? .coverage
-?? .githooks/
-?? .github/copilot-instructions.md
-?? .meto-ai/
-?? AGENTS.md
-?? docs/CURRENT_STATE.md
-?? docs/DECISIONS.md
-?? docs/TROUBLESHOOTING.md
-?? justfile
-?? scripts/create-handoff-context.sh
-?? scripts/create-task.sh
-?? tasks/active/TASK-028-i18n-close/CONTEXT.md
+ M tasks/active/TASK-028-i18n-close/CONTEXT.md
 ```
 
 ## Recent commits
 ```text
+345d02f chore(repo): track project docs/scripts, ignore workspace artifacts
 570f04a feat(ui): add channel discovery banner and Telegram footer link
 7aa75f8 test(analytics): add edge case coverage for get_stats
 f075bd1 fix(a11y): make coffee icon decorative in SupportModal
@@ -39,16 +28,16 @@ ea17b99 fix(i18n): give ErrorBoundary its own reload/backHome keys
 d28dc3e feat(i18n): migrate remaining shared components to use t()
 4dd3994 fix(i18n): address Batch 8 review findings
 b886fc2 feat(i18n): migrate StatusPage, subscribe/unsubscribe, and error pages to use t()
-e33fbf9 fix(i18n): address Batch 7 review findings
 ```
 
 ## Diff summary
 ```text
- CLAUDE.md                  | 12 ++++++++++++
- frontend/package-lock.json |  3 +++
- scripts/convert_images.sh  |  0
- scripts/verify_deploy.sh   |  0
- 4 files changed, 15 insertions(+)
+ CLAUDE.md                                   |  12 +
+ frontend/package-lock.json                  |   3 +
+ scripts/convert_images.sh                   |   0
+ scripts/verify_deploy.sh                    |   0
+ tasks/active/TASK-028-i18n-close/CONTEXT.md | 375 +---------------------------
+ 5 files changed, 18 insertions(+), 372 deletions(-)
 ```
 
 ## TASK.md

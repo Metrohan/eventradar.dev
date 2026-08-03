@@ -1,0 +1,17 @@
+task_id: TASK-036-coffee-a11y
+title: "fix(a11y): SupportModal coffee icon decorative"
+status: "committed_pending_merge"
+current_owner: "human"
+branch: feat/i18n-foundation
+
+completed_steps:
+  - "Identify issue in SupportModal.jsx"
+  - "Change alt='Coffee' to alt=''"
+  - "Commit: f075bd1"
+
+modified_files:
+  - frontend/src/components/SupportModal.jsx
+
+review_status: "not_required"
+last_updated_at: "2026-08-03"
+last_updated_by: "recovery-session"

@@ -117,3 +117,15 @@ Varsayılan yerel durumlar kullanılır: `needs-triage`, `needs-info`, `ready-fo
 ### Domain docs
 
 Tek bağlam kullanılır: kökte `CONTEXT.md`, mimari kararlar için `docs/adr/`. Ayrıntılar: `docs/agents/domain.md`.
+
+<!-- METO-AI:CLAUDE_ADAPTER:BEGIN -->
+@AGENTS.md
+
+# Claude Code repository adapter
+
+- Load the active task before source changes.
+- Use `.claude/agents/` for specialized roles.
+- Architects write plans, not production code.
+- Reviewers report findings, not production-code changes.
+- Before ending incomplete work, update task state and continuation context.
+<!-- METO-AI:CLAUDE_ADAPTER:END -->
