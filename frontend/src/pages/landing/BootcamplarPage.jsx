@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import EventListing from '../../components/EventListing'
-import { setPageSEO } from '../../utils/seo'
+import { setPageSEO, injectJsonLd } from '../../utils/seo'
 
 const BootcamplarPage = () => {
   const { t, i18n } = useTranslation()
@@ -12,6 +12,13 @@ const BootcamplarPage = () => {
       tabTitle: `${t('landing.bootcamplar.title')} | TechEventRadar`,
       description: 'Türkiye\'deki ücretsiz ve ücretli bootcamp programlarını tek listede keşfet. Yazılım, veri bilimi ve daha fazlası için güncel bootcamp takvimi.',
       path: '/bootcamplar',
+    })
+    return injectJsonLd('page-jsonld', {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Bootcamp Etkinlikleri | TechEventRadar',
+      description: 'Türkiye\'deki ücretsiz ve ücretli bootcamp programlarını tek listede keşfet.',
+      url: 'https://eventradar.dev/bootcamplar',
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i18n.language])

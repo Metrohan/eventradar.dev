@@ -23,6 +23,26 @@ function setMeta(name, content, property = false) {
  * the visible UI language; pages not yet migrated can omit it and get the
  * previous behavior (document.title === title) unchanged.
  */
+
+/**
+ * Inject or replace a JSON-LD <script> block in <head>.
+ * Returns a cleanup function that removes the tag (for useEffect returns).
+ */
+export function injectJsonLd(id, schema) {
+  document.getElementById(id)?.remove()
+  const script = document.createElement('script')
+  script.id = id
+  script.type = 'application/ld+json'
+  script.text = JSON.stringify(schema)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029')
+  document.head.appendChild(script)
+  return () => document.getElementById(id)?.remove()
+}
+
 export function setPageSEO({ title, tabTitle, description, path }) {
   document.title = tabTitle || title
   setMeta('description', description)

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import EventListing from '../../components/EventListing'
-import { setPageSEO } from '../../utils/seo'
+import { setPageSEO, injectJsonLd } from '../../utils/seo'
 
 const HackathonlarPage = () => {
   const { t, i18n } = useTranslation()
@@ -12,6 +12,13 @@ const HackathonlarPage = () => {
       tabTitle: `${t('landing.hackathonlar.title')} | TechEventRadar`,
       description: 'Türkiye\'deki güncel hackathon etkinliklerini tek listede keşfet. TechCareer, Kodluyoruz, Youthall ve daha fazla kaynaktan otomatik güncellenen hackathon takvimi.',
       path: '/hackathonlar',
+    })
+    return injectJsonLd('page-jsonld', {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Hackathon Etkinlikleri | TechEventRadar',
+      description: 'Türkiye\'deki güncel hackathon etkinliklerini tek listede keşfet.',
+      url: 'https://eventradar.dev/hackathonlar',
     })
     // Re-run on language change so the tab title stays in sync — otherwise
     // it only ever reflects whatever language was active on first mount.
