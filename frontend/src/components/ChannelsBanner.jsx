@@ -1,6 +1,14 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
+const focusFooterEmail = (e) => {
+  e.preventDefault()
+  const form = document.getElementById('footer-subscribe')
+  if (!form) return
+  form.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  setTimeout(() => form.querySelector('input[type="email"]')?.focus(), 350)
+}
+
 const CHANNELS = (t) => [
   {
     icon: 'fas fa-envelope',
@@ -11,6 +19,7 @@ const CHANNELS = (t) => [
     action: t('channelsBanner.email.action'),
     href: '#footer-subscribe',
     external: false,
+    onClick: focusFooterEmail,
   },
   {
     icon: 'fab fa-telegram',
@@ -62,7 +71,7 @@ const ChannelsBanner = () => {
   )
 }
 
-const ChannelCard = ({ icon, color, colorHex, label, desc, action, href, external }) => {
+const ChannelCard = ({ icon, color, colorHex, label, desc, action, href, external, onClick }) => {
   const [hovered, setHovered] = React.useState(false)
 
   return (
@@ -70,6 +79,7 @@ const ChannelCard = ({ icon, color, colorHex, label, desc, action, href, externa
       href={href}
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
+      onClick={onClick}
       style={{
         display: 'flex',
         alignItems: 'center',

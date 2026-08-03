@@ -664,7 +664,7 @@ h1, h2, h3, h4, h5, h6 {
 .filter-row {
   display: flex;
   gap: 0.75rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
 }
 
