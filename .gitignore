@@ -36,6 +36,16 @@ coverage.xml
 # Personal workspace tool configs
 .meto-ai/
 
+# Agent workflow files (meto-ai / Claude Code)
+tasks/
+justfile
+AGENTS.md
+scripts/create-handoff-context.sh
+scripts/create-task.sh
+docs/CURRENT_STATE.md
+docs/DECISIONS.md
+docs/TROUBLESHOOTING.md
+
 # Dev notes (not project docs)
 EVENTRADAR_COMPLETE_PROMPTS.md
 docs/superpowers/
