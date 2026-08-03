@@ -31,6 +31,10 @@ data/
 
 # CI/test artifacts
 coverage.xml
+.coverage
+
+# Personal workspace tool configs
+.meto-ai/
 
 # Dev notes (not project docs)
 EVENTRADAR_COMPLETE_PROMPTS.md
