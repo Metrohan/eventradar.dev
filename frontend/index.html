@@ -46,18 +46,31 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     </noscript>
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "TechEventRadar",
-      "url": "https://eventradar.dev",
-      "description": "Türkiye teknoloji kariyer etkinlikleri platformu",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://eventradar.dev/?q={search_term}",
-        "query-input": "required name=search_term"
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TechEventRadar",
+        "url": "https://eventradar.dev",
+        "description": "Türkiye teknoloji kariyer etkinlikleri platformu",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://eventradar.dev/?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "TechEventRadar",
+        "url": "https://eventradar.dev",
+        "logo": "https://eventradar.dev/pwa-icon-512.png",
+        "sameAs": ["https://t.me/eventradar"]
       }
-    }
+    ]
     </script>
   </head>
   <body>
