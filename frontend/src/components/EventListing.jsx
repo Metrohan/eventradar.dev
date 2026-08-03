@@ -223,7 +223,7 @@ const EventListing = ({
             <i className="fas fa-bookmark"></i>
             {t('eventListing.favoritesOnly')}
           </label>
-          <div className="filter-date-range">
+          <div className="filter-date-range" style={{ marginLeft: 'auto' }}>
             <input
               type="date"
               className="filter-select filter-date-input"
@@ -245,7 +245,7 @@ const EventListing = ({
             <button
               className="filter-toggle"
               onClick={clearFilters}
-              style={{ marginLeft: 'auto', color: 'var(--danger)', borderColor: 'rgba(239,68,68,0.3)' }}
+              style={{ color: 'var(--danger)', borderColor: 'rgba(239,68,68,0.3)' }}
             >
               <i className="fas fa-times"></i>
               {t('eventListing.clear')}
