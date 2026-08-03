@@ -12,7 +12,7 @@ class Event(Base):
     description = Column(Text)
     date = Column(DateTime)
     application_deadline = Column(DateTime)
-    location = Column(String(255))
+    location = Column(Text)
     url = Column(String(500), unique=True, nullable=False, index=True)
     image_url = Column(String(500))
     thumbnail_url = Column(String(500))
