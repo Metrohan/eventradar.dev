@@ -62,7 +62,7 @@ const SupportModal = ({ show, handleClose }) => {
                                 className="btn btn-lg fw-bold d-flex align-items-center justify-content-center gap-2 transition-all hover-scale"
                                 style={{ backgroundColor: '#FFDD00', color: '#000', border: 'none', borderRadius: '0.75rem', padding: '12px' }}
                             >
-                                <img src="/coffee.svg" alt="Coffee" style={{ width: '28px' }} />
+                                <img src="/coffee.svg" alt="" style={{ width: '28px' }} />
                                 Buy Me A Coffee
                             </a>
 
