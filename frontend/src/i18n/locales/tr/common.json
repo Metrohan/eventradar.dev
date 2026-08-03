@@ -35,6 +35,7 @@
     "subscribeError": "Abonelik başarısız oldu.",
     "githubAria": "GitHub",
     "emailAria": "E-posta",
+    "telegramAria": "Telegram Kanalı",
     "rssAria": "RSS Feed",
     "pagesHeading": "Sayfalar",
     "sourcesHeading": "Kaynaklar",
@@ -353,5 +354,23 @@
   "themeToggle": {
     "toLightMode": "Açık Mod'a Geç",
     "toDarkMode": "Koyu Mod'a Geç"
+  },
+  "channelsBanner": {
+    "heading": "Haberdar Ol",
+    "email": {
+      "label": "E-posta Bülteni",
+      "desc": "Yeni etkinlikler doğrudan gelen kutuna gelsin",
+      "action": "Abone Ol"
+    },
+    "telegram": {
+      "label": "Telegram Kanalı",
+      "desc": "Anlık bildirimler için kanalımıza katıl",
+      "action": "Kanala Katıl"
+    },
+    "rss": {
+      "label": "RSS Feed",
+      "desc": "Feed okuyucuyla takip et",
+      "action": "Feed'i Aç"
+    }
   }
 }
