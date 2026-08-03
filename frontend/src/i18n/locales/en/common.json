@@ -354,5 +354,9 @@
     "domainCost": "Domain / year",
     "linkCopied": "Link Copied!",
     "share": "Share"
+  },
+  "themeToggle": {
+    "toLightMode": "Switch to Light Mode",
+    "toDarkMode": "Switch to Dark Mode"
   }
 }

@@ -349,5 +349,9 @@
     "domainCost": "Domain / yıl",
     "linkCopied": "Link Kopyalandı!",
     "share": "Paylaş"
+  },
+  "themeToggle": {
+    "toLightMode": "Açık Mod'a Geç",
+    "toDarkMode": "Koyu Mod'a Geç"
   }
 }

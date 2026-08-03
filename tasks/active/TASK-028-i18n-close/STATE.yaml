@@ -1,0 +1,31 @@
+task_id: TASK-028-i18n-close
+issues:
+  - github: 28
+    title: "Multi-language UI (TR / EN)"
+  - github: 34
+    title: "Add aria-label to theme toggle button"
+branch: feat/i18n-foundation
+status: implementation_complete
+phase: review
+created: 2026-08-03
+
+roles:
+  architect: claude (current session)
+  implementer: pending_human_approval
+  reviewer: pending
+
+progress:
+  plan_written: true
+  human_plan_approved: true
+  implementation_started: true
+  tests_run: false
+  review_done: false
+  merged: false
+
+files_to_change:
+  - frontend/src/components/ThemeToggle.jsx
+  - frontend/src/i18n/locales/tr/common.json
+  - frontend/src/i18n/locales/en/common.json
+
+remaining_open_questions:
+  - Are admin pages (QualityPage, AdminDashboard) in scope for i18n?
