@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://eventradar.dev/sitemap.xml
+Sitemap: https://eventradar.dev/api/events/sitemap.xml

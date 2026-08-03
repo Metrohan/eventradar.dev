@@ -12,6 +12,8 @@ from ..services.event_request_service import EventRequestService
 from ..services.source_catalog import get_enabled_sources
 from ..services.rate_limiter import FixedWindowRateLimiter
 from ..services.rss_service import build_events_rss
+from ..services.sitemap_service import build_sitemap
+from ..models.blog_post import BlogPost
 from ..services import email_service, push_service
 from ..services.weekly_content_service import WeeklyContentService
 from ..schemas.blog_post import BlogPostListResponse, BlogPostResponse
@@ -114,6 +116,15 @@ async def get_events_rss(db: Session = Depends(get_db)):
     events = event_service.get_events(active_only=True, limit=100)
     feed_xml = build_events_rss(events)
     return Response(content=feed_xml, media_type="application/rss+xml")
+
+
+@router.get("/events/sitemap.xml")
+async def get_sitemap(db: Session = Depends(get_db)):
+    """Tüm aktif etkinlikleri ve yayınlanmış blog yazılarını içeren XML sitemap döner."""
+    events = db.query(Event).filter(Event.is_active == True).all()  # noqa: E712
+    posts = db.query(BlogPost).filter(BlogPost.is_published == True).all()  # noqa: E712
+    xml = build_sitemap(events, posts)
+    return Response(content=xml, media_type="application/xml")
 
 
 @router.post("/subscribe")

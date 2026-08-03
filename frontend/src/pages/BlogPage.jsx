@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 
 import LoadingSpinner from '../components/LoadingSpinner'
 import { publicAPI } from '../services/api'
-import { setPageSEO } from '../utils/seo'
+import { setPageSEO, injectJsonLd } from '../utils/seo'
 import { useDateLocale } from '../hooks/useDateLocale'
 
 const BlogPage = () => {
@@ -25,6 +25,25 @@ const BlogPage = () => {
 
   const { data, isLoading, error } = useQuery('blog-posts', publicAPI.getBlogPosts)
   const posts = data?.data?.posts || []
+
+  React.useEffect(() => {
+    const items = data?.data?.posts
+    if (!items?.length) return
+    return injectJsonLd('page-jsonld', {
+      '@context': 'https://schema.org',
+      '@type': 'Blog',
+      name: 'TechEventRadar Blog',
+      description: 'Her hafta öne çıkan hackathon, bootcamp, seminer ve teknoloji etkinlikleri.',
+      url: 'https://eventradar.dev/blog',
+      blogPost: items.map(p => ({
+        '@type': 'BlogPosting',
+        headline: p.title,
+        description: p.summary,
+        url: `https://eventradar.dev/blog/${p.slug}`,
+        datePublished: p.published_at,
+      })),
+    })
+  }, [data])
 
   if (isLoading) return <LoadingSpinner />
 

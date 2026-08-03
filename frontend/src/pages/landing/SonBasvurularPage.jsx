@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import EventListing from '../../components/EventListing'
-import { setPageSEO } from '../../utils/seo'
+import { setPageSEO, injectJsonLd } from '../../utils/seo'
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
@@ -21,6 +21,13 @@ const SonBasvurularPage = () => {
       tabTitle: `${t('landing.lastCall.title')} | TechEventRadar`,
       description: 'Başvuru son tarihi bu hafta dolacak hackathon, bootcamp ve webinar etkinliklerini kaçırma.',
       path: '/son-basvurular',
+    })
+    return injectJsonLd('page-jsonld', {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Son Başvuru Tarihi Yaklaşan Etkinlikler | TechEventRadar',
+      description: 'Başvuru son tarihi bu hafta dolacak hackathon, bootcamp ve webinar etkinliklerini kaçırma.',
+      url: 'https://eventradar.dev/son-basvurular',
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i18n.language])
