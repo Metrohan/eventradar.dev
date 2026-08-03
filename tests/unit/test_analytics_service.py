@@ -64,11 +64,27 @@ def test_top_pages_sorted_by_count(test_db):
 
 def test_today_visitors_excludes_yesterday(test_db):
     yesterday = datetime.now() - timedelta(days=1)
-    test_db.add_all([
-        TrafficLog(path="/api/events", method="GET", ip_address="1.1.1.1", user_agent="ua", timestamp=yesterday),
-        TrafficLog(path="/api/events", method="GET", ip_address="1.1.1.1", user_agent="ua", timestamp=yesterday),
-        TrafficLog(path="/api/events", method="GET", ip_address="1.1.1.1", user_agent="ua"),
-    ])
+    test_db.add_all(
+        [
+            TrafficLog(
+                path="/api/events",
+                method="GET",
+                ip_address="1.1.1.1",
+                user_agent="ua",
+                timestamp=yesterday,
+            ),
+            TrafficLog(
+                path="/api/events",
+                method="GET",
+                ip_address="1.1.1.1",
+                user_agent="ua",
+                timestamp=yesterday,
+            ),
+            TrafficLog(
+                path="/api/events", method="GET", ip_address="1.1.1.1", user_agent="ua"
+            ),
+        ]
+    )
     test_db.commit()
 
     stats = AnalyticsService(test_db).get_stats()
@@ -81,12 +97,28 @@ def test_top_pages_tie_both_paths_present(test_db):
     # Two paths with equal request counts — tie-break order is DB-specific
     # (SQLite returns rows in group-by scan order; no guarantee on which comes first).
     # Assert presence and correct counts; do not assert relative order of tied entries.
-    test_db.add_all([
-        TrafficLog(path="/api/events", method="GET", ip_address="1.1.1.1", user_agent="ua"),
-        TrafficLog(path="/api/events", method="GET", ip_address="1.1.1.1", user_agent="ua"),
-        TrafficLog(path="/api/announcements", method="GET", ip_address="1.1.1.1", user_agent="ua"),
-        TrafficLog(path="/api/announcements", method="GET", ip_address="1.1.1.1", user_agent="ua"),
-    ])
+    test_db.add_all(
+        [
+            TrafficLog(
+                path="/api/events", method="GET", ip_address="1.1.1.1", user_agent="ua"
+            ),
+            TrafficLog(
+                path="/api/events", method="GET", ip_address="1.1.1.1", user_agent="ua"
+            ),
+            TrafficLog(
+                path="/api/announcements",
+                method="GET",
+                ip_address="1.1.1.1",
+                user_agent="ua",
+            ),
+            TrafficLog(
+                path="/api/announcements",
+                method="GET",
+                ip_address="1.1.1.1",
+                user_agent="ua",
+            ),
+        ]
+    )
     test_db.commit()
 
     stats = AnalyticsService(test_db).get_stats()

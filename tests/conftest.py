@@ -102,7 +102,9 @@ def pytest_collection_modifyitems(config, items):
     m_expr = getattr(config.option, "markexpr", "")
     if m_expr.strip():
         return  # caller supplied their own -m; don't interfere
-    skip_marker = pytest.mark.skip(reason="live scraper test — run with: pytest -m integration")
+    skip_marker = pytest.mark.skip(
+        reason="live scraper test — run with: pytest -m integration"
+    )
     for item in items:
         if "integration" in item.keywords:
             item.add_marker(skip_marker)
