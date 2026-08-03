@@ -7,7 +7,7 @@ class TrafficLog(Base):
     __tablename__ = "traffic_logs"
 
     id = Column(Integer, primary_key=True, index=True)
-    path = Column(String(255), nullable=False)
+    path = Column(String(500), nullable=False)
     method = Column(String(10), nullable=False)
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(Text, nullable=True)

@@ -10,7 +10,7 @@ class PendingEvent(Base):
     title = Column(String(500), nullable=False)
     description = Column(Text)
     date = Column(DateTime)
-    location = Column(String(255))
+    location = Column(Text)
     url = Column(String(500), nullable=False)
     image_url = Column(String(500))
     source = Column(String(100), nullable=False)
