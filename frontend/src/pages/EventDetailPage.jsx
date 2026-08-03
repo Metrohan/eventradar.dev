@@ -135,6 +135,26 @@ const EventDetailPage = () => {
       .replace(/\u2029/g, '\\u2029')
     document.head.appendChild(script)
 
+    const breadcrumb = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: 'https://eventradar.dev' },
+        { '@type': 'ListItem', position: 2, name: event.title, item: `https://eventradar.dev/etkinlik/${id}` },
+      ],
+    }
+    document.getElementById('breadcrumb-jsonld')?.remove()
+    const breadcrumbScript = document.createElement('script')
+    breadcrumbScript.id = 'breadcrumb-jsonld'
+    breadcrumbScript.type = 'application/ld+json'
+    breadcrumbScript.text = JSON.stringify(breadcrumb)
+      .replace(/</g, '\\u003c')
+      .replace(/>/g, '\\u003e')
+      .replace(/&/g, '\\u0026')
+      .replace(/\u2028/g, '\\u2028')
+      .replace(/\u2029/g, '\\u2029')
+    document.head.appendChild(breadcrumbScript)
+
     return () => {
       document.title = DEFAULT_TITLE
       setMeta('description', DEFAULT_DESC)
@@ -147,6 +167,7 @@ const EventDetailPage = () => {
       setMeta('twitter:image', 'https://eventradar.dev/banner.png')
       document.querySelector('link[rel="canonical"]')?.setAttribute('href', 'https://eventradar.dev')
       document.getElementById('event-jsonld')?.remove()
+      document.getElementById('breadcrumb-jsonld')?.remove()
     }
   }, [event, id])
 

@@ -9,9 +9,10 @@ import useSources from '../hooks/useSources'
 
 const HomePage = () => {
   const { t } = useTranslation()
-  const [searchTerm, setSearchTerm] = React.useState('')
+  const params = new URLSearchParams(window.location.search)
+  const [searchTerm, setSearchTerm] = React.useState(params.get('q') || '')
   const { sources } = useSources()
-  const isPrerenderPass = new URLSearchParams(window.location.search).get('__prerender') === '1'
+  const isPrerenderPass = params.get('__prerender') === '1'
 
   const { data: eventsData } = useQuery(
     'events',
