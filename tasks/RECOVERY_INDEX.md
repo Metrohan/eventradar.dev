@@ -13,7 +13,7 @@ Kurtarma tarihi: 2026-08-03. Repository kanıtına dayanır; varsayım yoktur.
 | #37 Analytics test edge cases | TASK-037 | Bağımsız task | `7aa75f8` | test_analytics_service.py | ✅ Commit edildi + test çalıştırıldı | Yok | Merge |
 | #23 Kullanıcıları kanal UI ile bilgilendir | TASK-023 | Bağımsız task | `570f04a` | ChannelsBanner.jsx, HomePage.jsx, Footer.jsx, JSON | ✅ Commit edildi | Manuel browser test | Merge |
 | #15 Release artifact'larını ayır | TASK-015 | Bağımsız task | `345d02f` | .gitignore, 21 yeni dosya | ✅ Commit edildi | Yok | Merge |
-| #16 Integration testleri CI'da opsiyonel | TASK-016 | Bağımsız task | — | tests/conftest.py (bekliyor) | ⚠️ YARIDA KALDI | — | conftest.py hook ekle |
+| #16 Integration testleri CI'da opsiyonel | TASK-016 | Bağımsız task | `8227782` | tests/conftest.py | ✅ Commit edildi | Yok | Merge |
 | #20 Auto-archive past events | — | Kod değişikliği yok | — | — | ✅ Zaten uygulanmış (EventService filter) | — | Issue kapat |
 | #77 Mobile FCP/LCP | — | Kod değişikliği yok | — | — | ✅ PR #87 ile çözülmüş | — | Issue kapat |
 | #76 Oversized images | — | Kod değişikliği yok | — | — | ✅ image_pipeline.py ile çözülmüş | — | Issue kapat |
