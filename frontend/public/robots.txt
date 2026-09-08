@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /api/admin/
+Disallow: /docs
+Disallow: /openapi.json
 
 Sitemap: https://eventradar.dev/sitemap.xml
-Sitemap: https://eventradar.dev/api/events/sitemap.xml

@@ -134,6 +134,31 @@ async def health_check():
     return {"status": "healthy", "message": "API is running successfully"}
 
 
+ROBOTS_TXT = """\
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/admin/
+Disallow: /docs
+Disallow: /openapi.json
+
+Sitemap: https://eventradar.dev/sitemap.xml
+"""
+
+
+@app.get("/robots.txt", response_class=Response)
+async def robots_txt():
+    """
+    robots.txt served from version control (see docs/adr / nginx notes).
+
+    The production host nginx proxies GET /robots.txt here instead of serving a
+    hand-edited /var/www/seo/robots.txt that the deploy pipeline never touched
+    and that blanket-blocked /api/ — which also hid /api/events/rss and the
+    dynamic sitemap from Google (GSC "Blocked by robots.txt").
+    """
+    return Response(content=ROBOTS_TXT, media_type="text/plain")
+
+
 @app.get("/sitemap.xml", response_class=Response)
 async def sitemap():
     from .core.database import SessionLocal
