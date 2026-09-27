@@ -369,7 +369,7 @@ TechEventRadar tamamen ücretsiz ve açık kaynak. Domain ve sunucu maliyetlerin
 
 > Bu projeyi faydalı buluyorsan, bir kahve ısmarlayarak sürdürülebilirliğine katkıda bulunabilirsin.
 
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/metehangnn)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/metrohan)
 [![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/Metrohan)
 
 **Nereye gidiyor?**
