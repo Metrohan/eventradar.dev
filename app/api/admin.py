@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
@@ -19,6 +21,8 @@ from ..services.notification_service import NotificationService
 from ..core.auth import get_current_admin
 from .admin_auth import router as auth_router
 from .admin_events import router as events_router
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 router.include_router(auth_router)
@@ -42,9 +46,8 @@ async def get_admin_announcements(
             total_count=len(announcements),
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error loading announcements: {str(e)}"
-        )
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error loading announcements")
 
 
 @router.post("/announcements", response_model=AnnouncementResponse)
@@ -62,9 +65,8 @@ async def create_announcement(
         announcement = announcement_service.create_announcement(announcement_data)
         return announcement
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error creating announcement: {str(e)}"
-        )
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error creating announcement")
 
 
 @router.delete("/announcements/{announcement_id}")
@@ -86,9 +88,8 @@ async def delete_announcement(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error deleting announcement: {str(e)}"
-        )
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error deleting announcement")
 
 
 # Suggestion management endpoints
@@ -108,9 +109,8 @@ async def get_suggestions(
             total_count=len(suggestions),
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error loading suggestions: {str(e)}"
-        )
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error loading suggestions")
 
 
 @router.delete("/suggestions/{suggestion_id}")
@@ -129,10 +129,11 @@ async def delete_suggestion(
         if not success:
             raise HTTPException(status_code=404, detail="Suggestion not found")
         return {"message": "Suggestion deleted successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error deleting suggestion: {str(e)}"
-        )
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error deleting suggestion")
 
 
 # Event request management endpoints
@@ -152,9 +153,8 @@ async def get_event_requests(
             total_count=len(requests),
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error loading event requests: {str(e)}"
-        )
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error loading event requests")
 
 
 @router.delete("/event-requests/{request_id}")
@@ -173,10 +173,11 @@ async def delete_event_request(
         if not success:
             raise HTTPException(status_code=404, detail="Event request not found")
         return {"message": "Event request deleted successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error deleting event request: {str(e)}"
-        )
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error deleting event request")
 
 
 # Scraper Control Center endpoints

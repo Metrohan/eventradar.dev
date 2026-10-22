@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     smtp_user: str = os.getenv("SMTP_USER", "")
     smtp_pass: str = os.getenv("SMTP_PASS", "")
     smtp_from: str = os.getenv("SMTP_FROM", "noreply@eventradar.dev")
+    # Where public suggestion/complaint submissions are mailed (empty = no mail)
+    feedback_notify_email: str = os.getenv("FEEDBACK_NOTIFY_EMAIL", "")
 
     # Telegram
     telegram_bot_token: str = os.getenv("TELEGRAM_BOT_TOKEN", "")

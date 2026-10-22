@@ -1,5 +1,6 @@
 import logging
 import smtplib
+import ssl
 from html import escape
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -24,6 +25,7 @@ def _send(
     *,
     text_body: str = "",
     unsubscribe_url: str | None = None,
+    reply_to: str | None = None,
 ) -> bool:
     """SMTP üzerinden e-posta gönderir (düz metin + HTML). Başarılıysa True döner."""
     if not _is_configured():
@@ -42,6 +44,8 @@ def _send(
     msg["To"] = to
     msg["Date"] = formatdate(localtime=True)
     msg["Message-ID"] = make_msgid(domain=domain)
+    if reply_to:
+        msg["Reply-To"] = reply_to
     if unsubscribe_url:
         # RFC 2369 — spam filtreleri ve mail sağlayıcıları (Gmail/Outlook) bu
         # başlığı görünce gönderen adına "Abonelikten çık" kısayolu gösterir,
@@ -56,13 +60,70 @@ def _send(
 
     try:
         with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as server:
-            server.starttls()
+            server.starttls(context=ssl.create_default_context())
             server.login(settings.smtp_user, settings.smtp_pass)
             server.sendmail(from_email, to, msg.as_string())
         return True
     except Exception as exc:
         logger.error("E-posta gönderilemedi (%s): %s", to, exc)
         return False
+
+
+def _notify_owner(
+    subject_prefix: str,
+    subject_title: str,
+    fields: list[tuple[str, str]],
+    reply_to: str | None = None,
+) -> bool:
+    """Form gönderimini site sahibine e-postayla iletir (alıcı: FEEDBACK_NOTIFY_EMAIL)."""
+    to = settings.feedback_notify_email
+    if not to:
+        logger.info("FEEDBACK_NOTIFY_EMAIL boş, %s e-postası gönderilmedi", subject_prefix)
+        return False
+    try:
+        # Tek satıra indir: başlıktaki satır sonları e-posta başlığı enjeksiyonuna yol açmasın.
+        subject = f"[EventRadar] {subject_prefix}: {' '.join(subject_title.split())[:100]}"
+        html = "".join(
+            f'<p style="white-space:pre-wrap"><b>{escape(label)}:</b> {escape(value)}</p>'
+            for label, value in fields
+        )
+        plain = "\n".join(f"{label}: {value}" for label, value in fields) + "\n"
+        # Yalnızca tek bir geçerli adres: parseaddr ile ayıkla, boşluk/satır sonu varsa kullanma.
+        address = parseaddr(reply_to or "")[1]
+        safe_reply_to = address if "@" in address and not any(c.isspace() for c in address) else None
+        return _send(to, subject, html, text_body=plain, reply_to=safe_reply_to)
+    except Exception:
+        logger.exception("%s e-postası hazırlanamadı", subject_prefix)
+        return False
+
+
+def send_feedback_notification(kind: str, title: str, text: str) -> bool:
+    """Öneri/şikayet formu gönderimini site sahibine iletir."""
+    return _notify_owner(
+        "Öneri/Şikayet", title, [("Tür", kind), ("Başlık", title), ("Mesaj", text)]
+    )
+
+
+def send_event_request_notification(
+    link: str,
+    title: str,
+    date: str | None,
+    description: str | None,
+    contact_email: str | None,
+) -> bool:
+    """Etkinlik talebi formu gönderimini site sahibine iletir."""
+    return _notify_owner(
+        "Etkinlik talebi",
+        title,
+        [
+            ("Başlık", title),
+            ("Bağlantı", link),
+            ("Tarih", date or "-"),
+            ("Açıklama", description or "-"),
+            ("İletişim e-postası", contact_email or "-"),
+        ],
+        reply_to=contact_email,
+    )
 
 
 def _html_to_text(html_body: str) -> str:
@@ -167,8 +228,8 @@ def send_weekly_digest_email(
     if events:
         items = "".join(
             f'<tr><td style="padding:12px 0;border-bottom:1px solid {BORDER}">'
-            f'<a href="{SITE_URL}/etkinlik/{e["id"]}" style="color:{INK};font-weight:600;text-decoration:none;font-size:15px">{e["title"]}</a>'
-            f'<div style="color:{MUTED_TEXT};font-size:13px;margin-top:2px">{e.get("source", "")}</div>'
+            f'<a href="{SITE_URL}/etkinlik/{e["id"]}" style="color:{INK};font-weight:600;text-decoration:none;font-size:15px">{escape(str(e["title"]))}</a>'
+            f'<div style="color:{MUTED_TEXT};font-size:13px;margin-top:2px">{escape(str(e.get("source", "")))}</div>'
             "</td></tr>"
             for e in events[:15]
         )
