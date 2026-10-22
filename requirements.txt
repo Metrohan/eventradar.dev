@@ -3,7 +3,7 @@ uvicorn[standard]
 pydantic>=2
 pydantic-settings
 python-dotenv
-sqlalchemy
+sqlalchemy>=2.0,<2.1
 psycopg2-binary
 alembic
 python-jose[cryptography]
