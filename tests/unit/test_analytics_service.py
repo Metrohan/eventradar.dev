@@ -1,3 +1,4 @@
+import pytest
 import os
 
 os.environ.setdefault("ALLOW_INSECURE_DEFAULTS", "true")
@@ -128,3 +129,55 @@ def test_top_pages_tie_both_paths_present(test_db):
     assert "/api/announcements" in by_path
     assert by_path["/api/events"] == 2
     assert by_path["/api/announcements"] == 2
+
+
+@pytest.mark.parametrize(
+    "raw,expected",
+    [
+        ("203.0.113.57", "203.0.113.0"),
+        ("::ffff:203.0.113.57", "203.0.113.0"),
+        ("2001:db8:abcd:1234:5678:9abc:def0:1234", "2001:db8:abcd::"),
+        ("not-an-ip", None),
+        ("", None),
+        (None, None),
+    ],
+)
+def test_anonymize_ip(raw, expected):
+    from app.services.analytics_service import anonymize_ip
+
+    assert anonymize_ip(raw) == expected
+
+
+def test_log_request_stores_only_truncated_ip(test_db):
+    AnalyticsService(test_db).log_request("/api/events", "GET", "203.0.113.57", "ua")
+    assert test_db.query(TrafficLog).one().ip_address == "203.0.113.0"
+
+
+def test_purge_removes_only_rows_older_than_retention(test_db):
+    old = datetime.now() - timedelta(days=91)
+    recent = datetime.now() - timedelta(days=89)
+    test_db.add_all(
+        [
+            TrafficLog(path="/old", method="GET", timestamp=old),
+            TrafficLog(path="/recent", method="GET", timestamp=recent),
+        ]
+    )
+    test_db.commit()
+    assert AnalyticsService(test_db).purge_old_logs() == 1
+    assert [row.path for row in test_db.query(TrafficLog).all()] == ["/recent"]
+
+
+def test_log_request_triggers_daily_purge_once(test_db, monkeypatch):
+    from app.services import analytics_service
+
+    monkeypatch.setattr(analytics_service, "_last_purge", float("-inf"))
+    test_db.add(TrafficLog(path="/old", method="GET", timestamp=datetime.now() - timedelta(days=200)))
+    test_db.commit()
+    service = AnalyticsService(test_db)
+    service.log_request("/new", "GET", "198.51.100.9", "ua")
+    assert [row.path for row in test_db.query(TrafficLog).all()] == ["/new"]
+    # second call within the interval must not purge again
+    test_db.add(TrafficLog(path="/old2", method="GET", timestamp=datetime.now() - timedelta(days=200)))
+    test_db.commit()
+    service.log_request("/new2", "GET", "198.51.100.9", "ua")
+    assert "/old2" in [row.path for row in test_db.query(TrafficLog).all()]
