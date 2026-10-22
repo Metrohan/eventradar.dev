@@ -79,7 +79,7 @@ const EventListing = ({
 
   const { data: eventsData, isLoading, error } = useQuery(
     'events',
-    () => publicAPI.getEvents(true)
+    () => publicAPI.getAllEvents(true)
   )
 
   const filterOptions = React.useMemo(() => {

@@ -920,8 +920,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
   flex: 1;
-  position: relative;
-  z-index: 1;
+  z-index: 1; /* flex item: no position, so the stretched link spans the whole card */
 }
 
 .event-title {
@@ -934,6 +933,25 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.event-title a::after {
+  /* Stretched link: whole card opens the event; controls sit above at z-index 2 */
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.event-card:has(.event-title a:focus-visible) {
+  /* the stretched link's own ring only wraps the title text */
+  outline: 2px solid var(--action-primary);
+  outline-offset: -2px;
+}
+
+.event-card .btn-event {
+  position: relative;
+  z-index: 2;
 }
 
 .event-description {

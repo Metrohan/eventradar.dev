@@ -47,10 +47,6 @@ const EventCard = ({ event }) => {
     Math.ceil((new Date(event.application_deadline) - new Date()) / (1000 * 60 * 60 * 24)) <= 3
 
   return (
-    <Link
-      to={`/etkinlik/${event.id}`}
-      style={{ textDecoration: 'none', color: 'inherit', display: 'block', height: '100%' }}
-    >
     <div className="event-card h-100">
       {/* Image */}
       <div className="event-image-wrapper">
@@ -74,7 +70,7 @@ const EventCard = ({ event }) => {
         >
           {event.source}
         </span>
-        <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
+        <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 2 }}>
           <ShareButtons event={event} detailUrl={canonicalUrl} variant="icon" />
         </div>
         <button
@@ -91,7 +87,7 @@ const EventCard = ({ event }) => {
           <i className={`${isFavorite(event.id) ? 'fas' : 'far'} fa-bookmark`} />
         </button>
         {event.tags && event.tags.length > 0 && (
-          <div style={{ position: 'absolute', bottom: '8px', left: '8px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+          <div style={{ position: 'absolute', bottom: '8px', left: '8px', zIndex: 2, display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
             {event.tags.slice(0, 2).map(name => (
               <TagBadge key={name} name={name} />
             ))}
@@ -106,7 +102,9 @@ const EventCard = ({ event }) => {
 
       {/* Content */}
       <div className="event-content">
-        <h3 className="event-title">{event.title}</h3>
+        <h3 className="event-title">
+          <Link to={`/etkinlik/${event.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>{event.title}</Link>
+        </h3>
 
         {event.description && (
           <p className="event-description">
@@ -155,7 +153,6 @@ const EventCard = ({ event }) => {
         </div>
       </div>
     </div>
-    </Link>
   )
 }
 

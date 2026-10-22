@@ -16,8 +16,12 @@ const TagBadge = ({ name, selected = false, clickable = false, onClick }) => {
   const { t } = useTranslation()
   const s = TAG_STYLES[name] || TAG_STYLES.diger
 
+  const Element = clickable ? 'button' : 'span'
+
   return (
-    <span
+    <Element
+      type={clickable ? 'button' : undefined}
+      aria-pressed={clickable ? selected : undefined}
       onClick={clickable ? onClick : undefined}
       style={{
         display: 'inline-flex',
@@ -38,7 +42,7 @@ const TagBadge = ({ name, selected = false, clickable = false, onClick }) => {
     >
       <span>{s.emoji}</span>
       <span>{t(s.labelKey)}</span>
-    </span>
+    </Element>
   )
 }
 

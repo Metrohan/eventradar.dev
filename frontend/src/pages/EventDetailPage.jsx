@@ -30,7 +30,7 @@ const EventDetailPage = () => {
   const dateLocale = useDateLocale()
   const { id } = useParams()
 
-  const { data, isLoading, error } = useQuery(
+  const { data, isLoading, error, refetch } = useQuery(
     ['event', id],
     () => publicAPI.getEventById(id),
     {
@@ -172,6 +172,9 @@ const EventDetailPage = () => {
   }, [event, id])
 
   if (isLoading) return <LoadingSpinner />
+  if (error && error.response?.status !== 404) {
+    return <ErrorMessage message={t('eventListing.loadError')} onRetry={refetch} />
+  }
   if (error || !event) return <ErrorMessage message={t('eventDetail.notFound')} />
 
   const safeUrl = /^https?:\/\//i.test(event.url) ? event.url : '#'

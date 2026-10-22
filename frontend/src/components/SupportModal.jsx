@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
+import { useDialogFocus } from '../hooks/useDialogFocus'
 
 const SupportModal = ({ show, handleClose }) => {
     const { t } = useTranslation()
@@ -15,10 +16,12 @@ const SupportModal = ({ show, handleClose }) => {
             .catch(err => console.error('Link kopyalanamadı', err))
     }
 
+    const dialogRef = useDialogFocus(show, handleClose)
+
     if (!show) return null
 
     return createPortal(
-        <div className="support-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="support-modal-title" tabIndex="-1">
+        <div ref={dialogRef} className="support-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="support-modal-title" tabIndex="-1">
             <div className="support-modal-dialog">
                 <div className="modal-content border-0 shadow-lg support-modal-content">
                     <div className="modal-header border-0 pb-0 justify-content-end">
