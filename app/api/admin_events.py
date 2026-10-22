@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -5,6 +7,8 @@ from ..core.auth import get_current_admin
 from ..core.database import get_db
 from ..schemas.event import EventCreate, EventListResponse, EventResponse, EventUpdate
 from ..services.event_service import EventService
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -26,7 +30,8 @@ async def get_admin_events(
             last_updated=last_updated,
         )
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Error loading events: {exc}")
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error loading events")
 
 
 @router.post("/events", response_model=EventResponse)
@@ -40,7 +45,8 @@ async def create_event(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Error creating event: {exc}")
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error creating event")
 
 
 @router.put("/events/{event_id}", response_model=EventResponse)
@@ -60,7 +66,8 @@ async def update_event(
     except HTTPException:
         raise
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Error updating event: {exc}")
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error updating event")
 
 
 @router.delete("/events/{event_id}")
@@ -76,4 +83,5 @@ async def delete_event(
     except HTTPException:
         raise
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Error deleting event: {exc}")
+        logger.exception("Admin request failed")
+        raise HTTPException(status_code=500, detail="Error deleting event")

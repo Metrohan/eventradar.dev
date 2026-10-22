@@ -73,9 +73,22 @@ def client(test_db):
     from app.main import app
     from app.core.database import get_db
 
+    from unittest.mock import patch
+    from app.api.public import public_form_limiter
+    from app.api.admin_auth import login_limiter
+
+    public_form_limiter.reset()
+    login_limiter.reset()
     app.dependency_overrides[get_db] = lambda: test_db
-    with TestClient(app) as c:
+    # Startup and analytics otherwise use the configured database even when
+    # the route dependency is overridden. Keep those writes in the fixture DB.
+    factory = sessionmaker(bind=test_db.get_bind())
+    with patch("app.main.engine", test_db.get_bind()), patch(
+        "app.core.database.SessionLocal", factory
+    ), patch("app.main.SessionLocal", factory), TestClient(app) as c:
         yield c
+    public_form_limiter.reset()
+    login_limiter.reset()
     app.dependency_overrides.clear()
 
 
@@ -106,5 +119,5 @@ def pytest_collection_modifyitems(config, items):
         reason="live scraper test — run with: pytest -m integration"
     )
     for item in items:
-        if "integration" in item.keywords:
+        if item.get_closest_marker("integration") is not None:
             item.add_marker(skip_marker)

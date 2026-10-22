@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
@@ -31,6 +31,10 @@ from ..models.event import Event
 from ..models.subscriber import Subscriber
 from ..models.push_subscription import PushSubscription
 import secrets
+import logging
+from math import ceil
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 public_form_limiter = FixedWindowRateLimiter(limit=5, window_seconds=60)
@@ -38,14 +42,13 @@ public_form_limiter = FixedWindowRateLimiter(limit=5, window_seconds=60)
 
 def enforce_public_form_rate_limit(request: Request) -> None:
     direct_ip = request.client.host if request.client else "unknown"
-    forwarded_ip = request.headers.get("x-forwarded-for", "").split(",", 1)[0].strip()
-    key = f"{direct_ip}:{forwarded_ip or direct_ip}"
-    retry_after = public_form_limiter.check(key)
+    # ASGI server resolves forwarding headers only from configured trusted proxies.
+    retry_after = public_form_limiter.check(direct_ip)
     if retry_after is not None:
         raise HTTPException(
             status_code=429,
             detail="Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.",
-            headers={"Retry-After": str(max(1, int(retry_after)))},
+            headers={"Retry-After": str(max(1, ceil(retry_after)))},
         )
 
 
@@ -106,7 +109,8 @@ async def get_events(
             total_pages=(total_count + page_size - 1) // page_size,
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error loading events: {str(e)}")
+        logger.error("Public request failed (%s)", type(e).__name__)
+        raise HTTPException(status_code=500, detail="Error loading events")
 
 
 @router.get("/events/rss")
@@ -258,9 +262,8 @@ async def get_announcements(db: Session = Depends(get_db)):
             total_count=len(announcements),
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error loading announcements: {str(e)}"
-        )
+        logger.error("Public request failed (%s)", type(e).__name__)
+        raise HTTPException(status_code=500, detail="Error loading announcements")
 
 
 @router.get("/announcements/latest")
@@ -317,7 +320,9 @@ async def get_status(db: Session = Depends(get_db)):
                             latest.created_at.isoformat() if latest.created_at else None
                         ),
                         "error": (
-                            latest.error_message[:120] if latest.error_message else None
+                            "Source temporarily unavailable"
+                            if latest.error_message
+                            else None
                         ),
                     }
                 )
@@ -331,12 +336,14 @@ async def get_status(db: Session = Depends(get_db)):
             "generated_at": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Status check failed: {str(e)}")
+        logger.error("Public request failed (%s)", type(e).__name__)
+        raise HTTPException(status_code=500, detail="Status check failed")
 
 
 @router.post("/suggestions", response_model=SuggestionResponse)
 async def submit_suggestion(
     suggestion: SuggestionCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     _rate_limit: None = Depends(enforce_public_form_rate_limit),
 ):
@@ -346,16 +353,23 @@ async def submit_suggestion(
     suggestion_service = SuggestionService(db)
     try:
         new = suggestion_service.create_suggestion(suggestion)
-        return new
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error creating suggestion: {str(e)}"
-        )
+        logger.error("Public request failed (%s)", type(e).__name__)
+        raise HTTPException(status_code=500, detail="Error creating suggestion")
+    # Mail after the response so a slow SMTP server never delays or fails the submit.
+    background_tasks.add_task(
+        email_service.send_feedback_notification,
+        suggestion.suggestion_type,
+        suggestion.suggestion_title,
+        suggestion.suggestion_text,
+    )
+    return new
 
 
 @router.post("/event-requests", response_model=EventRequestResponse)
 async def submit_event_request(
     request: EventRequestCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     _rate_limit: None = Depends(enforce_public_form_rate_limit),
 ):
@@ -365,8 +379,15 @@ async def submit_event_request(
     event_request_service = EventRequestService(db)
     try:
         new = event_request_service.create_event_request(request)
-        return new
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error creating event request: {str(e)}"
-        )
+        logger.error("Public request failed (%s)", type(e).__name__)
+        raise HTTPException(status_code=500, detail="Error creating event request")
+    background_tasks.add_task(
+        email_service.send_event_request_notification,
+        str(request.event_link),
+        request.event_title,
+        request.event_date.isoformat() if request.event_date else None,
+        request.event_description,
+        str(request.contact_email) if request.contact_email else None,
+    )
+    return new
