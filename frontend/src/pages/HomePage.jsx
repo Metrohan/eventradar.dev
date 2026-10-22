@@ -16,7 +16,7 @@ const HomePage = () => {
 
   const { data: eventsData } = useQuery(
     'events',
-    () => publicAPI.getEvents(true)
+    () => publicAPI.getAllEvents(true)
   )
 
   const { data: announcementData } = useQuery(

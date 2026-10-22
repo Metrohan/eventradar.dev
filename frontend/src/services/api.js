@@ -42,6 +42,19 @@ export const publicAPI = {
   getEvents: (activeOnly = true, page = 1, pageSize = 200) =>
     api.get(`/events?active_only=${activeOnly}&page=${page}&page_size=${pageSize}`),
 
+  // Client-side filters and calendar need the entire active catalog.
+  getAllEvents: async (activeOnly = true) => {
+    const first = await publicAPI.getEvents(activeOnly)
+    const events = [...first.data.events]
+    const pages = first.data.total_pages || 1
+    for (let page = 2; page <= pages; page += 1) {
+      const response = await publicAPI.getEvents(activeOnly, page)
+      events.push(...response.data.events)
+    }
+    const unique = [...new Map(events.map(event => [event.id, event])).values()]
+    return { ...first, data: { ...first.data, events: unique } }
+  },
+
   // Canonical event-source catalog
   getSources: () =>
     api.get('/sources'),

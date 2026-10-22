@@ -58,7 +58,7 @@ const CalendarPage = () => {
 
   const { data: eventsData, isLoading, error } = useQuery(
     'events',
-    () => publicAPI.getEvents(true)
+    () => publicAPI.getAllEvents(true)
   )
 
   const eventsByDay = React.useMemo(() => {

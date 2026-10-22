@@ -82,7 +82,7 @@ const BootcampRehberi = () => {
     setMeta('og:description', desc, true)
   }, [])
 
-  const { data, isLoading } = useQuery('events', () => publicAPI.getEvents(true), { staleTime: 5 * 60 * 1000 })
+  const { data, isLoading } = useQuery('events', () => publicAPI.getAllEvents(true), { staleTime: 5 * 60 * 1000 })
 
   const bootcampEvents = React.useMemo(() => {
     const events = data?.data?.events || []

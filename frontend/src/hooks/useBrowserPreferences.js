@@ -14,17 +14,36 @@ const readJSON = (key, fallback) => {
   }
 }
 
-export const readSavedFilters = () => readJSON(FILTERS_KEY, {})
+const stringArray = value => Array.isArray(value) ? value.filter(item => typeof item === 'string') : []
+let volatileFavorites = null
+const readFavorites = () => volatileFavorites ?? stringArray(readJSON(FAVORITES_KEY, []))
+
+export const readSavedFilters = () => {
+  const value = readJSON(FILTERS_KEY, {})
+  const filters = value && typeof value === 'object' && !Array.isArray(value) ? value : {}
+  return {
+    source: typeof filters.source === 'string' ? filters.source : '',
+    location: typeof filters.location === 'string' ? filters.location : '',
+    tags: stringArray(filters.tags),
+    freeOnly: filters.freeOnly === true,
+  }
+}
 
 export const saveFilters = filters => {
   try { localStorage.setItem(FILTERS_KEY, JSON.stringify(filters)) } catch { /* storage unavailable */ }
 }
 
 export const useFavorites = () => {
-  const [favorites, setFavorites] = React.useState(() => readJSON(FAVORITES_KEY, []))
+  const [favorites, setFavorites] = React.useState(readFavorites)
 
   React.useEffect(() => {
-    const sync = () => setFavorites(readJSON(FAVORITES_KEY, []))
+    const sync = event => {
+      if (event.type === 'storage') {
+        if (event.key !== null && event.key !== FAVORITES_KEY) return
+        volatileFavorites = null
+      }
+      setFavorites(readFavorites())
+    }
     window.addEventListener(FAVORITES_EVENT, sync)
     window.addEventListener('storage', sync)
     return () => {
@@ -35,9 +54,16 @@ export const useFavorites = () => {
 
   const toggleFavorite = React.useCallback(eventId => {
     const id = String(eventId)
-    const current = readJSON(FAVORITES_KEY, [])
+    const current = readFavorites()
     const next = current.includes(id) ? current.filter(value => value !== id) : [...current, id]
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(next))
+    try {
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(next))
+      volatileFavorites = null
+    } catch {
+      // Keep all mounted favorite consumers in sync for this tab even if
+      // persistence is denied or full. A reload cannot retain these changes.
+      volatileFavorites = next
+    }
     window.dispatchEvent(new Event(FAVORITES_EVENT))
   }, [])
 
