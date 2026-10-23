@@ -1,7 +1,25 @@
+import ipaddress
 from collections import OrderedDict, deque
 from threading import Lock
 from time import monotonic
 from typing import Callable
+
+
+def client_key(host: str) -> str:
+    """Limiter key for a client address: IPv6 clients are grouped by their /64.
+
+    A single IPv6 subscriber controls a whole /64, so keying on the full address
+    would let one client mint unlimited keys (budget bypass and table filling).
+    """
+    try:
+        addr = ipaddress.ip_address(host)
+    except ValueError:
+        return host
+    if isinstance(addr, ipaddress.IPv6Address) and addr.ipv4_mapped:
+        return str(addr.ipv4_mapped)
+    if isinstance(addr, ipaddress.IPv6Address):
+        return str(ipaddress.IPv6Network((addr, 64), strict=False))
+    return host
 
 
 class FixedWindowRateLimiter:

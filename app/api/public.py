@@ -10,7 +10,7 @@ from ..services.announcement_service import AnnouncementService
 from ..services.suggestion_service import SuggestionService
 from ..services.event_request_service import EventRequestService
 from ..services.source_catalog import get_enabled_sources
-from ..services.rate_limiter import FixedWindowRateLimiter
+from ..services.rate_limiter import FixedWindowRateLimiter, client_key
 from ..services.rss_service import build_events_rss
 from ..services.sitemap_service import build_sitemap
 from ..models.blog_post import BlogPost
@@ -43,7 +43,7 @@ public_form_limiter = FixedWindowRateLimiter(limit=5, window_seconds=60)
 def enforce_public_form_rate_limit(request: Request) -> None:
     direct_ip = request.client.host if request.client else "unknown"
     # ASGI server resolves forwarding headers only from configured trusted proxies.
-    retry_after = public_form_limiter.check(direct_ip)
+    retry_after = public_form_limiter.check(client_key(direct_ip))
     if retry_after is not None:
         raise HTTPException(
             status_code=429,

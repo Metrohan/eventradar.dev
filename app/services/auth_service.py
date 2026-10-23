@@ -1,4 +1,5 @@
-from jose import JWTError, jwt
+import jwt
+from jwt import PyJWTError
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -65,11 +66,11 @@ class AuthService:
                 token,
                 SECRET_KEY,
                 algorithms=[ALGORITHM],
-                options={"require_exp": True, "require_sub": True},
+                options={"require": ["exp", "sub"]},
             )
             username: str = payload.get("sub")
             if not username or username != settings.admin_username:
                 return None
             return username
-        except JWTError:
+        except PyJWTError:
             return None

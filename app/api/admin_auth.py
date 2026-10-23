@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from ..schemas.auth import LoginRequest, LoginResponse
 from ..services.auth_service import AuthService
 
-from ..services.rate_limiter import FixedWindowRateLimiter
+from ..services.rate_limiter import FixedWindowRateLimiter, client_key
 
 router = APIRouter()
 login_limiter = FixedWindowRateLimiter(limit=10, window_seconds=60)
@@ -13,7 +13,7 @@ login_limiter = FixedWindowRateLimiter(limit=10, window_seconds=60)
 
 def enforce_login_rate_limit(request: Request) -> None:
     key = request.client.host if request.client else "unknown"
-    retry_after = login_limiter.check(key)
+    retry_after = login_limiter.check(client_key(key))
     if retry_after is not None:
         raise HTTPException(
             status_code=429,
