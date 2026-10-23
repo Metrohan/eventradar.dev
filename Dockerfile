@@ -55,6 +55,10 @@ COPY alembic.ini .
 COPY app/ app/
 COPY scripts/ scripts/
 
+# COPY keeps the source modes; a checkout made under a restrictive umask (the production
+# server has app/ and scripts/ at 0700) would leave the code unreadable for `app`.
+RUN chmod -R a+rX /app/alembic /app/alembic.ini /app/app /app/scripts
+
 USER app
 ENV HOME=/home/app
 
