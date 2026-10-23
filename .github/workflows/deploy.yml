@@ -87,7 +87,15 @@ jobs:
             echo "DB backup: $BACKUP_FILE"
             find backups -name 'pre_deploy_*.sql.gz' -mtime +7 -delete
 
+            # The dump above was taken from the running db; pull afterwards so the
+            # force-recreate below picks up Postgres 16 security releases (same major,
+            # data-compatible). The tag is otherwise never refreshed.
+            $COMPOSE pull db
+
             $COMPOSE build backend frontend
+            # The backend image runs as uid 10001; volumes created by older root-run
+            # images are root-owned. Idempotent, and a no-op for fresh volumes.
+            $COMPOSE run --rm --no-deps --user root backend chown -R app:app /app/data
             $COMPOSE run --rm backend alembic upgrade head
             $COMPOSE up -d --force-recreate
 
@@ -104,5 +112,10 @@ jobs:
               notify_telegram "🟡 TechEventRadar: rollback tamamlandi, ${PREV_COMMIT:0:7} tekrar calisiyor. Deploy basarisiz kaydedildi, kok neden incelenmeli."
               exit 1
             fi
+
+            # Reclaim disk (the host runs at ~85%): dangling images from rebuilds and
+            # build cache older than a week. Tagged images (incl. rollback tags) are kept.
+            docker image prune -f > /dev/null || true
+            docker builder prune -f --filter until=168h > /dev/null || true
 
             echo "--- Deploy tamamlandi ---"
