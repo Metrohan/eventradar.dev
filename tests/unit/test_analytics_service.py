@@ -171,13 +171,21 @@ def test_log_request_triggers_daily_purge_once(test_db, monkeypatch):
     from app.services import analytics_service
 
     monkeypatch.setattr(analytics_service, "_last_purge", float("-inf"))
-    test_db.add(TrafficLog(path="/old", method="GET", timestamp=datetime.now() - timedelta(days=200)))
+    test_db.add(
+        TrafficLog(
+            path="/old", method="GET", timestamp=datetime.now() - timedelta(days=200)
+        )
+    )
     test_db.commit()
     service = AnalyticsService(test_db)
     service.log_request("/new", "GET", "198.51.100.9", "ua")
     assert [row.path for row in test_db.query(TrafficLog).all()] == ["/new"]
     # second call within the interval must not purge again
-    test_db.add(TrafficLog(path="/old2", method="GET", timestamp=datetime.now() - timedelta(days=200)))
+    test_db.add(
+        TrafficLog(
+            path="/old2", method="GET", timestamp=datetime.now() - timedelta(days=200)
+        )
+    )
     test_db.commit()
     service.log_request("/new2", "GET", "198.51.100.9", "ua")
     assert "/old2" in [row.path for row in test_db.query(TrafficLog).all()]
