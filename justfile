@@ -19,6 +19,7 @@ format:
     {{py}} -m black app/ scripts/ tests/
 
 lint:
+    {{py}} -m black --check .
     {{py}} -m pylint app/ --disable=C0114,C0115,C0116,R0903,W0611 --fail-under=7.0
     npm --prefix frontend run lint
 
