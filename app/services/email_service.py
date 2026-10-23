@@ -78,11 +78,15 @@ def _notify_owner(
     """Form gönderimini site sahibine e-postayla iletir (alıcı: FEEDBACK_NOTIFY_EMAIL)."""
     to = settings.feedback_notify_email
     if not to:
-        logger.info("FEEDBACK_NOTIFY_EMAIL boş, %s e-postası gönderilmedi", subject_prefix)
+        logger.info(
+            "FEEDBACK_NOTIFY_EMAIL boş, %s e-postası gönderilmedi", subject_prefix
+        )
         return False
     try:
         # Tek satıra indir: başlıktaki satır sonları e-posta başlığı enjeksiyonuna yol açmasın.
-        subject = f"[EventRadar] {subject_prefix}: {' '.join(subject_title.split())[:100]}"
+        subject = (
+            f"[EventRadar] {subject_prefix}: {' '.join(subject_title.split())[:100]}"
+        )
         html = "".join(
             f'<p style="white-space:pre-wrap"><b>{escape(label)}:</b> {escape(value)}</p>'
             for label, value in fields
@@ -90,7 +94,11 @@ def _notify_owner(
         plain = "\n".join(f"{label}: {value}" for label, value in fields) + "\n"
         # Yalnızca tek bir geçerli adres: parseaddr ile ayıkla, boşluk/satır sonu varsa kullanma.
         address = parseaddr(reply_to or "")[1]
-        safe_reply_to = address if "@" in address and not any(c.isspace() for c in address) else None
+        safe_reply_to = (
+            address
+            if "@" in address and not any(c.isspace() for c in address)
+            else None
+        )
         return _send(to, subject, html, text_body=plain, reply_to=safe_reply_to)
     except Exception:
         logger.exception("%s e-postası hazırlanamadı", subject_prefix)

@@ -142,10 +142,28 @@ EVENT_REQUEST = {"event_link": "https://example.com/e", "event_title": "Some eve
     "http_method,path,body,target,attr",
     [
         ("get", "/api/events", None, public.EventService, "get_events"),
-        ("get", "/api/announcements", None, public.AnnouncementService, "get_announcements"),
+        (
+            "get",
+            "/api/announcements",
+            None,
+            public.AnnouncementService,
+            "get_announcements",
+        ),
         ("get", "/api/status", None, public, "get_enabled_sources"),
-        ("post", "/api/suggestions", SUGGESTION, public.SuggestionService, "create_suggestion"),
-        ("post", "/api/event-requests", EVENT_REQUEST, public.EventRequestService, "create_event_request"),
+        (
+            "post",
+            "/api/suggestions",
+            SUGGESTION,
+            public.SuggestionService,
+            "create_suggestion",
+        ),
+        (
+            "post",
+            "/api/event-requests",
+            EVENT_REQUEST,
+            public.EventRequestService,
+            "create_event_request",
+        ),
     ],
 )
 def test_public_errors_hide_database_details(
@@ -154,7 +172,9 @@ def test_public_errors_hide_database_details(
     monkeypatch.setattr(
         target, attr, Mock(side_effect=RuntimeError("SECRET_SQL_PARAMETER"))
     )
-    response = getattr(isolated_client, http_method)(path, **({"json": body} if body else {}))
+    response = getattr(isolated_client, http_method)(
+        path, **({"json": body} if body else {})
+    )
     assert response.status_code == 500
     assert "SECRET_SQL_PARAMETER" not in response.text
 
@@ -194,9 +214,15 @@ def _client_ip_seen_by_uvicorn(trusted, peer, forwarded):
 def test_forwarded_ip_honored_only_from_trusted_proxy():
     trusted = "172.16.0.0/12"
     # nginx container (trusted) appends the docker gateway to the client's address
-    assert _client_ip_seen_by_uvicorn(trusted, "172.18.0.3", "203.0.113.9, 172.18.0.1") == "203.0.113.9"
+    assert (
+        _client_ip_seen_by_uvicorn(trusted, "172.18.0.3", "203.0.113.9, 172.18.0.1")
+        == "203.0.113.9"
+    )
     # an untrusted peer cannot choose its own identity
-    assert _client_ip_seen_by_uvicorn(trusted, "198.51.100.7", "203.0.113.9") == "198.51.100.7"
+    assert (
+        _client_ip_seen_by_uvicorn(trusted, "198.51.100.7", "203.0.113.9")
+        == "198.51.100.7"
+    )
 
 
 def test_compose_backend_trusts_proxy_headers_from_configured_range():
@@ -206,7 +232,10 @@ def test_compose_backend_trusts_proxy_headers_from_configured_range():
     command = next(l for l in compose.splitlines() if "uvicorn app.main:app" in l)
     assert "--proxy-headers" in command
     assert "--forwarded-allow-ips" in command and "FORWARDED_ALLOW_IPS" in command
-    assert "forwarded-allow-ips *" not in command and "forwarded-allow-ips=*" not in command
+    assert (
+        "forwarded-allow-ips *" not in command
+        and "forwarded-allow-ips=*" not in command
+    )
 
 
 def test_smtp_verifies_certificate_and_hostname(monkeypatch):
@@ -246,13 +275,43 @@ def test_digest_treats_scraped_fields_as_text():
     "http_method,path,target,attr",
     [
         ("get", "/api/admin/events", admin_events.EventService, "get_events"),
-        ("get", "/api/admin/announcements", admin.AnnouncementService, "get_announcements"),
-        ("delete", "/api/admin/announcements/1", admin.AnnouncementService, "delete_announcement"),
+        (
+            "get",
+            "/api/admin/announcements",
+            admin.AnnouncementService,
+            "get_announcements",
+        ),
+        (
+            "delete",
+            "/api/admin/announcements/1",
+            admin.AnnouncementService,
+            "delete_announcement",
+        ),
         ("get", "/api/admin/suggestions", admin.SuggestionService, "get_suggestions"),
-        ("delete", "/api/admin/suggestions/1", admin.SuggestionService, "delete_suggestion"),
-        ("get", "/api/admin/event-requests", admin.EventRequestService, "get_event_requests"),
-        ("delete", "/api/admin/event-requests/1", admin.EventRequestService, "delete_event_request"),
-        ("post", "/api/admin/announcements", admin.AnnouncementService, "create_announcement"),
+        (
+            "delete",
+            "/api/admin/suggestions/1",
+            admin.SuggestionService,
+            "delete_suggestion",
+        ),
+        (
+            "get",
+            "/api/admin/event-requests",
+            admin.EventRequestService,
+            "get_event_requests",
+        ),
+        (
+            "delete",
+            "/api/admin/event-requests/1",
+            admin.EventRequestService,
+            "delete_event_request",
+        ),
+        (
+            "post",
+            "/api/admin/announcements",
+            admin.AnnouncementService,
+            "create_announcement",
+        ),
         ("post", "/api/admin/events", admin_events.EventService, "create_event"),
         ("put", "/api/admin/events/1", admin_events.EventService, "update_event"),
         ("delete", "/api/admin/events/1", admin_events.EventService, "delete_event"),
@@ -283,12 +342,22 @@ def test_admin_errors_hide_database_details(
 @pytest.mark.parametrize(
     "path,service,method",
     [
-        ("/api/admin/announcements/999", admin.AnnouncementService, "delete_announcement"),
+        (
+            "/api/admin/announcements/999",
+            admin.AnnouncementService,
+            "delete_announcement",
+        ),
         ("/api/admin/suggestions/999", admin.SuggestionService, "delete_suggestion"),
-        ("/api/admin/event-requests/999", admin.EventRequestService, "delete_event_request"),
+        (
+            "/api/admin/event-requests/999",
+            admin.EventRequestService,
+            "delete_event_request",
+        ),
     ],
 )
-def test_admin_delete_of_missing_record_is_404(test_db, monkeypatch, path, service, method):
+def test_admin_delete_of_missing_record_is_404(
+    test_db, monkeypatch, path, service, method
+):
     app = FastAPI()
     app.include_router(admin.router, prefix="/api/admin")
     app.dependency_overrides[get_db] = lambda: test_db
@@ -306,7 +375,9 @@ def _post_suggestion(client, **overrides):
 def test_suggestion_is_mailed_to_owner_with_safe_header_and_escaped_body(
     isolated_client, monkeypatch
 ):
-    monkeypatch.setattr(email_service.settings, "feedback_notify_email", "owner@example.com")
+    monkeypatch.setattr(
+        email_service.settings, "feedback_notify_email", "owner@example.com"
+    )
     sent = Mock(return_value=True)
     monkeypatch.setattr(email_service, "_send", sent)
     response = _post_suggestion(
@@ -333,8 +404,12 @@ def test_suggestion_without_notify_address_sends_nothing(isolated_client, monkey
 def test_suggestion_still_saved_when_mail_fails(isolated_client, test_db, monkeypatch):
     from app.models.suggestion import Suggestion
 
-    monkeypatch.setattr(email_service.settings, "feedback_notify_email", "owner@example.com")
-    monkeypatch.setattr(email_service, "_send", Mock(side_effect=RuntimeError("smtp down")))
+    monkeypatch.setattr(
+        email_service.settings, "feedback_notify_email", "owner@example.com"
+    )
+    monkeypatch.setattr(
+        email_service, "_send", Mock(side_effect=RuntimeError("smtp down"))
+    )
     assert _post_suggestion(isolated_client).status_code == 200
     assert test_db.query(Suggestion).count() == 1
 
@@ -342,7 +417,9 @@ def test_suggestion_still_saved_when_mail_fails(isolated_client, test_db, monkey
 def test_event_request_is_mailed_to_owner_with_safe_header_and_escaped_body(
     isolated_client, monkeypatch
 ):
-    monkeypatch.setattr(email_service.settings, "feedback_notify_email", "owner@example.com")
+    monkeypatch.setattr(
+        email_service.settings, "feedback_notify_email", "owner@example.com"
+    )
     sent = Mock(return_value=True)
     monkeypatch.setattr(email_service, "_send", sent)
     response = isolated_client.post(
@@ -364,28 +441,47 @@ def test_event_request_is_mailed_to_owner_with_safe_header_and_escaped_body(
     assert "https://example.com/e" in kwargs["text_body"]
 
 
-def test_event_request_still_saved_when_mail_fails(isolated_client, test_db, monkeypatch):
+def test_event_request_still_saved_when_mail_fails(
+    isolated_client, test_db, monkeypatch
+):
     from app.models.event_request import EventRequest
 
-    monkeypatch.setattr(email_service.settings, "feedback_notify_email", "owner@example.com")
-    monkeypatch.setattr(email_service, "_send", Mock(side_effect=RuntimeError("smtp down")))
-    assert isolated_client.post("/api/event-requests", json=EVENT_REQUEST).status_code == 200
+    monkeypatch.setattr(
+        email_service.settings, "feedback_notify_email", "owner@example.com"
+    )
+    monkeypatch.setattr(
+        email_service, "_send", Mock(side_effect=RuntimeError("smtp down"))
+    )
+    assert (
+        isolated_client.post("/api/event-requests", json=EVENT_REQUEST).status_code
+        == 200
+    )
     assert test_db.query(EventRequest).count() == 1
 
 
-def test_event_request_without_contact_email_has_no_reply_to(isolated_client, monkeypatch):
-    monkeypatch.setattr(email_service.settings, "feedback_notify_email", "owner@example.com")
+def test_event_request_without_contact_email_has_no_reply_to(
+    isolated_client, monkeypatch
+):
+    monkeypatch.setattr(
+        email_service.settings, "feedback_notify_email", "owner@example.com"
+    )
     sent = Mock(return_value=True)
     monkeypatch.setattr(email_service, "_send", sent)
-    assert isolated_client.post("/api/event-requests", json=EVENT_REQUEST).status_code == 200
+    assert (
+        isolated_client.post("/api/event-requests", json=EVENT_REQUEST).status_code
+        == 200
+    )
     assert sent.call_args.kwargs["reply_to"] is None
 
 
 @pytest.mark.parametrize(
-    "bad", ["a@b.com\r\nBcc: evil@example.com", "not an address", "two@a.com three@b.com"]
+    "bad",
+    ["a@b.com\r\nBcc: evil@example.com", "not an address", "two@a.com three@b.com"],
 )
 def test_unsafe_reply_to_is_dropped(monkeypatch, bad):
-    monkeypatch.setattr(email_service.settings, "feedback_notify_email", "owner@example.com")
+    monkeypatch.setattr(
+        email_service.settings, "feedback_notify_email", "owner@example.com"
+    )
     sent = Mock(return_value=True)
     monkeypatch.setattr(email_service, "_send", sent)
     email_service.send_event_request_notification("https://e.com", "t", None, None, bad)
