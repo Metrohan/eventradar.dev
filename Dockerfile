@@ -8,7 +8,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     gnupg \
     unzip \
-    gcc \
     postgresql-client \
     fonts-liberation \
     libasound2 \
@@ -42,10 +41,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt constraints.txt ./
 RUN pip install --no-cache-dir -r requirements.txt -c constraints.txt
 
+# Run as an unprivileged user (this container drives Chrome against third-party pages).
+# The code stays root-owned/read-only for it; only HOME (webdriver/uc caches) and the
+# data dir (thumbnails volume) are writable. Existing root-owned volumes are fixed by the
+# `chown` step in .github/workflows/deploy.yml.
+RUN groupadd --system --gid 10001 app \
+    && useradd --system --uid 10001 --gid app --create-home --home-dir /home/app --shell /usr/sbin/nologin app \
+    && mkdir -p /app/data/thumbnails \
+    && chown -R app:app /app/data
+
 COPY alembic/ alembic/
 COPY alembic.ini .
 COPY app/ app/
 COPY scripts/ scripts/
+
+USER app
+ENV HOME=/home/app
 
 EXPOSE 8000
 
