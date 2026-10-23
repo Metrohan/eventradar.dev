@@ -11,7 +11,10 @@ run_check="$(
 )"
 
 if [[ "$run_check" =~ ^(true|1|yes)$ ]]; then
-  if command -v just >/dev/null 2>&1 && just --list 2>/dev/null | grep -qE '(^|[[:space:]])check([[:space:]]|$)'; then
+  # Capture first: `just --list | grep -q` gets SIGPIPE when grep exits early, and
+  # under pipefail that made the check randomly look "not found".
+  recipes="$(just --list 2>/dev/null || true)"
+  if command -v just >/dev/null 2>&1 && grep -qE '(^|[[:space:]])check([[:space:]]|$)' <<<"$recipes"; then
     echo "[meto-ai] Running just check before push..."
     just check
   else

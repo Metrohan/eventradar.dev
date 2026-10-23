@@ -6,7 +6,7 @@ python-dotenv
 sqlalchemy>=2.0,<2.1
 psycopg2-binary
 alembic
-python-jose[cryptography]
+PyJWT
 passlib[bcrypt]
 email-validator
 python-multipart

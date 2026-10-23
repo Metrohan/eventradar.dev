@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 import pytest
 from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
-from jose import jwt
+import jwt
 from starlette.requests import Request
 
 from app.api import public, admin, admin_auth, admin_events
@@ -106,7 +106,7 @@ def test_token_lifetime_is_independent_of_local_timezone(monkeypatch):
 
     monkeypatch.setattr(auth_service, "datetime", LocalClock)
     token = auth_service.AuthService().create_access_token({"sub": "testadmin"})
-    assert jwt.get_unverified_claims(token)["exp"] == 1893457800
+    assert jwt.decode(token, options={"verify_signature": False})["exp"] == 1893457800
 
 
 @pytest.mark.parametrize(
@@ -390,3 +390,29 @@ def test_unsafe_reply_to_is_dropped(monkeypatch, bad):
     monkeypatch.setattr(email_service, "_send", sent)
     email_service.send_event_request_notification("https://e.com", "t", None, None, bad)
     assert sent.call_args.kwargs["reply_to"] is None
+
+
+@pytest.mark.parametrize(
+    "host,expected",
+    [
+        ("203.0.113.9", "203.0.113.9"),
+        ("::ffff:203.0.113.9", "203.0.113.9"),
+        ("2001:db8:abcd:12:1:2:3:4", "2001:db8:abcd:12::/64"),
+        ("2001:db8:abcd:12:ffff:ffff:ffff:ffff", "2001:db8:abcd:12::/64"),
+        ("unknown", "unknown"),
+    ],
+)
+def test_client_key_groups_ipv6_by_64(host, expected):
+    from app.services.rate_limiter import client_key
+
+    assert client_key(host) == expected
+
+
+def test_ipv6_client_cannot_mint_keys_to_bypass_or_fill_the_limiter():
+    from app.services.rate_limiter import client_key
+
+    limiter = FixedWindowRateLimiter(limit=2, window_seconds=60, max_keys=4)
+    hosts = [f"2001:db8:abcd:12::{i:x}" for i in range(1, 9)]  # one /64
+    results = [limiter.check(client_key(h)) for h in hosts]
+    assert results[:2] == [None, None] and all(r is not None for r in results[2:])
+    assert limiter.check(client_key("198.51.100.1")) is None  # table not filled

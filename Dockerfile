@@ -39,8 +39,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # requirements.txt dosyasını kopyala ve bağımlılıkları yükle
 # Bu adım, requirements.txt değiştiğinde yeniden çalışır.
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt constraints.txt ./
+RUN pip install --no-cache-dir -r requirements.txt -c constraints.txt
 
 COPY alembic/ alembic/
 COPY alembic.ini .
