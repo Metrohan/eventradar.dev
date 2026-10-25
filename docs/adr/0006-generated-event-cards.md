@@ -33,12 +33,16 @@ host-allowlist code is deleted because nothing is fetched any more.
 - Cards look the same across sources by design; accent hue is derived from the
   source name, with no logos or brand assets.
 
-## Known gaps (left open on purpose)
+## Follow-ups (code done; the production run is a separate, human-run step)
 
-- The public API schema still returns `image_url`, so a client can read the
-  source image URLs. Dropping it is a breaking interface change and needs a
-  separate, human-approved task.
-- Rows not yet rescraped keep their old copied `thumbnail_url`, and the old files
-  remain served from the thumbnail directory. Release gate: after deploy, re-render
-  cards for all rows (or null non-card `thumbnail_url`s), then delete the old files
-  — a human-approved, backed-up step.
+- The public API (`GET /api/events`, `GET /api/events/{id}`) no longer returns
+  `image_url`; the admin schema keeps it for the edit form. The DB column and the
+  scrapers' `image_url` stay (dropping them is a separate migration).
+- Old copied thumbnails: `scripts/backfill_event_cards.py` re-points every event at
+  its card and MOVES unreferenced files to `--archive-dir` (never deletes; the
+  archive must be outside the served directory). Dry-run by default. Run order on
+  the server: DB dump -> dry-run -> `--apply --archive-dir <path>` -> copy the archive
+  out of the container (a redeploy erases container-local paths) -> delete it after
+  a few days if nothing is missed.
+- Scraped text is capped at 300 characters before hashing and drawing, so a huge
+  `location` cannot make rendering slow.

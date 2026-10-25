@@ -28,6 +28,10 @@ THUMBNAIL_HEIGHT = 200
 _SCALE = 2
 _MARGIN = 20 * _SCALE
 
+# Scraped text is untrusted and unbounded (location is a Text column); cap it
+# before measuring/hashing so _fit's per-character loop stays cheap.
+_MAX_TEXT_CHARS = 300
+
 # Bump to regenerate every card after a design change (it is part of the cache key).
 _RENDER_VERSION = "v1"
 
@@ -160,6 +164,35 @@ def _cache_key(
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
 
 
+def card_public_url(
+    title: str,
+    date: datetime | None,
+    location: str | None,
+    source: str,
+    public_prefix: str,
+) -> str | None:
+    """Public URL the card for these facts has (or will have); None for a blank title."""
+    prepared = _prepare(title, date, location, source)
+    if prepared is None:
+        return None
+    return f"{public_prefix.rstrip('/')}/{_cache_key(*prepared)}.webp"
+
+
+def _prepare(
+    title: str, date: datetime | None, location: str | None, source: str
+) -> tuple[str, str | None, str | None, str] | None:
+    """Trim/cap untrusted scraped text; the result feeds both the cache key and _render."""
+    title = title.strip()[:_MAX_TEXT_CHARS]
+    if not title:
+        return None
+    return (
+        title,
+        _format_date(date),
+        location[:_MAX_TEXT_CHARS] if location else location,
+        source[:_MAX_TEXT_CHARS],
+    )
+
+
 def ensure_card(
     title: str,
     date: datetime | None,
@@ -174,11 +207,11 @@ def ensure_card(
     Never raises: any failure is logged and treated as "no thumbnail", letting
     the frontend fall back to the static placeholder.
     """
-    if not title.strip():
+    prepared = _prepare(title, date, location, source)
+    if prepared is None:
         return None
 
-    date_text = _format_date(date)
-    filename = f"{_cache_key(title, date_text, location, source)}.webp"
+    filename = f"{_cache_key(*prepared)}.webp"
     dest = thumbnail_dir / filename
     public_url = f"{public_prefix.rstrip('/')}/{filename}"
 
@@ -186,7 +219,7 @@ def ensure_card(
         return public_url
 
     try:
-        webp_bytes = _render(title, date_text, location, source)
+        webp_bytes = _render(*prepared)
         thumbnail_dir.mkdir(parents=True, exist_ok=True)
         tmp_dest = dest.with_name(
             f"{dest.name}.{os.getpid()}.tmp"
