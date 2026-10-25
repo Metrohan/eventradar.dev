@@ -43,6 +43,16 @@ export function injectJsonLd(id, schema) {
   return () => document.getElementById(id)?.remove()
 }
 
+/**
+ * Mark the current view as not indexable (soft-404 pages: unknown route or
+ * missing event — the server still answers 200 with the SPA shell).
+ * Returns a cleanup that restores the default for the next route.
+ */
+export function setNoIndex() {
+  setMeta('robots', 'noindex, follow')
+  return () => setMeta('robots', 'index, follow')
+}
+
 export function setPageSEO({ title, tabTitle, description, path }) {
   document.title = tabTitle || title
   setMeta('description', description)

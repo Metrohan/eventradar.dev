@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { setNoIndex } from '../utils/seo'
 
 const NotFoundPage = () => {
     const { t } = useTranslation()
+    useEffect(() => setNoIndex(), [])
     return (
         <div className="error-page-container">
             <div className="error-page-content">
