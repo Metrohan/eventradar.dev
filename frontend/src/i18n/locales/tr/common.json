@@ -43,7 +43,8 @@
       "home": "Anasayfa",
       "freeTrainings": "Ücretsiz Eğitimler",
       "feedback": "Öneri & Şikayet",
-      "addEvent": "Etkinlik Ekle"
+      "addEvent": "Etkinlik Ekle",
+      "takedown": "İçerik Kaldırma Talebi"
     },
     "openSourceHeading": "Açık Kaynak",
     "openSourceSubtitle": "GitHub'da yıldız bırak ⭐",
@@ -190,8 +191,10 @@
       "suggestion": "Öneri",
       "bug": "Hata Bildirimi",
       "complaint": "Şikayet",
+      "takedown": "Kaldırma Talebi",
       "other": "Diğer"
     },
+    "takedownHint": "Kaldırılmasını istediğiniz etkinliğin ya da görselin bağlantısını ve size ulaşabileceğimiz bir e-posta adresini yazın. Talepleri en kısa sürede inceleyip ilgili içeriği kaldırırız.",
     "titleLabel": "Başlık",
     "titlePlaceholder": "Öneri/şikayet başlığını giriniz",
     "titleRequired": "Başlık gereklidir",

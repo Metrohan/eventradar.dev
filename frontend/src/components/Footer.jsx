@@ -18,6 +18,7 @@ const Footer = () => {
     { to: '/egitim-kaynaklari', label: t('footer.quickLinks.freeTrainings') },
     { to: '/oneri-sikayet', label: t('footer.quickLinks.feedback') },
     { to: '/etkinlik-talep', label: t('footer.quickLinks.addEvent') },
+    { to: '/oneri-sikayet?tip=kaldirma', label: t('footer.quickLinks.takedown') },
   ]
 
   const handleSubscribe = async (e) => {
