@@ -14,7 +14,8 @@ from .location_normalizer import normalize_location
 SessionFactory = Callable[[], Session]
 NotificationAdapter = Callable[[list[dict[str, Any]]], None]
 Clock = Callable[[], datetime]
-ThumbnailFn = Callable[[str], "str | None"]
+# (title, date, location, source) -> public URL of the generated event card
+ThumbnailFn = Callable[[str, datetime | None, str | None, str], str | None]
 
 
 class IngestionError(RuntimeError):
@@ -109,14 +110,25 @@ class EventIngestion:
         db = self._session_factory()
         new_events: list[ScrapedEvent] = []
 
-        # Thumbnail generation touches the network/filesystem; run it
-        # up front (once per unique image_url, cache-hits are file checks
-        # only) so it never happens inside a DB transaction/savepoint.
+        # Card generation touches the filesystem; run it up front (cache hits
+        # are file checks only) so it never happens inside a DB
+        # transaction/savepoint. Keyed by event url.
         thumbnails: dict[str, str | None] = {}
         if self._thumbnail_fn:
-            unique_image_urls = {item.image_url for item in items if item.image_url}
-            for image_url in unique_image_urls:
-                thumbnails[image_url] = self._thumbnail_fn(image_url)
+            for item in items:
+                if (
+                    not item.url
+                    or not (item.title or "").strip()
+                    or item.url in thumbnails
+                ):
+                    continue
+                try:
+                    card_date = normalize_date(item.date)
+                except Exception:
+                    card_date = None
+                thumbnails[item.url] = self._thumbnail_fn(
+                    item.title, card_date, item.location, item.source
+                )
 
         try:
             urls = [item.url for item in items if item.url]
@@ -135,9 +147,7 @@ class EventIngestion:
                     continue
                 seen_urls.add(item.url)
 
-                thumbnail_url = (
-                    thumbnails.get(item.image_url) if item.image_url else None
-                )
+                thumbnail_url = thumbnails.get(item.url)
 
                 try:
                     is_new = False
@@ -264,11 +274,10 @@ class EventIngestion:
         event.image_url = item.image_url or cast(  # type: ignore[assignment]
             str | None, event.image_url
         )
-        if item.image_url:
-            # Only touch thumbnail_url when this scrape actually reported an
-            # image; a missing thumbnail_url here means generation failed
-            # (bad/unreachable source, SSRF-rejected, oversize, etc.) and
-            # the frontend falls back to image_url or the static placeholder.
+        if thumbnail_url:
+            # A missing thumbnail_url means card generation failed this run;
+            # keep the previous card and let the frontend fall back to the
+            # static placeholder if there is none.
             event.thumbnail_url = thumbnail_url  # type: ignore[assignment]
         event.scraped_at = now  # type: ignore[assignment]
         event.last_seen_at = now  # type: ignore[assignment]
@@ -326,9 +335,16 @@ def build_event_ingestion() -> EventIngestion:
 
     thumbnail_dir = Path(settings.thumbnail_dir)
 
-    def make_thumbnail(image_url: str) -> str | None:
-        return image_pipeline.ensure_thumbnail(
-            image_url, thumbnail_dir, settings.thumbnail_public_prefix
+    def make_thumbnail(
+        title: str, date: datetime | None, location: str | None, source: str
+    ) -> str | None:
+        return image_pipeline.ensure_card(
+            title,
+            date,
+            location,
+            source,
+            thumbnail_dir,
+            settings.thumbnail_public_prefix,
         )
 
     return EventIngestion(SessionLocal, notify_all, thumbnail_fn=make_thumbnail)

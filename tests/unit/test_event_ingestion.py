@@ -108,65 +108,98 @@ def test_invalid_record_does_not_abort_valid_records(test_db):
     assert test_db.query(Event).filter(Event.url == valid.url).count() == 1
 
 
-def test_ingest_sets_thumbnail_url_from_thumbnail_fn(test_db):
+def test_ingest_builds_card_from_event_facts(test_db):
     calls = []
 
-    def fake_thumbnail(image_url):
-        calls.append(image_url)
+    def fake_card(title, date, location, source):
+        calls.append((title, date, location, source))
         return "/media/thumbnails/abc123.webp"
 
-    ingestion = EventIngestion(lambda: test_db, thumbnail_fn=fake_thumbnail)
+    ingestion = EventIngestion(lambda: test_db, thumbnail_fn=fake_card)
     event = ScrapedEvent(
-        title="With Image",
-        url="https://example.com/with-image",
-        source="test",
-        image_url="https://coderspace.io/events/a.png",
+        title="Hackathon",
+        url="https://example.com/hackathon",
+        source="Youthall",
+        location="İstanbul",
+        date=datetime(2099, 11, 7, 18, 30),
     )
 
     ingestion.ingest([event])
 
     stored = test_db.query(Event).filter(Event.url == event.url).one()
     assert stored.thumbnail_url == "/media/thumbnails/abc123.webp"
-    assert calls == ["https://coderspace.io/events/a.png"]
+    assert calls == [
+        ("Hackathon", datetime(2099, 11, 7, 18, 30), "İstanbul", "Youthall")
+    ]
 
 
-def test_ingest_calls_thumbnail_fn_once_per_unique_image_url(test_db):
+def test_ingest_makes_a_card_even_without_source_image(test_db):
+    ingestion = EventIngestion(
+        lambda: test_db, thumbnail_fn=lambda *args: "/media/thumbnails/card.webp"
+    )
+    event = ScrapedEvent(
+        title="No Image", url="https://example.com/no-image", source="test"
+    )
+
+    ingestion.ingest([event])
+
+    stored = test_db.query(Event).filter(Event.url == event.url).one()
+    assert stored.thumbnail_url == "/media/thumbnails/card.webp"
+
+
+def test_ingest_passes_card_fn_only_the_shown_facts(test_db):
+    seen = []
+    ingestion = EventIngestion(
+        lambda: test_db,
+        thumbnail_fn=lambda *args: seen.append(args) or "/media/thumbnails/c.webp",
+    )
+    event = ScrapedEvent(
+        title="Has Image",
+        url="https://example.com/has-image",
+        source="test",
+        image_url="https://coderspace.io/events/a.png",
+    )
+
+    ingestion.ingest([event])
+
+    assert seen == [("Has Image", None, None, "test")]
+
+
+def test_ingest_skips_card_for_blank_title(test_db):
+    seen = []
+    ingestion = EventIngestion(
+        lambda: test_db, thumbnail_fn=lambda *args: seen.append(args) or "/x.webp"
+    )
+
+    ingestion.ingest(
+        [ScrapedEvent(title="  ", url="https://example.com/blank", source="t")]
+    )
+
+    assert seen == []
+
+
+def test_ingest_calls_card_fn_once_per_event_url(test_db):
     calls = []
 
-    def fake_thumbnail(image_url):
-        calls.append(image_url)
+    def fake_card(title, date, location, source):
+        calls.append(title)
         return f"/media/thumbnails/{len(calls)}.webp"
 
-    ingestion = EventIngestion(lambda: test_db, thumbnail_fn=fake_thumbnail)
-    shared_image = "https://coderspace.io/events/shared.png"
+    ingestion = EventIngestion(lambda: test_db, thumbnail_fn=fake_card)
     events = [
-        ScrapedEvent(
-            title="A",
-            url="https://example.com/a",
-            source="test",
-            image_url=shared_image,
-        ),
-        ScrapedEvent(
-            title="B",
-            url="https://example.com/b",
-            source="test",
-            image_url=shared_image,
-        ),
+        ScrapedEvent(title="A", url="https://example.com/a", source="test"),
+        ScrapedEvent(title="A dup", url="https://example.com/a", source="test"),
+        ScrapedEvent(title="B", url="https://example.com/b", source="test"),
     ]
 
     ingestion.ingest(events)
 
-    assert calls == [shared_image]
+    assert calls == ["A", "B"]
 
 
-def test_ingest_leaves_thumbnail_none_when_thumbnail_fn_fails(test_db):
-    ingestion = EventIngestion(lambda: test_db, thumbnail_fn=lambda url: None)
-    event = ScrapedEvent(
-        title="Bad Image",
-        url="https://example.com/bad-image",
-        source="test",
-        image_url="https://evil.example.com/x.png",
-    )
+def test_ingest_leaves_thumbnail_none_when_card_fn_fails(test_db):
+    ingestion = EventIngestion(lambda: test_db, thumbnail_fn=lambda *args: None)
+    event = ScrapedEvent(title="Bad", url="https://example.com/bad", source="test")
 
     ingestion.ingest([event])
 
@@ -177,10 +210,7 @@ def test_ingest_leaves_thumbnail_none_when_thumbnail_fn_fails(test_db):
 def test_ingest_without_thumbnail_fn_leaves_thumbnail_none(test_db):
     ingestion = EventIngestion(lambda: test_db)
     event = ScrapedEvent(
-        title="No Pipeline",
-        url="https://example.com/no-pipeline",
-        source="test",
-        image_url="https://coderspace.io/events/a.png",
+        title="No Pipeline", url="https://example.com/no-pipeline", source="test"
     )
 
     ingestion.ingest([event])
@@ -189,61 +219,30 @@ def test_ingest_without_thumbnail_fn_leaves_thumbnail_none(test_db):
     assert stored.thumbnail_url is None
 
 
-def test_update_regenerates_thumbnail_when_image_url_changes(test_db):
-    thumbnails = {
-        "https://coderspace.io/events/old.png": "/media/thumbnails/old.webp",
-        "https://coderspace.io/events/new.png": "/media/thumbnails/new.webp",
-    }
-    ingestion = EventIngestion(lambda: test_db, thumbnail_fn=thumbnails.get)
-    url = "https://example.com/changing-image"
-
-    ingestion.ingest(
-        [
-            ScrapedEvent(
-                title="V1",
-                url=url,
-                source="test",
-                image_url="https://coderspace.io/events/old.png",
-            )
-        ]
-    )
-    stored = test_db.query(Event).filter(Event.url == url).one()
-    assert stored.thumbnail_url == "/media/thumbnails/old.webp"
-
-    ingestion.ingest(
-        [
-            ScrapedEvent(
-                title="V1",
-                url=url,
-                source="test",
-                image_url="https://coderspace.io/events/new.png",
-            )
-        ]
-    )
-    stored = test_db.query(Event).filter(Event.url == url).one()
-    assert stored.thumbnail_url == "/media/thumbnails/new.webp"
-
-
-def test_update_keeps_existing_thumbnail_when_scrape_reports_no_image(test_db):
+def test_update_regenerates_card_when_event_facts_change(test_db):
     ingestion = EventIngestion(
-        lambda: test_db, thumbnail_fn=lambda url: "/media/thumbnails/keep.webp"
+        lambda: test_db,
+        thumbnail_fn=lambda title, date, location, source: f"/media/{title}.webp",
     )
-    url = "https://example.com/keep-thumbnail"
+    url = "https://example.com/changing-title"
 
-    ingestion.ingest(
-        [
-            ScrapedEvent(
-                title="V1",
-                url=url,
-                source="test",
-                image_url="https://coderspace.io/events/keep.png",
-            )
-        ]
+    ingestion.ingest([ScrapedEvent(title="V1", url=url, source="test")])
+    ingestion.ingest([ScrapedEvent(title="V2", url=url, source="test")])
+
+    stored = test_db.query(Event).filter(Event.url == url).one()
+    assert stored.thumbnail_url == "/media/V2.webp"
+
+
+def test_update_keeps_existing_card_when_generation_fails(test_db):
+    results = iter(["/media/thumbnails/keep.webp", None])
+    ingestion = EventIngestion(
+        lambda: test_db, thumbnail_fn=lambda *args: next(results)
     )
+    url = "https://example.com/keep-card"
+    event = ScrapedEvent(title="V1", url=url, source="test")
 
-    # A later scrape run that doesn't report an image_url (e.g. transient
-    # scrape failure on that field) must not wipe the existing thumbnail.
-    ingestion.ingest([ScrapedEvent(title="V1", url=url, source="test", image_url=None)])
+    ingestion.ingest([event])
+    ingestion.ingest([event])
 
     stored = test_db.query(Event).filter(Event.url == url).one()
     assert stored.thumbnail_url == "/media/thumbnails/keep.webp"

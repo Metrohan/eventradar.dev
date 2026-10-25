@@ -55,9 +55,11 @@ const EventDetailPage = () => {
     const description = parts.join(' — ') + '. Ücretsiz kariyer etkinliği.'
 
     const canonicalUrl = `https://eventradar.dev/etkinlik/${id}`
-    const ogImage = (event.image_url && /^https?:\/\//i.test(event.image_url))
-      ? event.image_url
-      : 'https://eventradar.dev/banner.png'
+    // Generated event card only; source-site images are never shown or linked.
+    const cardUrl = event.thumbnail_url?.startsWith('/')
+      ? `https://eventradar.dev${event.thumbnail_url}`
+      : null
+    const ogImage = cardUrl || 'https://eventradar.dev/banner.png'
 
     document.title = `${event.title} | TechEventRadar`
     setMeta('description', description)
@@ -98,7 +100,7 @@ const EventDetailPage = () => {
       name: event.title,
       ...(event.date && { startDate: new Date(event.date).toISOString() }),
       ...(event.description && { description: event.description }),
-      ...(event.image_url && { image: event.image_url }),
+      ...(cardUrl && { image: cardUrl }),
       url: `https://eventradar.dev/etkinlik/${id}`,
       isAccessibleForFree: true,
       eventStatus: 'https://schema.org/EventScheduled',
@@ -178,7 +180,6 @@ const EventDetailPage = () => {
   if (error || !event) return <ErrorMessage message={t('eventDetail.notFound')} />
 
   const safeUrl = /^https?:\/\//i.test(event.url) ? event.url : '#'
-  const safeImageUrl = event.image_url && /^https?:\/\//i.test(event.image_url) ? event.image_url : null
 
   const formatDate = (dateString) => {
     if (!dateString) return t('eventCard.noDate')
@@ -221,18 +222,6 @@ const EventDetailPage = () => {
             <i className="fas fa-arrow-left" style={{ fontSize: '0.75rem' }}></i>
             {t('nav.discoverLinks.all')}
           </Link>
-
-          {/* Görsel */}
-          {safeImageUrl && (
-            <div className="mb-4" style={{ borderRadius: '12px', overflow: 'hidden', maxHeight: '320px' }}>
-              <img
-                src={safeImageUrl}
-                alt={event.title}
-                style={{ width: '100%', height: '320px', objectFit: 'cover' }}
-                onError={(e) => { e.target.style.display = 'none' }}
-              />
-            </div>
-          )}
 
           {/* Başlık */}
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3, marginBottom: '1rem' }}>
