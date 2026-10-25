@@ -2,7 +2,7 @@
 event's own facts (title, date, location, source name) and cache it on local
 disk. No third-party image is ever fetched, stored or shown.
 
-See docs/adr/0006-generated-event-cards.md (supersedes the fetch/resize step
+See docs/adr/0007-generated-event-cards.md (supersedes the fetch/resize step
 of docs/adr/0005-scrape-time-image-resize.md).
 """
 
@@ -47,7 +47,7 @@ _FONT_FILES = {
     False: ("LiberationSans-Regular.ttf", "DejaVuSans.ttf"),
 }
 
-_MONTHS_TR = ("Oca", "Şub", "Mar", "Nis", "May", "Haz",
+MONTHS_TR = ("Oca", "Şub", "Mar", "Nis", "May", "Haz",
               "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara")  # fmt: skip
 
 
@@ -69,7 +69,7 @@ def _font(bold: bool, size: int) -> ImageFont.FreeTypeFont:
 def _format_date(value: datetime | None) -> str | None:
     if value is None:
         return None
-    return f"{value.day} {_MONTHS_TR[value.month - 1]} {value.year}"
+    return f"{value.day} {MONTHS_TR[value.month - 1]} {value.year}"
 
 
 def _fit(draw: ImageDraw.ImageDraw, text: str, font, max_width: int) -> str:

@@ -1,4 +1,4 @@
-"""One-off migration to ADR-0006: point every event at its generated card and
+"""One-off migration to ADR-0007: point every event at its generated card and
 move the old copied thumbnail files out of the served directory.
 
 Dry-run by default: nothing is written, rendered or moved unless apply=True.

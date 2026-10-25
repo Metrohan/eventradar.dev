@@ -1,4 +1,4 @@
-"""ADR-0006 migration: regenerate cards for all events and archive old thumbnails.
+"""ADR-0007 migration: regenerate cards for all events and archive old thumbnails.
 
 Dry-run (default):   python scripts/backfill_event_cards.py
 Apply (after DB dump): python scripts/backfill_event_cards.py --apply --archive-dir /path/outside/served/dir

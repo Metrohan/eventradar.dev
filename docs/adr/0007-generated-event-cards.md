@@ -1,4 +1,4 @@
-# ADR-0006: Generated Event Cards Instead of Source Images
+# ADR-0007: Generated Event Cards Instead of Source Images
 
 ## Status
 

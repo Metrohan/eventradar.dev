@@ -10,6 +10,7 @@ import ErrorMessage from '../components/ErrorMessage'
 import TagBadge from '../components/TagBadge'
 import ShareButtons from '../components/ShareButtons'
 import { useDateLocale } from '../hooks/useDateLocale'
+import { setNoIndex } from '../utils/seo'
 
 const DEFAULT_TITLE = 'TechEventRadar | Bootcamp, Hackathon & Kariyer Etkinlikleri'
 const DEFAULT_DESC = 'Türkiye\'deki bootcamp, hackathon ve kariyer etkinliklerini tek yerden ücretsiz takip et. 8 kaynaktan günlük güncellenen etkinlik platformu.'
@@ -42,6 +43,10 @@ const EventDetailPage = () => {
   )
 
   const event = data?.data
+
+  // A missing event is a soft 404 (HTTP 200 + SPA shell): keep it out of the index.
+  const missing = !isLoading && (error || !event)
+  useEffect(() => (missing ? setNoIndex() : undefined), [missing])
 
   useEffect(() => {
     if (!event) return
@@ -94,19 +99,30 @@ const EventDetailPage = () => {
       organizerUrl = undefined
     }
 
-    const schema = {
+    // shortcut: a location containing "online" counts as online, so a hybrid
+    // "Istanbul / Online" is labelled online-only; upgrade to MixedEventAttendanceMode
+    // if sources start reporting hybrid events separately.
+    const isOnline = !event.location || /online|çevrim\s?içi/i.test(event.location)
+
+    // Google's Event rich result requires startDate; an event without a date
+    // gets no Event JSON-LD (it is removed below / by the effect cleanup).
+    const schema = event.date && {
       '@context': 'https://schema.org',
       '@type': 'Event',
       name: event.title,
-      ...(event.date && { startDate: new Date(event.date).toISOString() }),
+      // Naive local time as stored; Google reads a date without offset as local to the event.
+      startDate: event.date,
       ...(event.description && { description: event.description }),
       ...(cardUrl && { image: cardUrl }),
       url: `https://eventradar.dev/etkinlik/${id}`,
       isAccessibleForFree: true,
       eventStatus: 'https://schema.org/EventScheduled',
-      location: event.location
-        ? { '@type': 'Place', name: event.location }
-        : { '@type': 'VirtualLocation', url: event.url },
+      eventAttendanceMode: isOnline
+        ? 'https://schema.org/OnlineEventAttendanceMode'
+        : 'https://schema.org/OfflineEventAttendanceMode',
+      location: isOnline
+        ? { '@type': 'VirtualLocation', url: event.url }
+        : { '@type': 'Place', name: event.location, address: event.location },
       organizer: {
         '@type': 'Organization',
         name: event.source,
@@ -126,16 +142,18 @@ const EventDetailPage = () => {
       },
     }
     document.getElementById('event-jsonld')?.remove()
-    const script = document.createElement('script')
-    script.id = 'event-jsonld'
-    script.type = 'application/ld+json'
-    script.text = JSON.stringify(schema)
-      .replace(/</g, '\\u003c')
-      .replace(/>/g, '\\u003e')
-      .replace(/&/g, '\\u0026')
-      .replace(/\u2028/g, '\\u2028')
-      .replace(/\u2029/g, '\\u2029')
-    document.head.appendChild(script)
+    if (schema) {
+      const script = document.createElement('script')
+      script.id = 'event-jsonld'
+      script.type = 'application/ld+json'
+      script.text = JSON.stringify(schema)
+        .replace(/</g, '\\u003c')
+        .replace(/>/g, '\\u003e')
+        .replace(/&/g, '\\u0026')
+        .replace(/\u2028/g, '\\u2028')
+        .replace(/\u2029/g, '\\u2029')
+      document.head.appendChild(script)
+    }
 
     const breadcrumb = {
       '@context': 'https://schema.org',
