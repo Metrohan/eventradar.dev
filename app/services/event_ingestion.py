@@ -10,6 +10,7 @@ from ..models.tag import Tag
 from .date_extractor import parse_event_date
 from .tag_service import classify_event
 from .location_normalizer import normalize_location
+from ..utils.event_dates import day_start, local_datetime, local_now
 
 SessionFactory = Callable[[], Session]
 NotificationAdapter = Callable[[list[dict[str, Any]]], None]
@@ -83,10 +84,11 @@ def normalize_date(value: datetime | str | None) -> datetime | None:
     if not value:
         return None
     if isinstance(value, datetime):
-        return value
+        return local_datetime(value)
     if value.strip().casefold() in {"tarih belirtilmemiş", "belirtilmemiş", "-", ""}:
         return None
-    return parse_event_date(value)
+    parsed = parse_event_date(value)
+    return local_datetime(parsed) if parsed else None
 
 
 class EventIngestion:
@@ -96,7 +98,7 @@ class EventIngestion:
         self,
         session_factory: SessionFactory,
         notification_adapter: NotificationAdapter | None = None,
-        clock: Clock = datetime.now,
+        clock: Clock = local_now,
         thumbnail_fn: ThumbnailFn | None = None,
     ):
         self._session_factory = session_factory
@@ -117,8 +119,10 @@ class EventIngestion:
         if self._thumbnail_fn:
             for item in items:
                 if (
-                    not item.url
-                    or not (item.title or "").strip()
+                    not isinstance(item.url, str)
+                    or not item.url.strip()
+                    or not isinstance(item.title, str)
+                    or not item.title.strip()
                     or item.url in thumbnails
                 ):
                     continue
@@ -142,8 +146,20 @@ class EventIngestion:
             now = self._clock()
             seen_urls: set[str] = set()
 
-            for item in items:
-                if not item.url or item.url in seen_urls:
+            for index, item in enumerate(items):
+                if (
+                    not isinstance(item.url, str)
+                    or not item.url.strip()
+                    or not isinstance(item.title, str)
+                    or not item.title.strip()
+                ):
+                    result.failed_urls.append(
+                        item.url
+                        if isinstance(item.url, str) and item.url
+                        else f"<invalid-row:{index}>"
+                    )
+                    continue
+                if item.url in seen_urls:
                     continue
                 seen_urls.add(item.url)
 
@@ -208,11 +224,12 @@ class EventIngestion:
         try:
             past_events = (
                 db.query(Event)
-                .filter(Event.is_active == True, Event.date < self._clock())
+                .filter(Event.is_active == True, Event.date < day_start(self._clock()))
                 .all()
             )
             for event in past_events:
                 event.is_active = False  # type: ignore[assignment]
+                event.deactivation_reason = "past"  # type: ignore[assignment]
             db.commit()
             return len(past_events)
         except Exception as exc:
@@ -239,6 +256,7 @@ class EventIngestion:
             )
             for event in stale_events:
                 event.is_active = False  # type: ignore[assignment]
+                event.deactivation_reason = "missing"  # type: ignore[assignment]
             db.commit()
             return len(stale_events)
         except Exception as exc:
@@ -264,8 +282,10 @@ class EventIngestion:
         if date_value is not None:
             event.date = date_value  # type: ignore[assignment]
         effective_date = date_value or cast(datetime | None, event.date)
-        if effective_date is not None and effective_date < now:
-            event.is_active = False  # type: ignore[assignment]
+        if event.deactivation_reason in ("past", "missing") or event.is_active:
+            # Only known automatic lifecycle decisions may be reversed by a scrape.
+            event.is_active = effective_date is None or effective_date >= day_start(now)  # type: ignore[assignment]
+            event.deactivation_reason = None if event.is_active else "past"  # type: ignore[assignment]
         if deadline_value is not None:
             event.application_deadline = deadline_value  # type: ignore[assignment]
         event.location = item.location or cast(  # type: ignore[assignment]
@@ -306,7 +326,12 @@ class EventIngestion:
             image_url=item.image_url,
             thumbnail_url=thumbnail_url,
             source=item.source,
-            is_active=date_value is None or date_value >= now,
+            is_active=date_value is None or date_value >= day_start(now),
+            deactivation_reason=(
+                "past"
+                if date_value is not None and date_value < day_start(now)
+                else None
+            ),
             scraped_at=now,
             last_seen_at=now,
         )

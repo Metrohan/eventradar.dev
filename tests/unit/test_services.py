@@ -17,6 +17,7 @@ def _make_subscriber(channel: str, contact: str, active: bool = True) -> Subscri
     s.channel = channel
     s.contact_info = contact
     s.is_active = active
+    s.confirmed = True
     s.interests = []
     return s
 

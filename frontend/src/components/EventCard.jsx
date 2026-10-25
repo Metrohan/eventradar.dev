@@ -7,6 +7,7 @@ import ShareButtons from './ShareButtons'
 import { getSourceStyle } from '../utils/sourceColor'
 import { useFavorites } from '../hooks/useBrowserPreferences'
 import { useDateLocale } from '../hooks/useDateLocale'
+import { isPastEvent } from '../utils/eventDates'
 
 const EventCard = ({ event }) => {
   const { t } = useTranslation()
@@ -103,7 +104,7 @@ const EventCard = ({ event }) => {
       {/* Content */}
       <div className="event-content">
         <h3 className="event-title">
-          <Link to={`/etkinlik/${event.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>{event.title}</Link>
+          <Link to={`/etkinlik/${event.id}${isPastEvent(event) || !event.is_active ? '?history=1' : ''}`} style={{ color: 'inherit', textDecoration: 'none' }}>{event.title}</Link>
         </h3>
 
         {event.description && (

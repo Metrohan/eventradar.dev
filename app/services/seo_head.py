@@ -172,7 +172,7 @@ def _event_meta(event: Event) -> _Meta:
         parts.append(f"{date.day:02d} {MONTHS_TR[date.month - 1]} {date.year}")
     if event.location:
         parts.append(str(event.location))
-    description = " — ".join(parts) + ". Ücretsiz kariyer etkinliği."
+    description = " — ".join(parts) + ". Teknoloji ve kariyer etkinliği."
 
     card = str(event.thumbnail_url or "")
     image = SITE_URL + card if card.startswith("/") else BANNER_URL
@@ -180,7 +180,7 @@ def _event_meta(event: Event) -> _Meta:
     json_ld: list[tuple[str, dict]] = []
     if date:  # Google's Event rich result requires startDate
         location_text = str(event.location or "")
-        is_online = not location_text or bool(_ONLINE_RE.search(location_text))
+        is_online = bool(_ONLINE_RE.search(location_text))
         source_url = str(event.url or "")
         origin = _http_origin(source_url)
         organization = {
@@ -196,7 +196,6 @@ def _event_meta(event: Event) -> _Meta:
             # to the event, which is what the scrapers store.
             "startDate": date.isoformat(),
             "url": SITE_URL + path,
-            "isAccessibleForFree": True,
             "eventStatus": "https://schema.org/EventScheduled",
             "eventAttendanceMode": (
                 "https://schema.org/OnlineEventAttendanceMode"
@@ -219,14 +218,9 @@ def _event_meta(event: Event) -> _Meta:
             schema["description"] = str(event.description)
         if image != BANNER_URL:
             schema["image"] = image
-        if origin:
-            schema["offers"] = {
-                "@type": "Offer",
-                "price": 0,
-                "priceCurrency": "TRY",
-                "url": source_url,
-                "availability": "https://schema.org/InStock",
-            }
+        if not location_text:
+            schema.pop("location", None)
+            schema.pop("eventAttendanceMode", None)
         json_ld.append(("event-jsonld", schema))
 
     json_ld.append(

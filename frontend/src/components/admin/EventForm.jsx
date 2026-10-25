@@ -11,8 +11,8 @@ const EventForm = ({ event, onClose, onSuccess }) => {
     defaultValues: event ? {
       title: event.title,
       description: event.description || '',
-      date: event.date ? new Date(event.date).toISOString().slice(0, 16) : '',
-      application_deadline: event.application_deadline ? new Date(event.application_deadline).toISOString().slice(0, 16) : '',
+      date: event.date?.slice(0, 16) || '',
+      application_deadline: event.application_deadline?.slice(0, 16) || '',
       location: event.location || '',
       url: event.url,
       image_url: event.image_url || '',
@@ -36,7 +36,7 @@ const EventForm = ({ event, onClose, onSuccess }) => {
   )
 
   const onSubmit = (data) => {
-    mutation.mutate(data)
+    mutation.mutate({ ...data, date: data.date || null, application_deadline: data.application_deadline || null })
   }
 
   return (

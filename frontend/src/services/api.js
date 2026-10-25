@@ -1,3 +1,4 @@
+import { getStored, removeStored } from '../utils/storage'
 import axios from 'axios'
 
 // Create axios instance with base configuration
@@ -12,7 +13,7 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('admin_token')
+    const token = getStored('admin_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -28,7 +29,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('admin_token')
+      removeStored('admin_token')
       // Dispatch custom event instead of full page reload
       window.dispatchEvent(new CustomEvent('auth:logout'))
     }
@@ -65,8 +66,8 @@ export const publicAPI = {
     api.get(`/blog/${encodeURIComponent(slug)}`),
 
   // Get single event by id
-  getEventById: (id) =>
-    api.get(`/events/${id}`),
+  getEventById: (id, includePast = false) =>
+    api.get(`/events/${id}${includePast ? '?include_past=true' : ''}`),
 
   // Get all announcements (converted from /api/announcements)
   getAnnouncements: () =>

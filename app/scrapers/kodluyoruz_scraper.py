@@ -45,7 +45,7 @@ def scrape_kodluyoruz_events() -> List[Dict[str, Any]]:
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Kodluyoruz: network error: {e}")
-        return []
+        raise
     response.encoding = "utf-8"
 
     soup = BeautifulSoup(response.text, "html.parser")

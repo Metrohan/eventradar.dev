@@ -14,8 +14,7 @@ def scrape_youthall_events():
     """Youthall scraper"""
     driver_path = ensure_chromedriver()
     if not driver_path:
-        print("Youthall: ChromeDriver bulunamadı, atlanıyor")
-        return []
+        raise RuntimeError("Youthall: ChromeDriver unavailable")
 
     options = Options()
     options.add_argument("--headless=new")
@@ -114,7 +113,7 @@ def scrape_youthall_events():
         import traceback
 
         traceback.print_exc()
-        return []
+        raise
 
     finally:
         if driver:

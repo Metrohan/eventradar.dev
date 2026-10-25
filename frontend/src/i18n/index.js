@@ -1,3 +1,4 @@
+import { getStored } from '../utils/storage'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
@@ -24,7 +25,7 @@ const wasPrerendered = isPrerendered()
 // value init() has already clobbered. Used by main.jsx to apply the real
 // preference after a forced-tr hydration.
 export const detectedLanguage = (() => {
-  const stored = localStorage.getItem('eventradar:lang')
+  const stored = getStored('eventradar:lang')
   if (stored === 'tr' || stored === 'en') return stored
   const nav = (navigator.language || 'tr').slice(0, 2)
   return nav === 'en' ? 'en' : 'tr'

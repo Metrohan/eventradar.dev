@@ -1,14 +1,12 @@
-import smtplib
 import logging
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.utils import formatdate, make_msgid, parseaddr
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from ..models.subscriber import Subscriber
 from ..schemas.subscriber import BroadcastRequest
 from ..core.config import settings
 from typing import List
 import requests as http_requests
+from . import email_service
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +33,10 @@ class NotificationService:
         }
 
     def broadcast_message(self, request: BroadcastRequest) -> dict:
-        query = self.db.query(Subscriber).filter(Subscriber.is_active == True)
+        query = self.db.query(Subscriber).filter(
+            Subscriber.is_active == True,
+            or_(Subscriber.channel != "email", Subscriber.confirmed.is_(True)),
+        )
         if request.target_channel != "all":
             query = query.filter(Subscriber.channel == request.target_channel)
         subscribers = query.all()
@@ -76,32 +77,8 @@ class NotificationService:
     def _send_email(
         self, to: str, subject: str, body: str, unsubscribe_token: str | None = None
     ) -> None:
-        if settings.debug or not settings.smtp_host:
-            logger.info("[DEV] Email to %s: %s", to, body)
-            return
-
-        from_addr = settings.smtp_from
-        _, from_email = parseaddr(from_addr)
-        domain = from_email.split("@")[-1] if "@" in from_email else "eventradar.dev"
-
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"] = from_addr
-        msg["To"] = to
-        msg["Date"] = formatdate(localtime=True)
-        msg["Message-ID"] = make_msgid(domain=domain)
-        if unsubscribe_token:
-            unsubscribe_url = (
-                f"https://eventradar.dev/abone-iptal?token={unsubscribe_token}"
-            )
-            msg["List-Unsubscribe"] = f"<{unsubscribe_url}>"
-            body = f"{body}\n\nAbonelikten çık: {unsubscribe_url}"
-        msg.attach(MIMEText(body, "plain", "utf-8"))
-
-        with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
-            server.starttls()
-            server.login(settings.smtp_user, settings.smtp_pass)
-            server.sendmail(from_email, to, msg.as_string())
+        if not email_service.send_plain_email(to, subject, body, unsubscribe_token):
+            raise RuntimeError("Email delivery failed or SMTP is not configured")
 
     def _send_telegram(self, chat_id: str, message: str) -> None:
         if settings.debug or not settings.telegram_bot_token:

@@ -162,69 +162,20 @@ async def robots_txt():
 
 @app.get("/sitemap.xml", response_class=Response)
 async def sitemap():
-    from .core.database import SessionLocal
+    from .services.sitemap_service import build_sitemap
+    from .services.event_lifecycle import visible_event_filter
     from .models.event import Event
     from .models.blog_post import BlogPost
 
-    BASE_URL = "https://eventradar.dev"
-
     db = SessionLocal()
     try:
-        events = (
-            db.query(Event.id, Event.scraped_at).filter(Event.is_active == True).all()
-        )  # noqa: E712
-        blog_posts = (
-            db.query(BlogPost.slug, BlogPost.published_at)
-            .filter(BlogPost.is_published == True)  # noqa: E712
-            .all()
+        events = db.query(Event).filter(*visible_event_filter()).all()
+        posts = db.query(BlogPost).filter(BlogPost.is_published.is_(True)).all()
+        return Response(
+            content=build_sitemap(events, posts), media_type="application/xml"
         )
     finally:
         db.close()
-
-    static_pages = [
-        ("/", "daily", "1.0"),
-        ("/takvim", "daily", "0.8"),
-        ("/hackathonlar", "daily", "0.9"),
-        ("/bootcamplar", "daily", "0.9"),
-        ("/online-etkinlikler", "daily", "0.9"),
-        ("/bu-haftaki-etkinlikler", "daily", "0.8"),
-        ("/son-basvurular", "daily", "0.8"),
-        ("/bootcamp-rehberi", "monthly", "0.7"),
-        ("/egitim-kaynaklari", "weekly", "0.6"),
-        ("/etkinlik-talep", "monthly", "0.4"),
-        ("/blog", "weekly", "0.7"),
-    ]
-
-    urls = [f"""  <url>
-    <loc>{BASE_URL}{path}</loc>
-    <changefreq>{changefreq}</changefreq>
-    <priority>{priority}</priority>
-  </url>""" for path, changefreq, priority in static_pages]
-
-    for event_id, scraped_at in events:
-        lastmod = scraped_at.strftime("%Y-%m-%d") if scraped_at else ""
-        lastmod_tag = f"\n    <lastmod>{lastmod}</lastmod>" if lastmod else ""
-        urls.append(f"""  <url>
-    <loc>{BASE_URL}/etkinlik/{event_id}</loc>{lastmod_tag}
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>""")
-
-    for slug, published_at in blog_posts:
-        lastmod = published_at.strftime("%Y-%m-%d") if published_at else ""
-        lastmod_tag = f"\n    <lastmod>{lastmod}</lastmod>" if lastmod else ""
-        urls.append(f"""  <url>
-    <loc>{BASE_URL}/blog/{slug}</loc>{lastmod_tag}
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>""")
-
-    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    xml += "\n".join(urls)
-    xml += "\n</urlset>"
-
-    return Response(content=xml, media_type="application/xml")
 
 
 if __name__ == "__main__":

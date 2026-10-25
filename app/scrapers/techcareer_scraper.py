@@ -56,8 +56,7 @@ def scrape_techcareer_events():
     """TechCareer scraper"""
     driver_path = ensure_chromedriver()
     if not driver_path:
-        print("TechCareer: ChromeDriver bulunamadı, atlanıyor")
-        return []
+        raise RuntimeError("TechCareer: ChromeDriver unavailable")
 
     options = Options()
     options.add_argument("--headless")
@@ -130,7 +129,7 @@ def scrape_techcareer_events():
         return all_events
     except Exception as e:
         print(f"TechCareer hatası: {e}")
-        return []
+        raise
     finally:
         if driver:
             driver.quit()

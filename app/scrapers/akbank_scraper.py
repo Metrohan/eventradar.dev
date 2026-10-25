@@ -162,6 +162,7 @@ def scrape_akbank_events() -> List[Dict[str, Any]]:
 
     except Exception as e:
         print(f"Akbank Scraper Error: {e}")
+        raise
     finally:
         if driver:
             driver.quit()

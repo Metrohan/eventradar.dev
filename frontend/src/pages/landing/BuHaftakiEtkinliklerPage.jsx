@@ -2,14 +2,14 @@ import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import EventListing from '../../components/EventListing'
 import { setPageSEO, injectJsonLd } from '../../utils/seo'
+import { eventDay, istanbulDay } from '../../utils/eventDates'
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
 const isThisWeek = (event) => {
   if (!event.date) return false
-  const eventDate = new Date(event.date)
-  const now = new Date()
-  return eventDate >= now && eventDate - now <= ONE_WEEK_MS
+  const today = istanbulDay()
+  return eventDay(event.date) >= today && eventDay(event.date) <= istanbulDay(new Date(Date.now() + ONE_WEEK_MS))
 }
 
 const BuHaftakiEtkinliklerPage = () => {

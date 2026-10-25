@@ -105,13 +105,12 @@ def test_youthall_returns_events():
     assert all("url" in e for e in events)
 
 
-def test_youthall_no_chromedriver_returns_empty():
+def test_youthall_no_chromedriver_raises_failure():
     from app.scrapers.youthall_scraper import scrape_youthall_events
 
     with patch("app.scrapers.youthall_scraper.ensure_chromedriver", return_value=None):
-        events = scrape_youthall_events()
-
-    assert events == []
+        with pytest.raises(RuntimeError, match="ChromeDriver unavailable"):
+            scrape_youthall_events()
 
 
 def test_youthall_defaults_location_to_none_when_venue_unknown():
@@ -212,15 +211,14 @@ def test_techcareer_uses_detail_page_date_not_deadline():
         assert event["description"] != "TechCareer.net etkinliği"
 
 
-def test_techcareer_no_chromedriver_returns_empty():
+def test_techcareer_no_chromedriver_raises_failure():
     from app.scrapers.techcareer_scraper import scrape_techcareer_events
 
     with patch(
         "app.scrapers.techcareer_scraper.ensure_chromedriver", return_value=None
     ):
-        events = scrape_techcareer_events()
-
-    assert events == []
+        with pytest.raises(RuntimeError, match="ChromeDriver unavailable"):
+            scrape_techcareer_events()
 
 
 # ── Kodluyoruz ────────────────────────────────────────────────────────────────
@@ -268,7 +266,7 @@ def test_kodluyoruz_uses_real_detail_page_description():
         assert "Programın amacı" in event["description"]
 
 
-def test_kodluyoruz_network_error_returns_empty():
+def test_kodluyoruz_network_error_reaches_coordinator():
     import requests as req
     from app.scrapers.kodluyoruz_scraper import scrape_kodluyoruz_events
 
@@ -276,9 +274,8 @@ def test_kodluyoruz_network_error_returns_empty():
         "app.scrapers.kodluyoruz_scraper.requests.get",
         side_effect=req.exceptions.ConnectionError,
     ):
-        events = scrape_kodluyoruz_events()
-
-    assert events == []
+        with pytest.raises(req.exceptions.ConnectionError):
+            scrape_kodluyoruz_events()
 
 
 # ── Anbean ────────────────────────────────────────────────────────────────────

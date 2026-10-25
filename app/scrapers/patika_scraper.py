@@ -78,4 +78,4 @@ def scrape_patika_events() -> list[dict]:
         return events
     except requests.RequestException as exc:
         print(f"Patika.dev: network error: {exc}")
-        return []
+        raise

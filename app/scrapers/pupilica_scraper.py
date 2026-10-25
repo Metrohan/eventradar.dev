@@ -136,6 +136,7 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
         import traceback
 
         traceback.print_exc()
+        raise
     finally:
         if driver:
             driver.quit()

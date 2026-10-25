@@ -1,3 +1,4 @@
+import { getStored, setStored, removeStored } from '../utils/storage'
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { adminAPI } from '../services/api'
@@ -18,14 +19,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   const handleForceLogout = useCallback(() => {
-    localStorage.removeItem('admin_token')
+    removeStored('admin_token')
     setIsAuthenticated(false)
     toast.error('Oturumunuz sona erdi, lütfen tekrar giriş yapın.')
   }, [])
 
   useEffect(() => {
     // Check if user is already authenticated
-    const token = localStorage.getItem('admin_token')
+    const token = getStored('admin_token')
     if (token) {
       setIsAuthenticated(true)
     }
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }) => {
       const response = await adminAPI.login(credentials)
       const { access_token } = response.data
 
-      localStorage.setItem('admin_token', access_token)
+      setStored('admin_token', access_token)
       setIsAuthenticated(true)
 
       return { success: true }
@@ -56,7 +57,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logout = () => {
-    localStorage.removeItem('admin_token')
+    removeStored('admin_token')
     setIsAuthenticated(false)
   }
 
