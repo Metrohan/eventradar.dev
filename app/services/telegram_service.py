@@ -109,50 +109,17 @@ def _send_message(text: str) -> bool:
         return False
 
 
-def _send_photo(image_url: str, caption: str) -> bool:
-    """Kanala görsel + açıklama gönderir. Başarısız olursa False döner."""
-    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
-    channel = os.getenv("TELEGRAM_CHANNEL_ID", "")
-    if not (token and channel):
-        return False
-    api_url = f"https://api.telegram.org/bot{token}/sendPhoto"
-    try:
-        resp = requests.post(
-            api_url,
-            json={
-                "chat_id": channel,
-                "photo": image_url,
-                "caption": caption,
-                "parse_mode": "HTML",
-            },
-            timeout=10,
-        )
-        resp.raise_for_status()
-        return True
-    except Exception as exc:
-        logger.warning(f"Telegram sendPhoto başarısız, metin mesajına geçiliyor: {exc}")
-        return False
-
-
 def notify_new_events(events: list[dict]) -> None:
     """
     Yeni etkinlikler için anlık bildirim gönderir.
-    Görsel varsa sendPhoto, yoksa sendMessage kullanır.
+    Yalnızca metin gönderir: kaynak sitelerin görselleri paylaşılmaz.
     Birden fazla etkinlikte mesajlar arası 0.5s beklenir.
     """
     if not _is_configured() or not events:
         return
 
     for i, event in enumerate(events):
-        text = _format_event_message(event)
-        image_url = event.get("image_url", "")
-
-        if image_url:
-            success = _send_photo(image_url, text)
-            if not success:
-                _send_message(text)
-        else:
-            _send_message(text)
+        _send_message(_format_event_message(event))
 
         if i < len(events) - 1:
             time.sleep(0.5)

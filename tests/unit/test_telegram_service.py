@@ -163,6 +163,31 @@ def test_notify_new_events_sends_per_event(monkeypatch):
     mock_sleep.assert_called_once_with(0.5)
 
 
+def test_notify_new_events_never_sends_source_image(monkeypatch):
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:ABC")
+    monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
+    import importlib
+    import app.services.telegram_service as ts
+
+    importlib.reload(ts)
+
+    event = {
+        "title": "A",
+        "url": "https://a.com",
+        "source": "S",
+        "date": "",
+        "description": "",
+        "image_url": "https://coderspace.io/events/a.png",
+    }
+    with patch("app.services.telegram_service._send_message") as mock_send, patch(
+        "app.services.telegram_service.requests.post"
+    ) as mock_post:
+        ts.notify_new_events([event])
+
+    mock_send.assert_called_once()
+    mock_post.assert_not_called()
+
+
 def test_send_daily_digest_noop_when_empty(monkeypatch):
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:ABC")
     monkeypatch.setenv("TELEGRAM_CHANNEL_ID", "@ch")
