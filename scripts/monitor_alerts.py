@@ -23,7 +23,8 @@ SERVICES = [
     for s in os.getenv("ALERT_SERVICES", "backend,scraper,db").split(",")
     if s.strip()
 ]
-LOG_LINES = int(os.getenv("ALERT_LOG_LINES", "120"))
+# Must stay above the cron interval (2 min) so each error is seen at least once.
+LOG_SINCE = os.getenv("ALERT_LOG_SINCE", "5m")
 COOLDOWN_SECONDS = int(os.getenv("ALERT_COOLDOWN_SECONDS", "900"))
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
@@ -149,7 +150,7 @@ def collect_issues() -> list[str]:
 
     for service in SERVICES:
         code, logs, _ = run(
-            [*COMPOSE_ARGS, "logs", "--no-color", f"--tail={LOG_LINES}", service]
+            [*COMPOSE_ARGS, "logs", "--no-color", f"--since={LOG_SINCE}", service]
         )
         if code != 0:
             continue
