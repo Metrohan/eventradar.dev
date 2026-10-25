@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { useTranslation } from 'react-i18next'
@@ -14,7 +14,8 @@ const TYPES = [
   { value: 'öneri',          labelKey: 'suggestion.types.suggestion',  emoji: '💡', color: '#6366f1', bg: 'rgba(99,102,241,0.15)',  border: 'rgba(99,102,241,0.4)'  },
   { value: 'hata_bildirimi', labelKey: 'suggestion.types.bug',         emoji: '🐛', color: '#f43f5e', bg: 'rgba(244,63,94,0.15)',   border: 'rgba(244,63,94,0.4)'   },
   { value: 'şikayet',        labelKey: 'suggestion.types.complaint',   emoji: '😤', color: '#fb923c', bg: 'rgba(251,146,60,0.15)',  border: 'rgba(251,146,60,0.4)'  },
-  { value: 'diğer',          labelKey: 'suggestion.types.other',       emoji: '📌', color: '#94a3b8', bg: 'rgba(148,163,184,0.15)', border: 'rgba(148,163,184,0.4)' },
+  { value: 'kaldirma_talebi', labelKey: 'suggestion.types.takedown',     emoji: '🗑️', color: '#14b8a6', bg: 'rgba(20,184,166,0.15)',  border: 'rgba(20,184,166,0.4)'  },
+  { value: 'diğer',         labelKey: 'suggestion.types.other',       emoji: '📌', color: '#94a3b8', bg: 'rgba(148,163,184,0.15)', border: 'rgba(148,163,184,0.4)' },
 ]
 
 const INFO_CARDS = [
@@ -55,6 +56,12 @@ const SuggestionPage = () => {
   } = useForm()
 
   const selectedType = watch('suggestion_type')
+
+  // Footer links here with ?tip=kaldirma to preselect the takedown type.
+  const [searchParams] = useSearchParams()
+  useEffect(() => {
+    if (searchParams.get('tip') === 'kaldirma') setValue('suggestion_type', 'kaldirma_talebi')
+  }, [searchParams, setValue])
 
   useEffect(() => {
     setPageSEO({
@@ -119,6 +126,11 @@ const SuggestionPage = () => {
                   )
                 })}
               </div>
+              {selectedType === 'kaldirma_talebi' && (
+                <p role="note" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '10px 0 0' }}>
+                  {t('suggestion.takedownHint')}
+                </p>
+              )}
               {errors.suggestion_type && (
                 <p id="type-error" className="field-error" role="alert">{errors.suggestion_type.message}</p>
               )}

@@ -43,7 +43,8 @@
       "home": "Home",
       "freeTrainings": "Free Trainings",
       "feedback": "Feedback",
-      "addEvent": "Add Event"
+      "addEvent": "Add Event",
+      "takedown": "Content Takedown Request"
     },
     "openSourceHeading": "Open Source",
     "openSourceSubtitle": "Star us on GitHub ⭐",
@@ -193,8 +194,10 @@
       "suggestion": "Suggestion",
       "bug": "Bug Report",
       "complaint": "Complaint",
+      "takedown": "Takedown Request",
       "other": "Other"
     },
+    "takedownHint": "Include the link to the event or image you want removed and an email address where we can reach you. We review requests promptly and remove the content concerned.",
     "titleLabel": "Title",
     "titlePlaceholder": "Enter the suggestion/complaint title",
     "titleRequired": "Title is required",
