@@ -74,6 +74,20 @@ def test_ensure_card_handles_very_long_text_and_turkish_characters(tmp_path):
         assert img.size == (400, 200)
 
 
+def test_ensure_card_caps_huge_text_before_rendering(tmp_path):
+    with patch.object(
+        image_pipeline, "_render", wraps=image_pipeline._render
+    ) as render:
+        url = _card(
+            tmp_path, title="x" * 100_000, location="y" * 100_000, source="z" * 100_000
+        )
+
+    assert url is not None
+    title, _date, location, source = render.call_args.args
+    cap = image_pipeline._MAX_TEXT_CHARS
+    assert (len(title), len(location), len(source)) == (cap, cap, cap)
+
+
 def test_ensure_card_returns_none_when_no_font_is_installed(tmp_path):
     with patch.object(
         image_pipeline, "_font", side_effect=image_pipeline.CardRenderError("no font")

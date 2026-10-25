@@ -75,7 +75,12 @@ async def get_blog_post(slug: str, db: Session = Depends(get_db)):
     return post
 
 
-@router.get("/events", response_model=EventListResponse)
+# image_url is a source-site image link; the public API never exposes it (ADR-0006).
+@router.get(
+    "/events",
+    response_model=EventListResponse,
+    response_model_exclude={"events": {"__all__": {"image_url"}}},
+)
 async def get_events(
     active_only: bool = True,
     tags: Optional[List[str]] = Query(default=None),
@@ -284,7 +289,11 @@ async def get_latest_announcement(db: Session = Depends(get_db)):
         ) from exc
 
 
-@router.get("/events/{event_id}", response_model=EventResponse)
+@router.get(
+    "/events/{event_id}",
+    response_model=EventResponse,
+    response_model_exclude={"image_url"},
+)
 async def get_event(event_id: int, db: Session = Depends(get_db)):
     event_service = EventService(db)
     event = event_service.get_public_event_by_id(event_id)
