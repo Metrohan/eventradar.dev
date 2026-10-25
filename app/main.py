@@ -87,6 +87,7 @@ async def log_traffic(request: Request, call_next):
         or path.startswith("/docs")
         or path.startswith("/openapi.json")
         or path.startswith("/api/admin")
+        or path.startswith("/api/seo/")  # nginx SSI subrequest, not a page view
         or request.method == "OPTIONS"
     ):
         return await call_next(request)
