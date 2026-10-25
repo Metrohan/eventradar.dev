@@ -1,5 +1,5 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
-from fastapi.responses import Response
+from fastapi.responses import HTMLResponse, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List, Optional
@@ -13,6 +13,7 @@ from ..services.source_catalog import get_enabled_sources
 from ..services.rate_limiter import FixedWindowRateLimiter, client_key
 from ..services.rss_service import build_events_rss
 from ..services.sitemap_service import build_sitemap
+from ..services.seo_head import build_head
 from ..models.blog_post import BlogPost
 from ..services import email_service, push_service
 from ..services.weekly_content_service import WeeklyContentService
@@ -75,7 +76,7 @@ async def get_blog_post(slug: str, db: Session = Depends(get_db)):
     return post
 
 
-# image_url is a source-site image link; the public API never exposes it (ADR-0006).
+# image_url is a source-site image link; the public API never exposes it (ADR-0007).
 @router.get(
     "/events",
     response_model=EventListResponse,
@@ -134,6 +135,12 @@ async def get_sitemap(db: Session = Depends(get_db)):
     posts = db.query(BlogPost).filter(BlogPost.is_published == True).all()  # noqa: E712
     xml = build_sitemap(events, posts)
     return Response(content=xml, media_type="application/xml")
+
+
+@router.get("/seo/head/{path:path}", include_in_schema=False)
+async def get_seo_head(path: str, db: Session = Depends(get_db)):
+    """<head> tags for one SPA URL; nginx includes this into index.html (SSI)."""
+    return HTMLResponse(build_head(path, db))
 
 
 @router.post("/subscribe")

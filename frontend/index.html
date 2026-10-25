@@ -10,9 +10,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="EventRadar" />
+    <!--
+      Per-URL head tags (title, description, robots, canonical, og:*, twitter:*,
+      Event JSON-LD): nginx includes them from the backend via SSI so crawlers that
+      do not run JS see the right values (docs/adr/0008-ssi-seo-head.md). The block
+      below is the fallback nginx outputs if the backend is unreachable; without SSI
+      (vite dev/preview, prerender) the directives are plain comments and the block
+      content is simply part of the page.
+    -->
+    <!--# block name="seo_default" -->
     <title>TechEventRadar | Bootcamp, Hackathon & Kariyer Etkinlikleri</title>
     <meta name="description" content="Türkiye'deki bootcamp, hackathon ve kariyer etkinliklerini tek yerden ücretsiz takip et. 10 kaynaktan günlük güncellenen etkinlik platformu." />
-    <meta name="keywords" content="teknoloji etkinlikleri, şehir etkinlikleri, seminerler, hackathon, atölye, konferans, teknoloji buluşmaları, güncel etkinlikler, Türkiye teknoloji etkinlikleri" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://eventradar.dev" />
     <meta property="og:title" content="TechEventRadar">
@@ -26,6 +34,9 @@
     <meta name="twitter:title" content="TechEventRadar" />
     <meta name="twitter:description" content="Türkiye'deki bootcamp, hackathon ve kariyer etkinliklerini tek yerden ücretsiz takip et. 10 kaynaktan günlük güncellenen etkinlik platformu." />
     <meta name="twitter:image" content="https://eventradar.dev/banner.png" />
+    <!--# endblock -->
+    <!--# include virtual="/_seo$seo_orig" stub="seo_default" -->
+    <meta name="keywords" content="teknoloji etkinlikleri, şehir etkinlikleri, seminerler, hackathon, atölye, konferans, teknoloji buluşmaları, güncel etkinlikler, Türkiye teknoloji etkinlikleri" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!--
