@@ -14,6 +14,7 @@ from ..services.rate_limiter import FixedWindowRateLimiter, client_key
 from ..services.rss_service import build_events_rss
 from ..services.sitemap_service import build_sitemap
 from ..services.seo_head import build_head
+from ..services.event_lifecycle import visible_event_filter
 from ..models.blog_post import BlogPost
 from ..services import email_service, push_service
 from ..services.weekly_content_service import WeeklyContentService
@@ -98,8 +99,11 @@ async def get_events(
             tags=tags,
             offset=offset,
             limit=page_size,
+            include_hidden=False,
         )
-        total_count = event_service.get_event_count(active_only=active_only, tags=tags)
+        total_count = event_service.get_event_count(
+            active_only=active_only, tags=tags, include_hidden=False
+        )
         last_updated_event = event_service.get_last_updated_event()
 
         last_updated = None
@@ -131,7 +135,7 @@ async def get_events_rss(db: Session = Depends(get_db)):
 @router.get("/events/sitemap.xml")
 async def get_sitemap(db: Session = Depends(get_db)):
     """Tüm aktif etkinlikleri ve yayınlanmış blog yazılarını içeren XML sitemap döner."""
-    events = db.query(Event).filter(Event.is_active == True).all()  # noqa: E712
+    events = db.query(Event).filter(*visible_event_filter()).all()
     posts = db.query(BlogPost).filter(BlogPost.is_published == True).all()  # noqa: E712
     xml = build_sitemap(events, posts)
     return Response(content=xml, media_type="application/xml")
@@ -301,9 +305,11 @@ async def get_latest_announcement(db: Session = Depends(get_db)):
     response_model=EventResponse,
     response_model_exclude={"image_url"},
 )
-async def get_event(event_id: int, db: Session = Depends(get_db)):
+async def get_event(
+    event_id: int, include_past: bool = False, db: Session = Depends(get_db)
+):
     event_service = EventService(db)
-    event = event_service.get_public_event_by_id(event_id)
+    event = event_service.get_public_event_by_id(event_id, include_past=include_past)
     if not event:
         raise HTTPException(status_code=404, detail="Etkinlik bulunamadı")
     return event
@@ -313,7 +319,7 @@ async def get_event(event_id: int, db: Session = Depends(get_db)):
 async def get_status(db: Session = Depends(get_db)):
     """Platform sağlık durumu — scraper kayıtları, aktif etkinlik sayısı."""
     try:
-        active_count = db.query(Event).filter(Event.is_active == True).count()
+        active_count = db.query(Event).filter(*visible_event_filter()).count()
         total_count = db.query(Event).count()
 
         scrapers = []

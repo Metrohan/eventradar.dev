@@ -83,4 +83,4 @@ def scrape_komunite_events() -> list[dict]:
         return parse_komunite_events(response.content)
     except requests.RequestException as exc:
         print(f"Komünite: network error: {exc}")
-        return []
+        raise

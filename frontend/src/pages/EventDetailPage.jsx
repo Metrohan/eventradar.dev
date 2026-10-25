@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { useQuery } from 'react-query'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
@@ -11,6 +11,7 @@ import TagBadge from '../components/TagBadge'
 import ShareButtons from '../components/ShareButtons'
 import { useDateLocale } from '../hooks/useDateLocale'
 import { setNoIndex } from '../utils/seo'
+import { isPastEvent } from '../utils/eventDates'
 
 const DEFAULT_TITLE = 'TechEventRadar | Bootcamp, Hackathon & Kariyer Etkinlikleri'
 const DEFAULT_DESC = 'Türkiye\'deki bootcamp, hackathon ve kariyer etkinliklerini tek yerden ücretsiz takip et. 8 kaynaktan günlük güncellenen etkinlik platformu.'
@@ -30,10 +31,12 @@ const EventDetailPage = () => {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
   const { id } = useParams()
+  const [params] = useSearchParams()
+  const includePast = params.get('history') === '1'
 
   const { data, isLoading, error, refetch } = useQuery(
-    ['event', id],
-    () => publicAPI.getEventById(id),
+    ['event', id, includePast],
+    () => publicAPI.getEventById(id, includePast),
     {
       // 404 gibi 4xx hatalar tekrar denendiğinde de aynı sonucu verir;
       // sadece geçici/sunucu hatalarında (5xx) bir kez retry et.
@@ -46,7 +49,8 @@ const EventDetailPage = () => {
 
   // A missing event is a soft 404 (HTTP 200 + SPA shell): keep it out of the index.
   const missing = !isLoading && (error || !event)
-  useEffect(() => (missing ? setNoIndex() : undefined), [missing])
+  const historical = Boolean(event && (isPastEvent(event) || !event.is_active))
+  useEffect(() => (missing || historical ? setNoIndex() : undefined), [missing, historical])
 
   useEffect(() => {
     if (!event) return
@@ -57,7 +61,7 @@ const EventDetailPage = () => {
     const parts = [event.title]
     if (dateStr) parts.push(dateStr)
     if (event.location) parts.push(event.location)
-    const description = parts.join(' — ') + '. Ücretsiz kariyer etkinliği.'
+    const description = parts.join(' — ') + '. Teknoloji ve kariyer etkinliği.'
 
     const canonicalUrl = `https://eventradar.dev/etkinlik/${id}`
     // Generated event card only; source-site images are never shown or linked.
@@ -102,11 +106,11 @@ const EventDetailPage = () => {
     // shortcut: a location containing "online" counts as online, so a hybrid
     // "Istanbul / Online" is labelled online-only; upgrade to MixedEventAttendanceMode
     // if sources start reporting hybrid events separately.
-    const isOnline = !event.location || /online|çevrim\s?içi/i.test(event.location)
+    const isOnline = /online|çevrim\s?içi/i.test(event.location || '')
 
     // Google's Event rich result requires startDate; an event without a date
     // gets no Event JSON-LD (it is removed below / by the effect cleanup).
-    const schema = event.date && {
+    const schema = event.date && !historical && {
       '@context': 'https://schema.org',
       '@type': 'Event',
       name: event.title,
@@ -115,7 +119,6 @@ const EventDetailPage = () => {
       ...(event.description && { description: event.description }),
       ...(cardUrl && { image: cardUrl }),
       url: `https://eventradar.dev/etkinlik/${id}`,
-      isAccessibleForFree: true,
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: isOnline
         ? 'https://schema.org/OnlineEventAttendanceMode'
@@ -133,13 +136,10 @@ const EventDetailPage = () => {
         name: event.source,
         ...(organizerUrl && { url: organizerUrl }),
       },
-      offers: {
-        '@type': 'Offer',
-        price: 0,
-        priceCurrency: 'TRY',
-        url: event.url,
-        availability: 'https://schema.org/InStock',
-      },
+    }
+    if (schema && !event.location) {
+      delete schema.location
+      delete schema.eventAttendanceMode
     }
     document.getElementById('event-jsonld')?.remove()
     if (schema) {
@@ -189,7 +189,7 @@ const EventDetailPage = () => {
       document.getElementById('event-jsonld')?.remove()
       document.getElementById('breadcrumb-jsonld')?.remove()
     }
-  }, [event, id])
+  }, [event, id, historical])
 
   if (isLoading) return <LoadingSpinner />
   if (error && error.response?.status !== 404) {

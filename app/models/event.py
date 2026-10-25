@@ -18,6 +18,7 @@ class Event(Base):
     thumbnail_url = Column(String(500))
     source = Column(String(100), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
+    deactivation_reason = Column(String(16), nullable=True)
     scraped_at = Column(DateTime, default=func.now(), nullable=False)
     last_seen_at = Column(DateTime, default=func.now(), nullable=False, index=True)
     tags = relationship("Tag", secondary="event_tags", lazy="selectin")

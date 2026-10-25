@@ -2,14 +2,13 @@ import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import EventListing from '../../components/EventListing'
 import { setPageSEO, injectJsonLd } from '../../utils/seo'
+import { eventDay, istanbulDay } from '../../utils/eventDates'
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
 const deadlineSoon = (event) => {
   if (!event.application_deadline) return false
-  const deadline = new Date(event.application_deadline)
-  const now = new Date()
-  return deadline >= now && deadline - now <= ONE_WEEK_MS
+  return eventDay(event.application_deadline) >= istanbulDay() && eventDay(event.application_deadline) <= istanbulDay(new Date(Date.now() + ONE_WEEK_MS))
 }
 
 const SonBasvurularPage = () => {

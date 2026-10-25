@@ -8,6 +8,7 @@ import LoadingSpinner from './LoadingSpinner'
 import ErrorMessage from './ErrorMessage'
 import TagBadge, { TAG_STYLES } from './TagBadge'
 import { readSavedFilters, saveFilters, useFavorites } from '../hooks/useBrowserPreferences'
+import { isPastEvent } from '../utils/eventDates'
 
 /**
  * Etkinlik filtreleme + listeleme mantığı. HomePage ve kategori/zaman bazlı
@@ -78,8 +79,8 @@ const EventListing = ({
   }, [usesPresetFilters, selectedSource, selectedLocation, selectedTags, freeOnly])
 
   const { data: eventsData, isLoading, error } = useQuery(
-    'events',
-    () => publicAPI.getAllEvents(true)
+    showPastEvents ? 'events-history' : 'events',
+    () => publicAPI.getAllEvents(!showPastEvents)
   )
 
   const filterOptions = React.useMemo(() => {
@@ -93,11 +94,10 @@ const EventListing = ({
   if (isLoading) return <LoadingSpinner />
   if (error) return <ErrorMessage message={t('eventListing.loadError')} />
 
-  const now = new Date()
   const allEvents = eventsData?.data?.events || []
 
   const filteredEvents = allEvents.filter(event => {
-    if (!showPastEvents && event.date && new Date(event.date) < now) return false
+    if (!showPastEvents && isPastEvent(event)) return false
     if (searchTerm) {
       const s = searchTerm.toLowerCase()
       if (!event.title?.toLowerCase().includes(s) && !event.description?.toLowerCase().includes(s)) return false

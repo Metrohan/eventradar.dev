@@ -54,10 +54,27 @@ class ScrapeRunCoordinator:
         attempts = 0
         try:
             events, attempts = self._fetch_with_retry(source)
+            if not events:
+                raise RuntimeError("Empty source result; reconciliation skipped")
             ingestion = self._ingestion_factory()
             ingestion_result = ingestion.ingest(
                 ScrapedEvent.from_mapping(event, source.name) for event in events
             )
+            if ingestion_result.failed:
+                result = ScrapeRunResult(
+                    source=source.name,
+                    status="failed",
+                    fetched=len(events),
+                    new=ingestion_result.new,
+                    updated=ingestion_result.updated,
+                    failed=ingestion_result.failed,
+                    attempts=attempts,
+                    error="Partial ingestion; reconciliation skipped",
+                    duration_seconds=self._timer() - started,
+                )
+                self._persist(result)
+                self._alert_on_failure_threshold(result)
+                return result
             deactivated = ingestion.reconcile_source(source.name)
             result = ScrapeRunResult(
                 source=source.name,

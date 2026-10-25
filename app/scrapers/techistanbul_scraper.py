@@ -37,17 +37,17 @@ def scrape_techistanbul_events():
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Tech Istanbul: network error: {e}")
-        return []
+        raise
 
     try:
         payload = response.json()
     except ValueError:
         print("Tech Istanbul: geçersiz JSON yanıtı")
-        return []
+        raise
 
     if not payload.get("isSuccess"):
         print("Tech Istanbul: API isSuccess=false döndü")
-        return []
+        raise RuntimeError("Tech Istanbul API reported failure")
 
     events = []
     for item in payload.get("data", []):

@@ -34,7 +34,7 @@ def scrape_anbean_events():
         response.encoding = "utf-8"
     except requests.exceptions.RequestException as e:
         print(f"URL'ye erişilirken hata oluştu: {e}")
-        return []
+        raise
 
     soup = BeautifulSoup(response.content, "html.parser")
     events = []

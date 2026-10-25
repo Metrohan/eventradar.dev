@@ -229,6 +229,25 @@ def send_confirmation_email(email: str, confirm_token: str) -> bool:
     )
 
 
+def send_plain_email(
+    to: str, subject: str, body: str, unsubscribe_token: str | None = None
+) -> bool:
+    """Admin broadcasts share the verified, timeout-bounded SMTP path."""
+    url = (
+        f"{SITE_URL}/abone-iptal?token={unsubscribe_token}"
+        if unsubscribe_token
+        else None
+    )
+    text = body + (f"\n\nAbonelikten çık: {url}" if url else "")
+    return _send(
+        to,
+        subject,
+        _wrapper(f'<p style="white-space:pre-wrap">{escape(body)}</p>', url),
+        text_body=text,
+        unsubscribe_url=url,
+    )
+
+
 def send_weekly_digest_email(
     email: str, events: list[dict], unsubscribe_token: str
 ) -> bool:

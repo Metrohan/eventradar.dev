@@ -8,6 +8,8 @@ from ..models.tag import Tag
 from ..schemas.event import EventCreate, EventUpdate
 from .date_extractor import extract_date_from_text
 from .location_normalizer import normalize_location
+from .event_lifecycle import history_event_filter, visible_event_filter
+from ..utils.event_dates import local_now
 
 
 class EventService:
@@ -20,17 +22,17 @@ class EventService:
         tags: list[str] | None = None,
         offset: int = 0,
         limit: int | None = None,
+        include_hidden: bool = True,
     ) -> List[Event]:
         """Get all events, optionally filtered by active status and/or tag names."""
         query = self.db.query(Event)
         if active_only:
-            query = query.filter(
-                Event.is_active == True,
-                or_(Event.date.is_(None), Event.date >= datetime.now()),
-            )
+            query = query.filter(*visible_event_filter())
+        elif not include_hidden:
+            query = query.filter(history_event_filter())
         if tags:
             query = query.filter(Event.tags.any(Tag.name.in_(tags)))
-        query = query.order_by(Event.date.desc()).offset(offset)
+        query = query.order_by(Event.date.desc(), Event.id.desc()).offset(offset)
         if limit is not None:
             query = query.limit(limit)
         return query.all()
@@ -39,17 +41,16 @@ class EventService:
         """Get event by ID"""
         return self.db.query(Event).filter(Event.id == event_id).first()
 
-    def get_public_event_by_id(self, event_id: int) -> Optional[Event]:
+    def get_public_event_by_id(
+        self, event_id: int, include_past: bool = False
+    ) -> Optional[Event]:
         """Return only an event that is currently visible to public callers."""
-        return (
-            self.db.query(Event)
-            .filter(
-                Event.id == event_id,
-                Event.is_active == True,
-                or_(Event.date.is_(None), Event.date >= datetime.now()),
-            )
-            .first()
-        )
+        query = self.db.query(Event).filter(Event.id == event_id)
+        if include_past:
+            query = query.filter(history_event_filter())
+        else:
+            query = query.filter(*visible_event_filter())
+        return query.first()
 
     def create_event(self, event_data: EventCreate) -> Event:
         """Create a new event"""
@@ -70,7 +71,8 @@ class EventService:
                 image_url=str(event_data.image_url) if event_data.image_url else None,
                 source=event_data.source,
                 is_active=event_data.is_active,
-                scraped_at=datetime.now(),
+                deactivation_reason=None if event_data.is_active else "manual",
+                scraped_at=local_now(),
             )
             self.db.add(db_event)
             self.db.commit()
@@ -87,6 +89,11 @@ class EventService:
             return None
         try:
             update_data = event_data.model_dump(exclude_unset=True)
+            if (
+                "is_active" in update_data
+                and update_data["is_active"] != db_event.is_active
+            ):
+                db_event.deactivation_reason = None if update_data["is_active"] else "manual"  # type: ignore[assignment]
             # Eğer date güncellenmiyorsa ve açıklama varsa, açıklamadan çek
             if (
                 "date" not in update_data or not update_data.get("date")
@@ -103,7 +110,7 @@ class EventService:
                     setattr(db_event, field, str(value))
                 else:
                     setattr(db_event, field, value)
-            db_event.scraped_at = datetime.now()  # type: ignore[assignment]
+            db_event.scraped_at = local_now()  # type: ignore[assignment]
             self.db.commit()
             self.db.refresh(db_event)
             return db_event
@@ -126,14 +133,16 @@ class EventService:
         return self.get_event_count(active_only=True, tags=tags)
 
     def get_event_count(
-        self, active_only: bool = True, tags: list[str] | None = None
+        self,
+        active_only: bool = True,
+        tags: list[str] | None = None,
+        include_hidden: bool = True,
     ) -> int:
         query = self.db.query(Event)
         if active_only:
-            query = query.filter(
-                Event.is_active == True,
-                or_(Event.date.is_(None), Event.date >= datetime.now()),
-            )
+            query = query.filter(*visible_event_filter())
+        elif not include_hidden:
+            query = query.filter(history_event_filter())
         if tags:
             query = query.filter(Event.tags.any(Tag.name.in_(tags)))
         return query.count()

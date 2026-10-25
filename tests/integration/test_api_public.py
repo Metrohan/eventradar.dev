@@ -69,8 +69,9 @@ def test_get_events_all_when_active_only_false(client, test_db):
     _seed_event(test_db, url="https://example.com/b", is_active=False)
     resp = client.get("/api/events?active_only=false")
     assert resp.status_code == 200
-    assert len(resp.json()["events"]) == 2
-    assert resp.json()["total_count"] == 2
+    # Unknown legacy/manual hides must not leak through the history option.
+    assert len(resp.json()["events"]) == 1
+    assert resp.json()["total_count"] == 1
 
 
 def test_get_events_paginates_without_changing_total_count(client, test_db):

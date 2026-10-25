@@ -176,7 +176,7 @@ def scrape_coderspace_events() -> List[Dict[str, Any]]:
 
     except Exception as e:
         logger.error(f"Coderspace genel hata: {e}", exc_info=True)
-        return []
+        raise
 
     finally:
         if driver:
