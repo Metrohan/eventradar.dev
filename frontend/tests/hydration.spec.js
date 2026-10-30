@@ -99,6 +99,8 @@ test('search filters the list after hydration', async ({ page }) => {
 });
 
 test('source filter narrows the list after hydration', async ({ page }) => {
+  // This assertion uses a Turkish label, independently of navigator.language.
+  await page.addInitScript(() => localStorage.setItem('eventradar:lang', 'tr'))
   await page.goto('/')
   await expect(page.locator('.event-card')).toHaveCount(2)
 

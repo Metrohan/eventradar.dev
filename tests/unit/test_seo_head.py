@@ -70,7 +70,7 @@ def test_event_head_carries_card_image_canonical_and_json_ld(test_db):
     head = build_head(f"/etkinlik/{event.id}", test_db)
 
     assert "<title>Hackathon 2026 | TechEventRadar</title>" in head
-    assert f'href="https://eventradar.dev/etkinlik/{event.id}"' in head
+    assert f'href="https://eventradar.dev/events/{event.slug}"' in head
     assert (
         'og:image" content="https://eventradar.dev/media/thumbnails/card.webp"' in head
     )

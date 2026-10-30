@@ -10,6 +10,11 @@ export default defineConfig({
     // Allow external domain access via Nginx reverse proxy
     allowedHosts: ['eventradar.dev', 'www.eventradar.dev'],
     proxy: {
+      '^/(events/|kategoriler(?:/|$)|sehirler(?:/|$)|robots\\.txt$)': {
+        target: process.env.VITE_PREVIEW_API_TARGET || 'http://backend:8000',
+        changeOrigin: true,
+        secure: false,
+      },
       '/api': {
         target: 'http://backend:8000',
         changeOrigin: true,
@@ -38,6 +43,11 @@ export default defineConfig({
     // same way the dev server does. Override for local runs outside
     // Docker, e.g. VITE_PREVIEW_API_TARGET=http://localhost:8000
     proxy: {
+      '^/(events/|kategoriler(?:/|$)|sehirler(?:/|$)|robots\\.txt$)': {
+        target: process.env.VITE_PREVIEW_API_TARGET || 'http://backend:8000',
+        changeOrigin: true,
+        secure: false,
+      },
       '/api': {
         target: process.env.VITE_PREVIEW_API_TARGET || 'http://backend:8000',
         changeOrigin: true,

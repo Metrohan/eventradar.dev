@@ -62,6 +62,9 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(api_router)
+from .api.discovery import router as discovery_router
+
+app.include_router(discovery_router)
 
 # Scrape-time event thumbnails (see docs/adr/0005-scrape-time-image-resize.md)
 _thumbnail_dir = Path(settings.thumbnail_dir)
@@ -137,7 +140,6 @@ async def health_check():
 
 ROBOTS_TXT = """\
 User-agent: *
-Allow: /
 Disallow: /admin/
 Disallow: /api/admin/
 Disallow: /docs

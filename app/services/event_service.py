@@ -6,7 +6,6 @@ from datetime import datetime
 from ..models.event import Event
 from ..models.tag import Tag
 from ..schemas.event import EventCreate, EventUpdate
-from .date_extractor import extract_date_from_text
 from .location_normalizer import normalize_location
 from .event_lifecycle import history_event_filter, visible_event_filter
 from ..utils.event_dates import local_now
@@ -55,12 +54,7 @@ class EventService:
     def create_event(self, event_data: EventCreate) -> Event:
         """Create a new event"""
         try:
-            # Eğer date yoksa açıklamadan çek
             date_val = event_data.date
-            if not date_val and event_data.description:
-                extracted = extract_date_from_text(event_data.description)
-                if extracted:
-                    date_val = extracted
             db_event = Event(
                 title=event_data.title,
                 description=event_data.description,
@@ -94,13 +88,6 @@ class EventService:
                 and update_data["is_active"] != db_event.is_active
             ):
                 db_event.deactivation_reason = None if update_data["is_active"] else "manual"  # type: ignore[assignment]
-            # Eğer date güncellenmiyorsa ve açıklama varsa, açıklamadan çek
-            if (
-                "date" not in update_data or not update_data.get("date")
-            ) and update_data.get("description"):
-                extracted = extract_date_from_text(update_data["description"])
-                if extracted:
-                    update_data["date"] = extracted
             for field, value in update_data.items():
                 if field == "location":
                     setattr(db_event, field, normalize_location(value))
