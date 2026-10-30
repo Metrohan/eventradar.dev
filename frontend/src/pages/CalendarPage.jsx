@@ -183,7 +183,7 @@ const CalendarPage = () => {
                   return (
                     <Link
                       key={event.id}
-                      to={`/etkinlik/${event.id}`}
+                      to={event.slug ? `/events/${event.slug}` : `/etkinlik/${event.id}`} reloadDocument
                       title={event.title}
                       style={{
                         display: 'block',

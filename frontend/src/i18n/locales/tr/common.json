@@ -14,7 +14,9 @@
       "bootcamps": "Bootcamp'ler",
       "online": "Online Etkinlikler",
       "thisWeek": "Bu Hafta",
-      "lastCall": "Son Başvurular"
+      "lastCall": "Son Başvurular",
+      "categories": "Kategoriler",
+      "cities": "Şehirler"
     },
     "contentLinks": {
       "weeklyGuide": "Haftalık Rehber",

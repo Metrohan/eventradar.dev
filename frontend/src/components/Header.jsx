@@ -18,6 +18,8 @@ const Header = () => {
 
   const DISCOVER_LINKS = [
     { to: '/', label: t('nav.discoverLinks.all'), icon: 'fa-compass' },
+    { to: '/kategoriler', label: t('nav.discoverLinks.categories'), icon: 'fa-tags', reloadDocument: true },
+    { to: '/sehirler', label: t('nav.discoverLinks.cities'), icon: 'fa-map-marker-alt', reloadDocument: true },
     { to: '/takvim', label: t('nav.discoverLinks.calendar'), icon: 'fa-calendar-alt' },
     { to: '/hackathonlar', label: t('nav.discoverLinks.hackathons'), icon: 'fa-code' },
     { to: '/bootcamplar', label: t('nav.discoverLinks.bootcamps'), icon: 'fa-laptop-code' },
@@ -121,7 +123,7 @@ const NavMenu = ({ label, icon, links, isActive }) => {
       </summary>
       <div className="nav-menu-panel">
         {links.map(link => (
-          <Link key={link.to} to={link.to} className={`nav-menu-item ${isActive(link.to) ? 'active' : ''}`}>
+          <Link key={link.to} to={link.to} reloadDocument={link.reloadDocument} className={`nav-menu-item ${isActive(link.to) ? 'active' : ''}`}>
             <span className="nav-menu-icon"><i className={`fas ${link.icon}`} /></span>
             <span>{link.label}</span>
           </Link>

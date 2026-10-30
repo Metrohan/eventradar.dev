@@ -63,7 +63,7 @@ const EventDetailPage = () => {
     if (event.location) parts.push(event.location)
     const description = parts.join(' — ') + '. Teknoloji ve kariyer etkinliği.'
 
-    const canonicalUrl = `https://eventradar.dev/etkinlik/${id}`
+    const canonicalUrl = `https://eventradar.dev${event.slug ? `/events/${event.slug}` : `/etkinlik/${id}`}`
     // Generated event card only; source-site images are never shown or linked.
     const cardUrl = event.thumbnail_url?.startsWith('/')
       ? `https://eventradar.dev${event.thumbnail_url}`
@@ -96,13 +96,6 @@ const EventDetailPage = () => {
     canonical.setAttribute('href', canonicalUrl)
 
     // JSON-LD Event schema
-    let organizerUrl
-    try {
-      organizerUrl = new URL(event.url).origin
-    } catch {
-      organizerUrl = undefined
-    }
-
     // shortcut: a location containing "online" counts as online, so a hybrid
     // "Istanbul / Online" is labelled online-only; upgrade to MixedEventAttendanceMode
     // if sources start reporting hybrid events separately.
@@ -118,7 +111,7 @@ const EventDetailPage = () => {
       startDate: event.date,
       ...(event.description && { description: event.description }),
       ...(cardUrl && { image: cardUrl }),
-      url: `https://eventradar.dev/etkinlik/${id}`,
+      url: `https://eventradar.dev${event.slug ? `/events/${event.slug}` : `/etkinlik/${id}`}`,
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: isOnline
         ? 'https://schema.org/OnlineEventAttendanceMode'
@@ -126,16 +119,7 @@ const EventDetailPage = () => {
       location: isOnline
         ? { '@type': 'VirtualLocation', url: event.url }
         : { '@type': 'Place', name: event.location, address: event.location },
-      organizer: {
-        '@type': 'Organization',
-        name: event.source,
-        ...(organizerUrl && { url: organizerUrl }),
-      },
-      performer: {
-        '@type': 'Organization',
-        name: event.source,
-        ...(organizerUrl && { url: organizerUrl }),
-      },
+
     }
     if (schema && !event.location) {
       delete schema.location
@@ -160,7 +144,7 @@ const EventDetailPage = () => {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: 'https://eventradar.dev' },
-        { '@type': 'ListItem', position: 2, name: event.title, item: `https://eventradar.dev/etkinlik/${id}` },
+        { '@type': 'ListItem', position: 2, name: event.title, item: `https://eventradar.dev${event.slug ? `/events/${event.slug}` : `/etkinlik/${id}`}` },
       ],
     }
     document.getElementById('breadcrumb-jsonld')?.remove()
@@ -224,7 +208,7 @@ const EventDetailPage = () => {
   }
 
   const deadlineText = formatDeadline(event.application_deadline)
-  const canonicalUrl = `https://eventradar.dev/etkinlik/${id}`
+  const canonicalUrl = `https://eventradar.dev${event.slug ? `/events/${event.slug}` : `/etkinlik/${id}`}`
 
   return (
     <div className="container py-5">

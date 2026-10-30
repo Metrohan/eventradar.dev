@@ -14,7 +14,9 @@
       "bootcamps": "Bootcamps",
       "online": "Online Events",
       "thisWeek": "This Week",
-      "lastCall": "Last Call"
+      "lastCall": "Last Call",
+      "categories": "Categories",
+      "cities": "Cities"
     },
     "contentLinks": {
       "weeklyGuide": "Weekly Guide",

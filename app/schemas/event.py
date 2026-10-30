@@ -77,6 +77,7 @@ class EventResponse(EventBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    slug: str
     scraped_at: datetime
     thumbnail_url: Optional[str] = None
     tags: list[str] = Field(default_factory=list)

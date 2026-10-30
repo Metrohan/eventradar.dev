@@ -1,13 +1,18 @@
+from ..utils.event_urls import event_path
 from xml.sax.saxutils import escape
 from datetime import datetime, timezone
 
 from ..models.event import Event
 from ..models.blog_post import BlogPost
+from .location_normalizer import CITY_NAMES
 
 SITE_URL = "https://eventradar.dev"
 
 STATIC_PAGES = [
     ("", "daily", "1.0"),
+    ("/kategoriler", "daily", "0.7"),
+    ("/sehirler", "daily", "0.7"),
+    ("/blog", "weekly", "0.6"),
     ("/takvim", "daily", "0.8"),
     ("/hackathonlar", "daily", "0.9"),
     ("/bootcamplar", "daily", "0.9"),
@@ -41,7 +46,7 @@ def build_sitemap(events: list[Event], posts: list[BlogPost]) -> str:
         )
 
     for event in events:
-        loc = escape(f"{SITE_URL}/etkinlik/{event.id}")
+        loc = escape(f"{SITE_URL}{event_path(event)}")
         lastmod = _w3c_date(
             getattr(event, "last_seen_at", None) or getattr(event, "scraped_at", None)
         )
@@ -53,6 +58,26 @@ def build_sitemap(events: list[Event], posts: list[BlogPost]) -> str:
             f"    <priority>0.7</priority>\n"
             f"  </url>"
         )
+
+    categories: set[str] = set()
+    cities: set[str] = set()
+    for event in events:
+        tags = getattr(event, "tags", [])
+        if isinstance(tags, (list, tuple)):
+            categories.update(str(tag.name) for tag in tags)
+        for slug, city in CITY_NAMES.items():
+            if getattr(event, "location", None) == city:
+                cities.add(slug)
+    import re
+
+    paths = [
+        "/kategoriler/" + name
+        for name in sorted(categories)
+        if re.fullmatch(r"[a-z0-9-]+", name)
+    ]
+    paths += ["/sehirler/" + name for name in sorted(cities)]
+    for path in paths:
+        urls.append(f"  <url><loc>{escape(SITE_URL + path)}</loc></url>")
 
     for post in posts:
         loc = escape(f"{SITE_URL}/blog/{post.slug}")

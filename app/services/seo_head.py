@@ -19,7 +19,9 @@ from sqlalchemy.orm import Session
 
 from ..models.blog_post import BlogPost
 from ..models.event import Event
+from ..utils.event_urls import event_path
 from .event_service import EventService
+from .event_lifecycle import visible_event_filter
 from .image_pipeline import MONTHS_TR
 
 SITE_URL = "https://eventradar.dev"
@@ -166,7 +168,7 @@ def _http_origin(url: str | None) -> str | None:
 def _event_meta(event: Event) -> _Meta:
     date: datetime | None = event.date  # type: ignore[assignment]
     title = str(event.title)
-    path = f"/etkinlik/{event.id}"
+    path = event_path(event)
     parts = [title]
     if date:
         parts.append(f"{date.day:02d} {MONTHS_TR[date.month - 1]} {date.year}")
@@ -182,12 +184,6 @@ def _event_meta(event: Event) -> _Meta:
         location_text = str(event.location or "")
         is_online = bool(_ONLINE_RE.search(location_text))
         source_url = str(event.url or "")
-        origin = _http_origin(source_url)
-        organization = {
-            "@type": "Organization",
-            "name": str(event.source),
-            **({"url": origin} if origin else {}),
-        }
         schema: dict = {
             "@context": "https://schema.org",
             "@type": "Event",
@@ -211,8 +207,6 @@ def _event_meta(event: Event) -> _Meta:
                     "address": location_text,
                 }
             ),
-            "organizer": organization,
-            "performer": organization,
         }
         if event.description:
             schema["description"] = str(event.description)
@@ -263,6 +257,15 @@ def build_head(path: str, db: Session) -> str:
         meta = _Meta(title, description, path)
     elif match := _EVENT_RE.match(path):
         event = EventService(db).get_public_event_by_id(int(match.group(1)))
+        meta = _event_meta(event) if event else None
+    elif path.startswith("/events/"):
+        event = (
+            db.query(Event)
+            .filter(
+                Event.slug == path.removeprefix("/events/"), *visible_event_filter()
+            )
+            .first()
+        )
         meta = _event_meta(event) if event else None
     elif match := _BLOG_RE.match(path):
         post = (

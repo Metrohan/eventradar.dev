@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { useTranslation } from 'react-i18next'
 import TagBadge from './TagBadge'
@@ -14,7 +13,7 @@ const EventCard = ({ event }) => {
   const dateLocale = useDateLocale()
   const { isFavorite, toggleFavorite } = useFavorites()
   const safeUrl = /^https?:\/\//i.test(event.url) ? event.url : '#'
-  const canonicalUrl = `https://eventradar.dev/etkinlik/${event.id}`
+  const canonicalUrl = `https://eventradar.dev${event.slug ? `/events/${event.slug}` : `/etkinlik/${event.id}`}`
 
   const formatDate = (dateString) => {
     if (!dateString) return t('eventCard.noDate')
@@ -104,7 +103,7 @@ const EventCard = ({ event }) => {
       {/* Content */}
       <div className="event-content">
         <h3 className="event-title">
-          <Link to={`/etkinlik/${event.id}${isPastEvent(event) || !event.is_active ? '?history=1' : ''}`} style={{ color: 'inherit', textDecoration: 'none' }}>{event.title}</Link>
+          <a href={event.slug ? `/events/${event.slug}` : `/etkinlik/${event.id}${isPastEvent(event) || !event.is_active ? '?history=1' : ''}`} style={{ color: 'inherit', textDecoration: 'none' }}>{event.title}</a>
         </h3>
 
         {event.description && (
