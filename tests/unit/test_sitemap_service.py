@@ -10,6 +10,7 @@ def _make_event(id_: int, last_seen_at=None, is_active=True):
 
     e = MagicMock()
     e.id = id_
+    e.slug = f"etkinlik-{id_}"
     e.is_active = is_active
     e.last_seen_at = last_seen_at
     e.scraped_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
@@ -42,7 +43,7 @@ def test_static_pages_present():
 def test_event_url_included():
     event = _make_event(42)
     xml = build_sitemap([event], [])
-    assert f"{SITE_URL}/etkinlik/42" in xml
+    assert f"{SITE_URL}/events/etkinlik-42" in xml
 
 
 def test_event_lastmod_from_last_seen_at():
@@ -62,7 +63,7 @@ def test_multiple_events_all_present():
     events = [_make_event(i) for i in range(1, 6)]
     xml = build_sitemap(events, [])
     for i in range(1, 6):
-        assert f"/etkinlik/{i}" in xml
+        assert f"/events/etkinlik-{i}" in xml
 
 
 def test_special_chars_escaped():

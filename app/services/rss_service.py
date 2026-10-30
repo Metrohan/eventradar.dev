@@ -1,3 +1,4 @@
+from ..utils.event_urls import event_path
 from xml.sax.saxutils import escape
 from email.utils import format_datetime
 from datetime import datetime, timezone
@@ -30,7 +31,7 @@ def build_events_rss(events: list[Event]) -> str:
 
     item_xml = []
     for event in items:
-        link = f"{SITE_URL}/etkinlik/{event.id}"
+        link = f"{SITE_URL}{event_path(event)}"
         title = str(event.title or "")
         description = escape(str(event.description or "").strip()[:500])
         item_xml.append(
