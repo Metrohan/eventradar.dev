@@ -140,7 +140,6 @@ async def health_check():
 
 ROBOTS_TXT = """\
 User-agent: *
-Allow: /
 Disallow: /admin/
 Disallow: /api/admin/
 Disallow: /docs

@@ -112,14 +112,40 @@ def test_category_and_city_pages_match_sitemap(client, test_db):
 
 
 def test_robots_allows_public_resources(client):
+    from pathlib import Path
     from urllib.robotparser import RobotFileParser
 
-    robots = RobotFileParser()
     response = client.get("/robots.txt")
-    robots.parse(response.text.splitlines())
-    assert robots.can_fetch("Googlebot", "https://eventradar.dev/events/example")
-    assert robots.can_fetch("bingbot", "https://eventradar.dev/sitemap.xml")
-    assert not robots.can_fetch("Googlebot", "https://eventradar.dev/admin/login")
+    assert response.status_code == 200
+    fallback = (
+        Path(__file__).resolve().parents[2] / "frontend/public/robots.txt"
+    ).read_text()
+    assert fallback == response.text
+    # Python 3.11 uses the first matching rule, while newer parsers choose the
+    # longest match. Public access is implicit: no broad Allow rule is needed.
+    paths = {
+        "/": True,
+        "/events/example": True,
+        "/sitemap.xml": True,
+        "/api/events/rss": True,
+        "/assets/example.js": True,
+        "/admin/login": False,
+        "/api/admin/events": False,
+        "/docs": False,
+        "/openapi.json": False,
+    }
+    for source, body in (("backend", response.text), ("fallback", fallback)):
+        robots = RobotFileParser()
+        robots.parse(body.splitlines())
+        for agent in ("Googlebot", "bingbot", "OtherCrawler"):
+            for path, allowed in paths.items():
+                assert (
+                    robots.can_fetch(agent, "https://eventradar.dev" + path) == allowed
+                ), (
+                    source,
+                    agent,
+                    path,
+                )
 
 
 def test_slug_migration_preserves_rows_and_roundtrips():
