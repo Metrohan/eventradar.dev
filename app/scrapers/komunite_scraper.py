@@ -1,86 +1,75 @@
 import re
-from urllib.parse import urljoin
+from datetime import datetime
 
 import requests
-from bs4 import BeautifulSoup
 
 LIST_URL = "https://komunite.com.tr/etkinlikler"
-BASE_URL = "https://komunite.com.tr/"
+FEED_URL = "https://komunite.com.tr/etkinlikler/takvim.ics"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; TechEventRadar/1.0)"}
 
 
-def parse_komunite_events(html: bytes | str) -> list[dict]:
-    soup = BeautifulSoup(html, "html.parser")
+def _unfold(text: str) -> list[str]:
+    lines: list[str] = []
+    for line in text.splitlines():
+        if line[:1] in (" ", "\t") and lines:
+            lines[-1] += line[1:]
+        else:
+            lines.append(line)
+    return lines
+
+
+def _unescape(value: str) -> str:
+    return re.sub(r"\\(.)", lambda m: "\n" if m.group(1) in "nN" else m.group(1), value)
+
+
+def parse_komunite_events(ics: str) -> list[dict]:
     events: list[dict] = []
     seen: set[str] = set()
-    for link in soup.select('a[href*="/etkinlikler/"]'):
-        href = link.get("href")
-        if not isinstance(href, str):
-            continue
-        url = urljoin(BASE_URL, href)
-        if url in seen:
-            continue
-        card = link.find_parent("div")
-        if not card:
-            continue
-        text = " ".join(card.get_text(" ", strip=True).split())
-        if "Yakında Açıklanacak" in text:
-            continue
-        date_match = re.search(
-            r"(\d{1,2}(?:\s*-\s*\d{1,2})?\s+[A-Za-zÇĞİÖŞÜçğıöşü]+\s+\d{4})(?:\s*\|\s*(\d{1,2}:\d{2}))?",
-            text,
-        )
-        paragraphs = [node.get_text(" ", strip=True) for node in card.select("p")]
-        description = max(paragraphs, key=len, default="")
-        title_node = card.select_one("h2, h3, h4")
-        title = title_node.get_text(" ", strip=True) if title_node else None
-        if not title and description in paragraphs:
-            description_index = paragraphs.index(description)
-            title = next(
-                (
-                    value
-                    for value in reversed(paragraphs[:description_index])
-                    if len(value) > 3
-                    and not re.search(r"\d{1,2}:\d{2}|\d{4}", value)
-                    and "Komünite Space" not in value
-                    and value != "Online"
-                ),
-                None,
-            )
-        if not date_match or not title:
-            continue
-        seen.add(url)
-        location = next(
-            (
-                value
-                for value in paragraphs
-                if "Komünite Space" in value or value == "Online"
-            ),
-            None,
-        )
-        img = card.select_one("img")
-        image_url = img.get("src") if img else None
-        events.append(
-            {
-                "title": title,
-                "description": description,
-                "date": " ".join(part for part in date_match.groups() if part),
-                "application_deadline": None,
-                "location": location,
-                "url": url,
-                "image_url": image_url,
-                "source": "Komünite",
-                "is_active": True,
-            }
-        )
+    fields: dict[str, str] | None = None
+    for line in _unfold(ics):
+        if line == "BEGIN:VEVENT":
+            fields = {}
+        elif line == "END:VEVENT" and fields is not None:
+            event = _to_event(fields)
+            if event and event["url"] not in seen:
+                seen.add(event["url"])
+                events.append(event)
+            fields = None
+        elif fields is not None and ":" in line:
+            name, _, value = line.partition(":")
+            fields[name.split(";")[0]] = value
     return events
+
+
+def _to_event(fields: dict[str, str]) -> dict | None:
+    url = fields.get("URL")
+    title = _unescape(fields.get("SUMMARY", "")).strip()
+    try:
+        start = datetime.strptime(fields.get("DTSTART", ""), "%Y%m%dT%H%M%S")
+    except ValueError:
+        return None
+    if not url or not title:
+        return None
+    description = _unescape(fields.get("DESCRIPTION", "")).split("\n\n")[0].strip()
+    return {
+        "title": title,
+        "description": description,
+        "date": start,
+        "application_deadline": None,
+        "location": _unescape(fields.get("LOCATION", "")).strip() or None,
+        "url": url,
+        "image_url": None,
+        "source": "Komünite",
+        "is_active": True,
+    }
 
 
 def scrape_komunite_events() -> list[dict]:
     try:
-        response = requests.get(LIST_URL, timeout=30, headers=HEADERS)
+        response = requests.get(FEED_URL, timeout=30, headers=HEADERS)
         response.raise_for_status()
-        return parse_komunite_events(response.content)
+        response.encoding = "utf-8"
+        return parse_komunite_events(response.text)
     except requests.RequestException as exc:
         print(f"Komünite: network error: {exc}")
         raise

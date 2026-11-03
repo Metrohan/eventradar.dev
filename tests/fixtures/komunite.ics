@@ -1,0 +1,154 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Komunite//Etkinlik Takvimi//TR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Komünite etkinlikleri
+X-WR-TIMEZONE:Europe/Istanbul
+X-WR-CALDESC:Komünite bootcamp\, buluşma\, hackathon ve topluluk etkinlik
+ leri.
+REFRESH-INTERVAL;VALUE=DURATION:PT6H
+X-PUBLISHED-TTL:PT6H
+BEGIN:VTIMEZONE
+TZID:Europe/Istanbul
+BEGIN:STANDARD
+DTSTART:19700101T000000
+TZOFFSETFROM:+0300
+TZOFFSETTO:+0300
+TZNAME:+03
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:sifirdan-bire-ai-sba-2026-10@komunite.com.tr
+DTSTAMP:20261103T123128Z
+DTSTART;TZID=Europe/Istanbul:20261102T203000
+DTEND;TZID=Europe/Istanbul:20261102T220000
+RRULE:FREQ=DAILY;COUNT=4
+SUMMARY:Sıfırdan Bire Yapay Zekâ
+DESCRIPTION:AI’ı günlük işine ilk kez güvenli biçimde yerleştirmek
+ .\n\nhttps://komunite.com.tr/etkinlikler/sifirdan-bire-ai
+LOCATION:Online (Zoom)
+URL:https://komunite.com.tr/etkinlikler/sifirdan-bire-ai
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:aix-leadership-bootcamp-alb-2026-10@komunite.com.tr
+DTSTAMP:20261103T123128Z
+DTSTART;TZID=Europe/Istanbul:20261105T093000
+DTEND;TZID=Europe/Istanbul:20261105T163000
+SUMMARY:AIx Leadership Bootcamp
+DESCRIPTION:Şirketinin AI dönüşümü için yönetime sunulacak yedi kar
+ ar belgesini bir günde çıkarmak.\n\nhttps://komunite.com.tr/etkinlikler
+ /aix-leadership-bootcamp
+LOCATION:Komünite Space\, Ayazağa Mah. Azerbaycan Cd. No:3A Radisson Coll
+ ection Hotel\, Dış Dükkan\, Sarıyer / İstanbul ve online (Zoom)
+URL:https://komunite.com.tr/etkinlikler/aix-leadership-bootcamp
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:agentic-ai-pro-bootcamp-apb-2026-11@komunite.com.tr
+DTSTAMP:20261103T123128Z
+DTSTART;TZID=Europe/Istanbul:20261111T093000
+DTEND;TZID=Europe/Istanbul:20261111T163000
+SUMMARY:Agentic AI Pro Bootcamp
+DESCRIPTION:Her hafta sohbete yazdığın prompt’u skill’e\, skill’i 
+ Claude Cowork’te kendi kendine koşan bir göreve çevirmek.\n\nhttps://
+ komunite.com.tr/etkinlikler/agentic-ai-pro-bootcamp
+LOCATION:Komünite Space\, Ayazağa Mah. Azerbaycan Cd. No:3A Radisson Coll
+ ection Hotel\, Dış Dükkan\, Sarıyer / İstanbul ve online (Zoom)
+URL:https://komunite.com.tr/etkinlikler/agentic-ai-pro-bootcamp
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:aix-design-thinking-bootcamp-adt-2026-10@komunite.com.tr
+DTSTAMP:20261103T123128Z
+DTSTART;TZID=Europe/Istanbul:20261112T093000
+DTEND;TZID=Europe/Istanbul:20261112T163000
+SUMMARY:AIx Design Thinking Bootcamp
+DESCRIPTION:Bir problemi\, gerçek kullanıcılarla test edilmiş çalışa
+ n bir prototipe bir günde çevirmek.\n\nhttps://komunite.com.tr/etkinlikl
+ er/aix-design-thinking-bootcamp
+LOCATION:Komünite Space\, Ayazağa Mah. Azerbaycan Cd. No:3A Radisson Coll
+ ection Hotel\, Dış Dükkan\, Sarıyer / İstanbul ve online (Zoom)
+URL:https://komunite.com.tr/etkinlikler/aix-design-thinking-bootcamp
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:ai-creative-bootcamp-acb-2026-11@komunite.com.tr
+DTSTAMP:20261103T123128Z
+DTSTART;TZID=Europe/Istanbul:20261113T093000
+DTEND;TZID=Europe/Istanbul:20261113T163000
+SUMMARY:AI Creative Bootcamp
+DESCRIPTION:Gerçek bir brief’i konseptten görsele\, filme\, sese ve sun
+ ulmuş pitch’e uzanan hatta bir günde kampanyaya çevirmek.\n\nhttps://
+ komunite.com.tr/etkinlikler/ai-creative-bootcamp
+LOCATION:Komünite Space\, Ayazağa Mah. Azerbaycan Cd. No:3A Radisson Coll
+ ection Hotel\, Dış Dükkan\, Sarıyer / İstanbul ve online (Zoom)
+URL:https://komunite.com.tr/etkinlikler/ai-creative-bootcamp
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:ai-writing-bootcamp-awb-2026-10@komunite.com.tr
+DTSTAMP:20261103T123128Z
+DTSTART;TZID=Europe/Istanbul:20261115T093000
+DTEND;TZID=Europe/Istanbul:20261115T163000
+SUMMARY:AI Writing Bootcamp
+DESCRIPTION:Yapay zekâya kendi sesiyle yazdıran kişisel yazım kılavuzu
+  dosyasını bir günde kurup onunla ilk yazıyı yayımlamak.\n\nhttps://
+ komunite.com.tr/etkinlikler/ai-writing-bootcamp
+LOCATION:Online (Zoom)
+URL:https://komunite.com.tr/etkinlikler/ai-writing-bootcamp
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:go-to-market-engineering-bootcamp-gtm-2026-11@komunite.com.tr
+DTSTAMP:20261103T123128Z
+DTSTART;TZID=Europe/Istanbul:20261117T093000
+DTEND;TZID=Europe/Istanbul:20261117T163000
+SUMMARY:Go-to-Market Engineering Bootcamp
+DESCRIPTION:B2B’de yeni müşteri bulma işini\, hedef hesap listesinden 
+ onaylı ilk mesaja uzanan ve her hafta yeniden çalışan bir Claude fabri
+ kasına çevirmek.\n\nhttps://komunite.com.tr/etkinlikler/go-to-market-eng
+ ineering-bootcamp
+LOCATION:Komünite Space\, Ayazağa Mah. Azerbaycan Cd. No:3A Radisson Coll
+ ection Hotel\, Dış Dükkan\, Sarıyer / İstanbul ve online (Zoom)
+URL:https://komunite.com.tr/etkinlikler/go-to-market-engineering-bootcamp
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:agentic-ai-bootcamp-aab-2026-11@komunite.com.tr
+DTSTAMP:20261103T123128Z
+DTSTART;TZID=Europe/Istanbul:20261118T093000
+DTEND;TZID=Europe/Istanbul:20261118T163000
+SUMMARY:Agentic AI Bootcamp
+DESCRIPTION:Kendi tool’larını çalıştıran\, MCP bağlantılı bir aj
+ anı bir günde kurup canlıya bağlamak.\n\nhttps://komunite.com.tr/etkin
+ likler/agentic-ai-bootcamp
+LOCATION:Komünite Space\, Ayazağa Mah. Azerbaycan Cd. No:3A Radisson Coll
+ ection Hotel\, Dış Dükkan\, Sarıyer / İstanbul ve online (Zoom)
+URL:https://komunite.com.tr/etkinlikler/agentic-ai-bootcamp
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:vibe-coding-bootcamp-vcb-2026-11@komunite.com.tr
+DTSTAMP:20261103T123128Z
+DTSTART;TZID=Europe/Istanbul:20261122T093000
+DTEND;TZID=Europe/Istanbul:20261122T163000
+SUMMARY:Vibe Coding Bootcamp
+DESCRIPTION:AI ile çalışan bir ürün çıkarıp gerçek kullanıcıya u
+ laştırmak.\n\nhttps://komunite.com.tr/etkinlikler/vibe-coding-bootcamp
+LOCATION:Komünite Space\, Ayazağa Mah. Azerbaycan Cd. No:3A Radisson Coll
+ ection Hotel\, Dış Dükkan\, Sarıyer / İstanbul ve online (Zoom)
+URL:https://komunite.com.tr/etkinlikler/vibe-coding-bootcamp
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

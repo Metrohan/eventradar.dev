@@ -15,6 +15,7 @@ _uc_mock.ChromeOptions = MagicMock
 _uc_mock.Chrome = MagicMock
 sys.modules.setdefault("undetected_chromedriver", _uc_mock)
 
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 import pytest
@@ -66,19 +67,56 @@ def test_patika_enriches_event_from_detail_page():
 # ── Komünite ─────────────────────────────────────────────────────────────────
 
 
-def test_komunite_deduplicates_responsive_cards_and_skips_unknown_dates():
+def test_komunite_parses_calendar_feed():
     from app.scrapers.komunite_scraper import parse_komunite_events
 
-    events = parse_komunite_events(_html("komunite.html"))
+    events = parse_komunite_events(_html("komunite.ics"))
 
-    assert len(events) == 1
-    assert events[0]["title"] == "Vibe Coding Bootcamp"
-    assert events[0]["date"] == "18 - 19 Temmuz 2026 10:00"
-    assert events[0]["location"] == "Komünite Space, Vadistanbul"
+    assert len(events) == 9
+    leadership = next(e for e in events if e["title"] == "AIx Leadership Bootcamp")
+    assert leadership["date"] == datetime(2026, 11, 5, 9, 30)
     assert (
-        events[0]["image_url"]
-        == "https://framerusercontent.com/images/lPEk0HJL02Nvo0DDtsWrPCdkK14.png?width=1280&height=720"
+        leadership["url"]
+        == "https://komunite.com.tr/etkinlikler/aix-leadership-bootcamp"
     )
+    assert leadership["location"].startswith("Komünite Space, Ayazağa")
+    assert "https://" not in leadership["description"]
+    assert leadership["source"] == "Komünite"
+
+
+def test_komunite_feed_skips_entries_without_url_or_valid_start():
+    from app.scrapers.komunite_scraper import parse_komunite_events
+
+    feed = (
+        "BEGIN:VEVENT\nSUMMARY:A\nDTSTART;TZID=Europe/Istanbul:bozuk\n"
+        "URL:https://komunite.com.tr/etkinlikler/a\nEND:VEVENT\n"
+        "BEGIN:VEVENT\nSUMMARY:B\nDTSTART;TZID=Europe/Istanbul:20261105T093000\nEND:VEVENT\n"
+    )
+
+    assert parse_komunite_events(feed) == []
+
+
+def test_patika_decodes_utf8_when_server_sends_no_charset():
+    import requests
+    from app.scrapers.patika_scraper import scrape_patika_events
+
+    def charsetless(name: str) -> requests.Response:
+        response = requests.Response()
+        response.status_code = 200
+        response.headers["content-type"] = "text/html"
+        response._content = _html(name).encode("utf-8")
+        # What requests derives from a text/* header without a charset.
+        response.encoding = "ISO-8859-1"
+        return response
+
+    response, detail = charsetless("patika.html"), charsetless("patika_detail.html")
+    with patch(
+        "app.scrapers.patika_scraper.requests.get", side_effect=[response, detail]
+    ):
+        events = scrape_patika_events()
+
+    assert [e["title"] for e in events] == ["Grid Up Hackathon"]
+    assert events[0]["date"] == "1/9/2026"
 
 
 # ── Youthall ──────────────────────────────────────────────────────────────────
@@ -399,53 +437,51 @@ def test_akbank_defaults_location_to_none_when_venue_unknown(mock_chrome):
 # ── Coderspace ────────────────────────────────────────────────────────────────
 
 
-def test_cs_scraper_parses_event_cards():
-    from bs4 import BeautifulSoup
+def test_coderspace_parses_upcoming_cards_and_skips_past_section():
+    from app.scrapers.cs_scraper import parse_coderspace_events
 
-    soup = BeautifulSoup(_html("cs_scraper.html"), "html.parser")
-    cards = soup.select("div.event-card, div.card, article")
-    assert len(cards) == 2
+    events = parse_coderspace_events(
+        _html("coderspace_list.html"), now=datetime(2026, 11, 3)
+    )
 
-
-def test_cs_scraper_parses_title_and_link():
-    from bs4 import BeautifulSoup
-
-    soup = BeautifulSoup(_html("cs_scraper.html"), "html.parser")
-    card = soup.select_one("div.event-card")
-    assert card is not None
-    title = card.select_one("h3, h2, h4")
-    assert title is not None
-    assert title.get_text(strip=True) == "Machine Learning Summit"
-    link = card.select_one("a[href]")
-    assert link is not None
-    assert "ml-summit" in str(link["href"])
+    titles = [e["title"] for e in events]
+    assert titles[:3] == [
+        "Data Science & AI Day",
+        "49W x Coderspace: Yapay Zeka Paneli",
+        "Boğaziçi Teknoloji Zirvesi",
+    ]
+    assert "Grid Up Datathon" not in titles  # lives under "Geçmiş etkinlikler"
+    first = events[0]
+    assert first["url"] == "https://coderspace.io/etkinlikler/data-science-ai-day/"
+    assert first["date"].endswith("November 2026") and first["date"].startswith("19")
+    assert first["source"] == "Coderspace"
 
 
-def test_cs_scraper_builds_absolute_url():
-    from bs4 import BeautifulSoup
+def test_coderspace_drops_events_whose_application_is_closed():
+    from app.scrapers.cs_scraper import parse_coderspace_events
 
-    soup = BeautifulSoup(_html("cs_scraper.html"), "html.parser")
-    cards = soup.select("div.event-card")
-    urls = []
-    for card in cards:
-        link = card.select_one("a[href]")
-        href = str(link["href"])
-        urls.append(href if href.startswith("http") else f"https://coderspace.io{href}")
-    assert urls[0] == "https://coderspace.io/etkinlikler/ml-summit"
-    assert urls[1] == "https://coderspace.io/etkinlikler/full-stack"
+    events = parse_coderspace_events(
+        _html("coderspace_list.html"), now=datetime(2026, 12, 30)
+    )
+
+    assert [e["title"] for e in events] == [
+        "Vodafone Business & İTÜ Siber Güvenlik Akademisi"
+    ]  # only the undated card remains
 
 
-@patch("undetected_chromedriver.Chrome")
-def test_cs_scraper_returns_list(mock_chrome):
+def test_coderspace_scrape_uses_plain_http_and_utf8():
+    import requests
     from app.scrapers.cs_scraper import scrape_coderspace_events
 
-    mock_driver = _make_selenium_driver(_html("cs_scraper.html"))
-    mock_chrome.return_value = mock_driver
+    response = requests.Response()
+    response.status_code = 200
+    response.headers["content-type"] = "text/html"
+    response._content = _html("coderspace_list.html").encode("utf-8")
+    response.encoding = "ISO-8859-1"
+    with patch("app.scrapers.cs_scraper.requests.get", return_value=response):
+        events = scrape_coderspace_events()
 
-    with patch("app.scrapers.cs_scraper.time.sleep"):
-        result = scrape_coderspace_events()
-
-    assert isinstance(result, list)
+    assert any(e["title"] == "Boğaziçi Teknoloji Zirvesi" for e in events)
 
 
 # ── Pupilica ──────────────────────────────────────────────────────────────────
