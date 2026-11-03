@@ -12,6 +12,7 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; TechEventRadar/1.0)"}
 def _detail_metadata(url: str) -> tuple[str | None, str | None]:
     response = requests.get(url, timeout=20, headers=HEADERS)
     response.raise_for_status()
+    response.encoding = "utf-8"
     text = " ".join(
         BeautifulSoup(response.text, "html.parser").get_text(" ", strip=True).split()
     )
@@ -69,6 +70,9 @@ def scrape_patika_events() -> list[dict]:
     try:
         response = requests.get(LIST_URL, timeout=30, headers=HEADERS)
         response.raise_for_status()
+        # The server sends text/html without a charset; requests would guess
+        # ISO-8859-1 and the Turkish markers below would never match.
+        response.encoding = "utf-8"
         events = parse_patika_events(response.text)
         for event in events:
             try:

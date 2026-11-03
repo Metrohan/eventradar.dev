@@ -1,0 +1,1825 @@
+
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+
+
+
+
+
+<title>Hackathon, Kod Yarışması, Yazılım Eğitimi</title>
+
+
+<!-- hreflang -->
+
+
+
+
+<!-- Favicon -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Google Tag Manager -->
+
+
+<!-- Google tag (gtag.js) -->
+
+
+<!-- End Google Tag Manager -->
+</head>
+<body class="min-h-screen bg-[#fafafa] font-sans text-[16px] text-neutral-900 antialiased">
+<div class="v3-root">
+
+<div @keydown.escape.window="closeAll()" class="v3nav sticky top-0 z-50 lg:relative font-sans" data-nav-theme="light" data-v3nav="" x-data="{ dd: null, drawer: false, acc: null,
+               openDD(name) { this.dd = name },
+               closeDD() { this.dd = null },
+               closeAll() { this.dd = null; this.drawer = false; this.acc = null },
+               focusCta(sel) {
+                 this.closeAll();
+                 const el = document.querySelector(sel);
+                 if (!el) return;
+                 /* Focus first — preventScroll keeps the browser from jumping, so the scroll below owns it. */
+                 el.focus({ preventScroll: true });
+                 const start = window.scrollY;
+                 const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                 el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
+                 /* Some embedded browsers ignore behavior:'smooth' and never move at all.
+                    If nothing happened by now, jump instead of leaving the click dead. */
+                 setTimeout(() =&gt; { if (window.scrollY === start) el.scrollIntoView({ block: 'center' }) }, 600);
+               } }">
+<header class="relative z-[60] w-full bg-[color:#00102c] bg-[image:radial-gradient(ellipse_175%_140%_at_center_top,rgba(0,73,253,0.55)_0%,#00102c_50%)] min-[992px]:bg-[image:radial-gradient(ellipse_60%_220%_at_center_top,rgba(0,73,253,0.7)_0%,#00102c_50%)]" data-top-navbar-notification="" hidden="">
+<div class="relative mx-auto flex w-full max-w-[1440px] flex-col items-center justify-center gap-[2px] px-[44px] py-[7px] text-center min-[992px]:flex-row min-[992px]:gap-[16px]">
+<span class="font-sans text-[14px] leading-[20px] min-[992px]:text-[16px]" style="color: #FFFFFF; font-weight: 600;">🚀 Yeni Eğitim Yayında! Veri Bilimi ve Yapay Zeka dünyasına adım at!</span>
+<a class="top-navbar-click-track inline-flex h-[32px] shrink-0 items-center justify-center gap-[4px] whitespace-nowrap rounded-[16px] !border !border-solid border-white bg-white bg-[image:linear-gradient(180deg,rgba(179,176,201,0)_0%,rgba(179,176,201,0.12)_100%)] px-[12px] font-sans text-[14px] font-medium leading-[20px] text-neutral-800 no-underline shadow-c-btn--secondary hover:text-neutral-800" data-cs-ref="top_navbar" data-cs-title="pro-vb" data-notification-id="312" href="https://coderspace.io/pro/veri-bilimi-ve-yapay-zeka/">Hemen Keşfet!</a>
+<button aria-label="Kapat" class="absolute right-[15px] top-1/2 inline-flex -translate-y-1/2 cursor-pointer items-center border-0 bg-transparent p-0 text-[20px] leading-none text-white" data-top-navbar-close="" type="button">
+<i aria-hidden="true" class="ri-close-line"></i>
+</button>
+</div>
+</header>
+
+<div class="v3nav-solid hidden w-full lg:block" style="--nav-dd-bridge: 28px; background: transparent; border-color: var(--nav-bar-border);">
+<div class="mx-auto flex h-[80px] max-w-[1440px] items-center justify-between px-[80px]">
+<div class="flex items-center gap-[32px]">
+<a aria-label="Coderspace" class="block shrink-0" href="/">
+<img alt="Coderspace" class="v3nav-logo-light h-[24px] w-auto" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/brand/coderspace-logo.svg"/>
+<img alt="Coderspace" class="v3nav-logo-dark h-[24px] w-auto" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/brand/coderspace-white-logo.svg"/>
+</a>
+<nav class="flex items-center">
+<div @mouseenter="openDD('egitimler')" @mouseleave="closeDD()" class="relative">
+<button :aria-expanded="dd === 'egitimler'" @click="dd === 'egitimler' ? closeDD() : openDD('egitimler')" class="v3nav-trigger flex h-[40px] items-center justify-center gap-[6px] px-[12px] text-[16px] leading-[24px]" type="button">
+      Eğitimler
+      <i :class="{ '-rotate-180': dd === 'egitimler' }" class="iconoir-nav-arrow-down text-[16px] leading-none transition-transform duration-200"></i>
+</button>
+<div :class="{ 'is-open': dd === 'egitimler' }" class="v3nav-dd-panel absolute left-0 top-full z-50 pt-[var(--nav-dd-bridge,20px)]">
+<div class="v3nav-dd-card flex w-[342px] flex-col gap-[24px] rounded-[32px] border border-solid p-[16px]" style="background: var(--nav-panel-bg); border-color: var(--nav-panel-border);">
+<div class="flex flex-col gap-[8px]">
+<div class="px-[8px]">
+<span class="inline-flex rounded-[12px] bg-gradient-to-r from-[#661fcc] to-[#370c7a] px-[8px] py-[4px] text-[12px] font-medium leading-[16px] tracking-[0.24px] text-white">SÜRELİ CANLI EĞİTİM</span>
+</div>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[310px] rounded-[8px]" href="/egitimler/teknoloji-okulu/">
+<span class="flex size-[32px] shrink-0 items-center justify-center rounded-[8px] border border-solid" style="border-width: 1px; border-style: solid; background: var(--nav-accent-chip-purple-bg); border-color: var(--nav-accent-chip-purple-border); color: var(--nav-accent-icon-purple);">
+<i class="iconoir-graduation-cap text-[20px] leading-none"></i>
+</span>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Teknoloji Okulları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Sektör odaklı teknoloji okullarını keşfet.</span>
+</span>
+</a>
+</div>
+<div class="flex flex-col gap-[8px]">
+<div class="px-[8px]">
+<span class="inline-flex rounded-[12px] bg-gradient-to-r from-[#003ed9] to-[#002e8e] px-[8px] py-[4px] text-[12px] font-medium leading-[16px] tracking-[0.24px] text-white">İNTERAKTİF EĞİTİM PLATFORMU</span>
+</div>
+<div class="flex flex-col gap-[16px]">
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[310px] rounded-[8px]" href="/pro/">
+<span class="flex size-[32px] shrink-0 items-center justify-center rounded-[8px] border border-solid" style="border-width: 1px; border-style: solid; background: var(--nav-accent-chip-blue-bg); border-color: var(--nav-accent-chip-blue-border); color: var(--nav-accent-icon-blue);">
+<i class="iconoir-code text-[20px] leading-none"></i>
+</span>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Coderspace Pro: Yazılım ve Veri</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Uygulamalı eğitimlerle Python ve veri alanında uzmanlaş.</span>
+</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<a class="v3nav-trigger flex h-[40px] items-center justify-center px-[12px] text-[16px] leading-[24px]" href="/etkinlikler">
+    Etkinlikler
+  </a>
+<div @mouseenter="openDD('kaynaklar')" @mouseleave="closeDD()" class="relative">
+<button :aria-expanded="dd === 'kaynaklar'" @click="dd === 'kaynaklar' ? closeDD() : openDD('kaynaklar')" class="v3nav-trigger flex h-[40px] items-center justify-center gap-[6px] px-[12px] text-[16px] leading-[24px]" type="button">
+      Kaynaklar
+      <i :class="{ '-rotate-180': dd === 'kaynaklar' }" class="iconoir-nav-arrow-down text-[16px] leading-none transition-transform duration-200"></i>
+</button>
+<div :class="{ 'is-open': dd === 'kaynaklar' }" class="v3nav-dd-panel absolute left-1/2 top-full z-50 -ml-[326px] w-[652px] max-w-[calc(100vw-32px)] pt-[var(--nav-dd-bridge,20px)]">
+<div class="v3nav-dd-card flex w-full flex-col gap-[32px] rounded-[32px] border border-solid p-[16px]" style="background: var(--nav-panel-bg); border-color: var(--nav-panel-border);">
+<div class="flex flex-col gap-[16px]">
+<div class="flex flex-col gap-[8px] px-[8px]">
+<p class="text-[12px] font-medium leading-[16px] tracking-[0.24px]" style="color: var(--nav-heading);">YETENEKLER İÇİN</p>
+<div class="h-px w-full" style="background: var(--nav-divider);"></div>
+</div>
+<div class="grid grid-cols-3 gap-[16px]">
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/blog/">
+<i class="iconoir-text-square shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Blog</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Trendleri keşfet.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/blog/codebrew/">
+<i class="iconoir-journal-page shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Bülten</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Güncel kal.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/mulakat-sorulari/">
+<i class="iconoir-chat-bubble-question shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Mülakat Soruları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Hazırlık yap.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/sozluk">
+<i class="iconoir-book shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Yazılımcı Sözlüğü</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Kavramları öğren.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/portfolyo/">
+<i class="iconoir-user-square shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Portfolyo</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Projelerini sergile.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/universite-taban-puanlari/">
+<i class="iconoir-graduation-cap shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Üniversite Tercihleri</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Doğru seçimi yap.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/roadmap/">
+<i class="iconoir-path-arrow shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Yol Haritası</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Adım adım ilerle.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/en/cheat-sheets/">
+<i class="iconoir-flash shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Cheat Sheets</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Kısayollara bak.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/araclar/">
+<i class="iconoir-tools shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Yazılım Araçları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Yardım al.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/podcast">
+<i class="iconoir-microphone shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Podcast</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Yolda dinle.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/maaslar/">
+<i class="iconoir-coins shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Maaşlar</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Piyasayı öğren.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/yapay-zeka-araclari/">
+<i class="iconoir-sparks shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Yapay Zeka Araçları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Yapay zekayı keşfet.</span>
+</span>
+</a>
+</div>
+</div>
+<div class="flex flex-col gap-[16px]">
+<div class="flex flex-col gap-[8px] px-[8px]">
+<p class="text-[12px] font-medium leading-[16px] tracking-[0.24px]" style="color: var(--nav-heading);">ŞİRKETLER İÇİN</p>
+<div class="h-px w-full" style="background: var(--nav-divider);"></div>
+</div>
+<div class="grid grid-cols-3 gap-[16px]">
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/blog/insan-kaynaklari/">
+<i class="iconoir-text-square shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Blog</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">İK trendleri.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/blog/codebrew/">
+<i class="iconoir-journal-page shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Bülten</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Haberdar ol.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/webinar/">
+<i class="iconoir-video-camera shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">HR Webinarları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Uzmanları dinle.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/basari-hikayeleri/">
+<i class="iconoir-medal shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Başarı Hikayeleri</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">İlham al.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/e-kitaplar/">
+<i class="iconoir-book-stack shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">E-kitap</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Rehberleri indir.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/ik-hesaplama-araclari/">
+<i class="iconoir-calculator shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">İK Hesaplama Araçları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Kolayca hesapla.</span>
+</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</nav>
+</div>
+<div class="flex items-center gap-[12px]">
+<div @mouseenter="openDD('sirketler')" @mouseleave="closeDD()" class="relative">
+<button :aria-expanded="dd === 'sirketler'" @click="dd === 'sirketler' ? closeDD() : openDD('sirketler')" class="v3nav-trigger flex h-[40px] items-center justify-center gap-[6px] px-[12px] text-[16px] leading-[24px]" type="button">
+        Şirketler için
+        <i :class="{ '-rotate-180': dd === 'sirketler' }" class="iconoir-nav-arrow-down text-[16px] leading-none transition-transform duration-200"></i>
+</button>
+<div :class="{ 'is-open': dd === 'sirketler' }" class="v3nav-dd-panel absolute right-0 top-full z-50 pt-[var(--nav-dd-bridge,20px)]">
+<div class="v3nav-dd-card flex flex-col gap-[16px] rounded-[32px] border border-solid p-[16px]" style="background: var(--nav-panel-bg); border-color: var(--nav-panel-border);">
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/ise-alim">
+<i class="iconoir-user-plus shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">İşe Alım</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Ekibinizi büyütün.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] px-[12px] py-[8px] w-[196px] rounded-[16px]" href="/isveren-markasi">
+<i class="iconoir-megaphone shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">İşveren Markası</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Yeteneklere ulaşın.</span>
+</span>
+</a>
+</div>
+</div>
+</div>
+<a class="inline-flex h-[40px] items-center justify-center rounded-[222px] border border-solid border-white bg-buttons-primary px-[16px] text-[16px] font-medium leading-[20px] tracking-[-0.08px] text-white shadow-c-btn--primary transition-opacity hover:opacity-90" href="/kayitol">Kayıt ol</a>
+</div>
+</div>
+</div>
+<div class="v3nav-mobile relative z-40 lg:hidden" style="background: transparent;">
+<div class="flex h-[60px] items-center justify-between px-5" style="border-color: var(--nav-bar-border); border-bottom: 1px solid var(--nav-bar-border); background: var(--nav-mobile-bar-bg); -webkit-backdrop-filter: blur(var(--nav-mobile-blur, 8px)); backdrop-filter: blur(var(--nav-mobile-blur, 8px));">
+<a aria-label="Coderspace" class="block shrink-0" href="/">
+<img alt="Coderspace" class="v3nav-logo-light h-[24px] w-auto" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/brand/coderspace-logo.svg"/>
+<img alt="Coderspace" class="v3nav-logo-dark h-[24px] w-auto" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/brand/coderspace-white-logo.svg"/>
+</a>
+<div class="flex items-center gap-[12px]">
+<a class="inline-flex h-[36px] items-center justify-center rounded-[222px] border border-solid border-white bg-buttons-primary px-[14px] text-[14px] font-medium leading-[20px] text-white shadow-c-btn--primary" href="/kayitol">Kayıt ol</a>
+<button :aria-expanded="drawer" @click="drawer = !drawer; acc = null; if (drawer) { const m = $el.closest('.v3nav-mobile'); m.querySelector('.v3nav-drawer').style.top = m.getBoundingClientRect().bottom + 'px' }" aria-label="Menü" class="flex size-[32px] items-center justify-center" style="color: var(--nav-item-title);" type="button">
+<i :class="drawer ? 'iconoir-xmark' : 'iconoir-menu'" class="text-[24px] leading-none"></i>
+</button>
+</div>
+</div>
+<div :class="{ 'is-open': drawer }" class="v3nav-drawer fixed inset-x-0 bottom-0 top-[60px] z-40 flex flex-col" style="background: var(--nav-solid-bg);">
+<div class="flex-1 overflow-y-auto px-5 py-[8px]">
+<div class="border-b border-solid" style="border-color: var(--nav-divider);">
+<button @click="acc === 'egitimler' ? acc = null : acc = 'egitimler'" class="flex w-full items-center justify-between py-[16px] text-left text-[16px] leading-[24px]" style="color: var(--nav-item-title);" type="button">
+          Eğitimler
+          <i :class="{ '-rotate-180': acc === 'egitimler' }" class="iconoir-nav-arrow-down text-[20px] leading-none transition-transform duration-200"></i>
+</button>
+<div :class="{ 'is-open': acc === 'egitimler' }" class="v3nav-acc">
+<div class="v3nav-acc-inner">
+<div class="flex flex-col gap-[16px] pb-[16px]">
+<span class="inline-flex w-max rounded-[12px] bg-gradient-to-r from-[#661fcc] to-[#370c7a] px-[8px] py-[4px] text-[12px] font-medium leading-[16px] tracking-[0.24px] text-white">SÜRELİ CANLI EĞİTİM</span>
+<a class="flex items-center gap-[16px] py-[4px]" href="/egitimler/teknoloji-okulu/">
+<span class="flex size-[32px] shrink-0 items-center justify-center rounded-[8px] border border-solid" style="background: rgba(123,53,226,0.24); border-color: rgba(123,53,226,0.32); color: #c09bff;">
+<i class="iconoir-graduation-cap text-[20px] leading-none"></i>
+</span>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Teknoloji Okulları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Sektör odaklı teknoloji okullarını keşfet.</span>
+</span>
+</a>
+<span class="inline-flex w-max rounded-[12px] bg-gradient-to-r from-[#003ed9] to-[#002e8e] px-[8px] py-[4px] text-[12px] font-medium leading-[16px] tracking-[0.24px] text-white">İNTERAKTİF EĞİTİM PLATFORMU</span>
+<a class="flex items-center gap-[16px] py-[4px]" href="/pro/">
+<span class="flex size-[32px] shrink-0 items-center justify-center rounded-[8px] border border-solid" style="background: rgba(0,73,253,0.24); border-color: rgba(0,73,253,0.32); color: #7ea6ff;">
+<i class="iconoir-code text-[20px] leading-none"></i>
+</span>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Coderspace Pro: Yazılım ve Veri</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Uygulamalı eğitimlerle Python ve veri alanında uzmanlaş.</span>
+</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<a class="flex items-center justify-between border-b border-solid py-[16px] text-[16px] leading-[24px]" href="/etkinlikler" style="border-color: var(--nav-divider); color: var(--nav-item-title);">Etkinlikler</a>
+<div class="border-b border-solid" style="border-color: var(--nav-divider);">
+<button @click="acc === 'kaynaklar' ? acc = null : acc = 'kaynaklar'" class="flex w-full items-center justify-between py-[16px] text-left text-[16px] leading-[24px]" style="color: var(--nav-item-title);" type="button">
+          Kaynaklar
+          <i :class="{ '-rotate-180': acc === 'kaynaklar' }" class="iconoir-nav-arrow-down text-[20px] leading-none transition-transform duration-200"></i>
+</button>
+<div :class="{ 'is-open': acc === 'kaynaklar' }" class="v3nav-acc">
+<div class="v3nav-acc-inner">
+<div class="flex flex-col gap-[16px] pb-[16px]">
+<p class="text-[12px] font-medium leading-[16px] tracking-[0.24px]" style="color: var(--nav-heading);">YETENEKLER İÇİN</p>
+<a class="flex items-center gap-[16px] py-[4px]" href="/blog/">
+<i class="iconoir-text-square shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Blog</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Trendleri keşfet.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/blog/codebrew/">
+<i class="iconoir-journal-page shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Bülten</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Güncel kal.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/mulakat-sorulari/">
+<i class="iconoir-chat-bubble-question shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Mülakat Soruları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Hazırlık yap.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/sozluk">
+<i class="iconoir-book shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Yazılımcı Sözlüğü</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Kavramları öğren.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/portfolyo/">
+<i class="iconoir-user-square shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Portfolyo</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Projelerini sergile.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/universite-taban-puanlari/">
+<i class="iconoir-graduation-cap shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Üniversite Tercihleri</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Doğru seçimi yap.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/roadmap/">
+<i class="iconoir-path-arrow shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Yol Haritası</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Adım adım ilerle.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/en/cheat-sheets/">
+<i class="iconoir-flash shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Cheat Sheets</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Kısayollara bak.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/araclar/">
+<i class="iconoir-tools shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Yazılım Araçları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Yardım al.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/podcast">
+<i class="iconoir-microphone shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Podcast</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Yolda dinle.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/maaslar/">
+<i class="iconoir-coins shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Maaşlar</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Piyasayı öğren.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/yapay-zeka-araclari/">
+<i class="iconoir-sparks shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Yapay Zeka Araçları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Yapay zekayı keşfet.</span>
+</span>
+</a>
+<p class="mt-[8px] text-[12px] font-medium leading-[16px] tracking-[0.24px]" style="color: var(--nav-heading);">ŞİRKETLER İÇİN</p>
+<a class="flex items-center gap-[16px] py-[4px]" href="/blog/insan-kaynaklari/">
+<i class="iconoir-text-square shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Blog</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">İK trendleri.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/blog/codebrew/">
+<i class="iconoir-journal-page shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Bülten</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Haberdar ol.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/webinar/">
+<i class="iconoir-video-camera shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">HR Webinarları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Uzmanları dinle.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/basari-hikayeleri/">
+<i class="iconoir-medal shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">Başarı Hikayeleri</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">İlham al.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/e-kitaplar/">
+<i class="iconoir-book-stack shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">E-kitap</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Rehberleri indir.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/ik-hesaplama-araclari/">
+<i class="iconoir-calculator shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">İK Hesaplama Araçları</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Kolayca hesapla.</span>
+</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<div class="border-b border-solid" style="border-color: var(--nav-divider);">
+<button @click="acc === 'sirketler' ? acc = null : acc = 'sirketler'" class="flex w-full items-center justify-between py-[16px] text-left text-[16px] leading-[24px]" style="color: var(--nav-item-title);" type="button">
+            Şirketler için
+            <i :class="{ '-rotate-180': acc === 'sirketler' }" class="iconoir-nav-arrow-down text-[20px] leading-none transition-transform duration-200"></i>
+</button>
+<div :class="{ 'is-open': acc === 'sirketler' }" class="v3nav-acc">
+<div class="v3nav-acc-inner">
+<div class="flex flex-col gap-[16px] pb-[16px]">
+<a class="flex items-center gap-[16px] py-[4px]" href="/ise-alim">
+<i class="iconoir-user-plus shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">İşe Alım</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Ekibinizi büyütün.</span>
+</span>
+</a>
+<a class="flex items-center gap-[16px] py-[4px]" href="/isveren-markasi">
+<i class="iconoir-megaphone shrink-0 text-[24px] leading-none" style="color: var(--nav-item-icon);"></i>
+<span class="flex min-w-0 flex-1 flex-col">
+<span class="text-[14px] leading-[20px]" style="color: var(--nav-item-title);">İşveren Markası</span>
+<span class="text-[12px] leading-[16px]" style="color: var(--nav-item-sub);">Yeteneklere ulaşın.</span>
+</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="shrink-0 border-t border-solid px-5 py-[16px]" style="border-color: var(--nav-divider); background: var(--nav-solid-bg);">
+<a class="flex h-[48px] w-full items-center justify-center rounded-[222px] text-[16px] font-medium leading-[24px]" href="/giris" style="background: var(--nav-item-hover); color: var(--nav-item-title);">Giriş yap</a>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mx-auto max-w-[1440px] px-5 pb-[120px] lg:px-[80px] xl:px-[156px]">
+<div class="pt-[20px] lg:pt-[46px]">
+<nav aria-label="breadcrumb" class="flex flex-wrap items-center">
+<a class="flex items-center p-[6px] text-[14px] leading-[20px] tracking-[0.28px] text-neutral-700 transition-colors hover:text-neutral-900" href="/">Anasayfa</a>
+<i aria-hidden="true" class="iconoir-nav-arrow-right text-[20px] leading-none text-neutral-600"></i>
+<span aria-current="page" class="flex items-center p-[6px] text-[14px] leading-[20px] tracking-[0.28px] text-neutral-700">Etkinlikler</span>
+</nav>
+
+</div>
+<section class="mt-[24px] lg:mt-[80px]">
+<h1 class="font-heading text-[32px] font-medium leading-[40px] tracking-[-0.08px] text-neutral-900">Etkinlikleri keşfet</h1>
+<div class="mt-[24px]">
+<div class="flex flex-col-reverse gap-[16px] lg:flex-row lg:items-end lg:justify-between">
+<nav class="-m-[4px] flex min-w-0 gap-[8px] overflow-x-auto p-[4px] [-ms-overflow-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
+<a class="inline-flex h-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-white px-[12px] text-[14px] font-medium leading-[20px] transition-colors bg-white text-neutral-800 shadow-[0_0_0_1px_rgba(213,213,224,0.6)] hover:bg-neutral-100" href="/etkinlikler/bootcamp/">Bootcamp</a>
+<a class="inline-flex h-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-white px-[12px] text-[14px] font-medium leading-[20px] transition-colors bg-white text-neutral-800 shadow-[0_0_0_1px_rgba(213,213,224,0.6)] hover:bg-neutral-100" href="/etkinlikler/hackathon/">Hackathon</a>
+<a class="inline-flex h-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-white px-[12px] text-[14px] font-medium leading-[20px] transition-colors bg-white text-neutral-800 shadow-[0_0_0_1px_rgba(213,213,224,0.6)] hover:bg-neutral-100" href="/etkinlikler/hiring-challenge/">Hiring Challenge</a>
+<a class="inline-flex h-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-white px-[12px] text-[14px] font-medium leading-[20px] transition-colors bg-white text-neutral-800 shadow-[0_0_0_1px_rgba(213,213,224,0.6)] hover:bg-neutral-100" href="/etkinlikler/meet-up/">Meet-up</a>
+<a class="inline-flex h-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-white px-[12px] text-[14px] font-medium leading-[20px] transition-colors bg-white text-neutral-800 shadow-[0_0_0_1px_rgba(213,213,224,0.6)] hover:bg-neutral-100" href="/etkinlikler/yetenek-programi/">Yetenek Programı</a>
+<a class="inline-flex h-[36px] shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-white px-[12px] text-[14px] font-medium leading-[20px] transition-colors bg-white text-neutral-800 shadow-[0_0_0_1px_rgba(213,213,224,0.6)] hover:bg-neutral-100" href="/etkinlikler/web3/">Web3</a>
+</nav>
+<form action="" class="c-input-group c-input-group--md shrink-0 rounded-full px-[12px] min-[400px]:w-[264px]" method="get">
+<i class="iconoir-search shrink-0 text-[20px] leading-none text-neutral-600"></i>
+<input class="c-input c-input--bare" name="q" placeholder="Etkinlik ara" type="text" value=""/>
+</form>
+</div>
+</div>
+<div class="mt-[40px] grid grid-cols-1 gap-[24px] sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-fr lg:gap-y-[40px]">
+<div class="-mx-[4px] -mb-[4px] grid grid-rows-[auto_1fr] rounded-[28px] bg-cover bg-top bg-no-repeat px-[4px] pb-[4px]" data-cs-ref="events_pro_card" data-cs-title="pro-3" style="background-image: url('https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/v3/events/pro-card-bg.jpg')">
+<div class="flex h-[32px] items-center justify-center">
+<span class="text-[14px] font-medium leading-[20px] text-white">Coderspace Pro</span>
+</div>
+<div class="group flex h-full flex-col gap-[16px] overflow-hidden rounded-[24px] bg-white p-[8px] shadow-elevation-200">
+<a class="relative aspect-[344/180] w-full overflow-hidden rounded-[16px] border border-neutral-200" href="/pro/veri-bilimi-ve-yapay-zeka/">
+<img alt="Veri Bilimi ve Yapay Zeka" class="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/pro/programs/events_card/Veri_Bilimi.png"/>
+</a>
+<div class="flex flex-1 flex-col gap-[16px]">
+<div class="flex flex-col gap-[8px] px-[8px]">
+<span class="inline-flex h-[24px] w-fit items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Coderspace Pro</span>
+<div class="flex flex-col gap-[4px]">
+<a class="line-clamp-2 font-heading text-[20px] font-medium leading-[28px] text-neutral-900 transition-colors group-hover:text-primary-500" href="/pro/veri-bilimi-ve-yapay-zeka/">Veri Bilimi ve Yapay Zeka</a>
+<p class="line-clamp-2 text-[14px] leading-[20px] text-neutral-600">Veriyi hazırlamaktan modeli canlıya almaya kadar tüm süreci öğren. Makine öğrenmesi, derin öğrenme ve doğal dil işleme becerilerini gerçek projelerle geliştir, yapay zeka çağında kariyerine yön ver.</p>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-[16px]">
+<div class="flex items-start justify-between gap-[8px] px-[8px] text-center">
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">İlerleme</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">Kendi hızında</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Pratik</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">500+</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Sertifika</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">18 adet</span>
+</div>
+</div>
+<a class="c-btn c-btn--primary c-btn--md w-full pr-[12px]" href="/pro/veri-bilimi-ve-yapay-zeka/">
+            Detaylı bilgi
+            <i class="iconoir-nav-arrow-right text-[20px] leading-none"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+<div class="-mx-[4px] -mb-[4px] grid grid-rows-[auto_1fr] rounded-[28px] bg-cover bg-top bg-no-repeat px-[4px] pb-[4px]" style="background-image: url('https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/v3/events/highlighted-card-bg.jpg')">
+<div class="flex h-[32px] items-center justify-center gap-[6px]">
+<i class="iconoir-star text-[20px] leading-none text-white"></i>
+<span class="text-[14px] font-medium leading-[20px] text-white">Coderspace özel etkinlik</span>
+</div>
+<div class="group flex h-full flex-col gap-[16px] overflow-hidden rounded-[24px] bg-white p-[8px] shadow-elevation-200">
+<a class="relative aspect-[344/180] w-full overflow-hidden rounded-[16px] border border-neutral-200" href="/egitimler/teknoloji-okulu/siber-guvenlik-okulu/">
+<img alt="Siber Güvenlik Okulu" class="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/40/ec/40ec1b5644c3c09a7c24b803a231b5d7.webp"/>
+</a>
+<div class="flex flex-1 flex-col gap-[24px]">
+<div class="flex flex-col gap-[12px] px-[8px]">
+<span class="inline-flex h-[24px] w-fit items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Teknoloji Okulu</span>
+<div class="flex flex-col gap-[4px]">
+<a class="line-clamp-2 font-heading text-[20px] font-medium leading-[28px] text-neutral-900 transition-colors group-hover:text-primary-500" href="/egitimler/teknoloji-okulu/siber-guvenlik-okulu/">Siber Güvenlik Okulu</a>
+<p class="line-clamp-3 text-[14px] leading-[20px] text-neutral-600">Siber Güvenlik Okulu seni bekler!</p>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-[24px]">
+<div class="flex items-start justify-between gap-[8px] px-[8px] text-center">
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Son Başvuru</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">3 Aralık</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Başlangıç</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">5 Aralık</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Bitiş</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">27 Aralık</span>
+</div>
+</div>
+<a class="c-btn c-btn--primary c-btn--md w-full pr-[12px]" href="/egitimler/teknoloji-okulu/siber-guvenlik-okulu/">
+          Detaylı bilgi
+          <i class="iconoir-nav-arrow-right text-[20px] leading-none"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+<div class="group flex h-full flex-col gap-[16px] overflow-hidden rounded-[24px] bg-white p-[8px] shadow-elevation-200">
+<a class="relative aspect-[344/180] w-full overflow-hidden rounded-[16px] border border-neutral-200" href="/etkinlikler/data-science-ai-day/">
+<img alt="Data Science &amp; AI Day" class="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/c5/0f/c50f26a5842263c70e718607d599228f.webp"/>
+</a>
+<div class="flex flex-1 flex-col gap-[24px]">
+<div class="flex flex-col gap-[12px] px-[8px]">
+<span class="inline-flex h-[24px] w-fit items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<div class="flex flex-col gap-[4px]">
+<a class="line-clamp-2 font-heading text-[20px] font-medium leading-[28px] text-neutral-900 transition-colors group-hover:text-primary-500" href="/etkinlikler/data-science-ai-day/">Data Science &amp; AI Day</a>
+<p class="line-clamp-3 text-[14px] leading-[20px] text-neutral-600">Teknoloji Dünyasında Verinin Önemini Keşfet!</p>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-[24px]">
+<div class="flex items-start justify-between gap-[8px] px-[8px] text-center">
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Son Başvuru</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">18 Kasım</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Başlangıç</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">19 Kasım</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Bitiş</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">19 Kasım</span>
+</div>
+</div>
+<a class="c-btn c-btn--primary c-btn--md w-full pr-[12px]" href="/etkinlikler/data-science-ai-day/">
+          Detaylı bilgi
+          <i class="iconoir-nav-arrow-right text-[20px] leading-none"></i>
+</a>
+</div>
+</div>
+</div>
+<div class="group flex h-full flex-col gap-[16px] overflow-hidden rounded-[24px] bg-white p-[8px] shadow-elevation-200">
+<a class="relative aspect-[344/180] w-full overflow-hidden rounded-[16px] border border-neutral-200" href="/etkinlikler/49w-x-coderspace-yapay-zeka-paneli/">
+<img alt="49W x Coderspace: Yapay Zeka Paneli" class="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/5e/ea/5eea8d624fd24eea2606df76550b3fd2.webp"/>
+</a>
+<div class="flex flex-1 flex-col gap-[24px]">
+<div class="flex flex-col gap-[12px] px-[8px]">
+<span class="inline-flex h-[24px] w-fit items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<div class="flex flex-col gap-[4px]">
+<a class="line-clamp-2 font-heading text-[20px] font-medium leading-[28px] text-neutral-900 transition-colors group-hover:text-primary-500" href="/etkinlikler/49w-x-coderspace-yapay-zeka-paneli/">49W x Coderspace: Yapay Zeka Paneli</a>
+<p class="line-clamp-3 text-[14px] leading-[20px] text-neutral-600">Yapay Zeka’nın Yakın Geleceği: 2027'de Bizi Neler Bekliyor?</p>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-[24px]">
+<div class="flex items-start justify-between gap-[8px] px-[8px] text-center">
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Son Başvuru</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">22 Kasım</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Başlangıç</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">24 Kasım</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Bitiş</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">24 Kasım</span>
+</div>
+</div>
+<a class="c-btn c-btn--primary c-btn--md w-full pr-[12px]" href="/etkinlikler/49w-x-coderspace-yapay-zeka-paneli/">
+          Detaylı bilgi
+          <i class="iconoir-nav-arrow-right text-[20px] leading-none"></i>
+</a>
+</div>
+</div>
+</div>
+<div class="group flex h-full flex-col gap-[16px] overflow-hidden rounded-[24px] bg-white p-[8px] shadow-elevation-200">
+<a class="relative aspect-[344/180] w-full overflow-hidden rounded-[16px] border border-neutral-200" href="/etkinlikler/bogazici-teknoloji-zirvesi/">
+<img alt="Boğaziçi Teknoloji Zirvesi" class="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/1f/70/1f7094dd30fb0515e949f3367c6eff42.webp"/>
+</a>
+<div class="flex flex-1 flex-col gap-[24px]">
+<div class="flex flex-col gap-[12px] px-[8px]">
+<span class="inline-flex h-[24px] w-fit items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<div class="flex flex-col gap-[4px]">
+<a class="line-clamp-2 font-heading text-[20px] font-medium leading-[28px] text-neutral-900 transition-colors group-hover:text-primary-500" href="/etkinlikler/bogazici-teknoloji-zirvesi/">Boğaziçi Teknoloji Zirvesi</a>
+<p class="line-clamp-3 text-[14px] leading-[20px] text-neutral-600">Boğaziçi Teknoloji Zirvesi: Yapay zeka, finansal teknolojiler ve dijital dönüşümün vizyoner liderleriyle genç yetenekleri aynı sahnede buluşturmak; öğrencilere ilham dolu paneller, keynote oturumları ve fuaye alanında doğrudan networking fırsatı sunan tek günlük fiziksel etkinliktir.</p>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-[24px]">
+<div class="flex items-start justify-between gap-[8px] px-[8px] text-center">
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Son Başvuru</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">23 Kasım</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Başlangıç</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">28 Kasım</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Bitiş</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">28 Kasım</span>
+</div>
+</div>
+<a class="c-btn c-btn--primary c-btn--md w-full pr-[12px]" href="/etkinlikler/bogazici-teknoloji-zirvesi/">
+          Detaylı bilgi
+          <i class="iconoir-nav-arrow-right text-[20px] leading-none"></i>
+</a>
+</div>
+</div>
+</div>
+<div class="group flex h-full flex-col gap-[16px] overflow-hidden rounded-[24px] bg-white p-[8px] shadow-elevation-200">
+<a class="relative aspect-[344/180] w-full overflow-hidden rounded-[16px] border border-neutral-200" href="/etkinlikler/vodafone-business-itu-siber-guvenlik-akademisi/">
+<img alt="Vodafone Business &amp; İTÜ Siber Güvenlik Akademisi" class="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/37/a4/37a45a5e7af50f2ee96aa29db4d3d587.webp"/>
+</a>
+<div class="flex flex-1 flex-col gap-[24px]">
+<div class="flex flex-col gap-[12px] px-[8px]">
+<span class="inline-flex h-[24px] w-fit items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Bootcamp</span>
+<div class="flex flex-col gap-[4px]">
+<a class="line-clamp-2 font-heading text-[20px] font-medium leading-[28px] text-neutral-900 transition-colors group-hover:text-primary-500" href="/etkinlikler/vodafone-business-itu-siber-guvenlik-akademisi/">Vodafone Business &amp; İTÜ Siber Güvenlik Akademisi</a>
+<p class="line-clamp-3 text-[14px] leading-[20px] text-neutral-600">Siber güvenlik yetkinliklerinizi geliştirin.</p>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-[24px]">
+<div class="flex items-start justify-between gap-[8px] px-[8px] text-center">
+</div>
+<a class="c-btn c-btn--primary c-btn--md w-full pr-[12px]" href="/etkinlikler/vodafone-business-itu-siber-guvenlik-akademisi/">
+          Detaylı bilgi
+          <i class="iconoir-nav-arrow-right text-[20px] leading-none"></i>
+</a>
+</div>
+</div>
+
+</div>
+<div class="-mx-[4px] -mb-[4px] grid grid-rows-[auto_1fr] rounded-[28px] bg-cover bg-top bg-no-repeat px-[4px] pb-[4px]" data-cs-ref="events_pro_card" data-cs-title="pro-2" style="background-image: url('https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/v3/events/pro-card-bg.jpg')">
+<div class="flex h-[32px] items-center justify-center">
+<span class="text-[14px] font-medium leading-[20px] text-white">Coderspace Pro</span>
+</div>
+<div class="group flex h-full flex-col gap-[16px] overflow-hidden rounded-[24px] bg-white p-[8px] shadow-elevation-200">
+<a class="relative aspect-[344/180] w-full overflow-hidden rounded-[16px] border border-neutral-200" href="/pro/veri-analitigi/">
+<img alt="Veri Analitiği" class="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/pro/programs/events_card/Veri_Analiti%C4%9Fi.png"/>
+</a>
+<div class="flex flex-1 flex-col gap-[16px]">
+<div class="flex flex-col gap-[8px] px-[8px]">
+<span class="inline-flex h-[24px] w-fit items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Coderspace Pro</span>
+<div class="flex flex-col gap-[4px]">
+<a class="line-clamp-2 font-heading text-[20px] font-medium leading-[28px] text-neutral-900 transition-colors group-hover:text-primary-500" href="/pro/veri-analitigi/">Veri Analitiği</a>
+<p class="line-clamp-2 text-[14px] leading-[20px] text-neutral-600">Veriyi toplamayı, analiz etmeyi ve görselleştirmeyi öğren. Python, SQL ve veri görselleştirme becerileriyle analitik düşünme yetkinliğini geliştir, kariyerinde yeni bir alan aç.</p>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-[16px]">
+<div class="flex items-start justify-between gap-[8px] px-[8px] text-center">
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">İlerleme</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">Kendi hızında</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Pratik</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">450+</span>
+</div>
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Sertifika</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">12 adet</span>
+</div>
+</div>
+<a class="c-btn c-btn--primary c-btn--md w-full pr-[12px]" href="/pro/veri-analitigi/">
+            Detaylı bilgi
+            <i class="iconoir-nav-arrow-right text-[20px] leading-none"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+<div class="group flex h-full flex-col gap-[16px] overflow-hidden rounded-[24px] bg-white p-[8px] shadow-elevation-200">
+<a class="relative aspect-[344/180] w-full overflow-hidden rounded-[16px] border border-neutral-200" href="/etkinlikler/vodafone-long-term-internship-program/">
+<img alt="Vodafone Long Term Internship Program" class="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/b3/a5/b3a5b29edacdb0c661cb7218c30108b1.webp"/>
+</a>
+<div class="flex flex-1 flex-col gap-[24px]">
+<div class="flex flex-col gap-[12px] px-[8px]">
+<span class="inline-flex h-[24px] w-fit items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<div class="flex flex-col gap-[4px]">
+<a class="line-clamp-2 font-heading text-[20px] font-medium leading-[28px] text-neutral-900 transition-colors group-hover:text-primary-500" href="/etkinlikler/vodafone-long-term-internship-program/">Vodafone Long Term Internship Program</a>
+<p class="line-clamp-3 text-[14px] leading-[20px] text-neutral-600">If we can connect, we can create a better future.</p>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-[24px]">
+<div class="flex items-start justify-between gap-[8px] px-[8px] text-center">
+<div class="flex flex-1 flex-col items-center">
+<span class="text-[14px] leading-[20px] text-neutral-600">Son Başvuru</span>
+<span class="text-[14px] font-medium leading-[20px] text-neutral-900">28 Ekim</span>
+</div>
+</div>
+<a class="c-btn c-btn--primary c-btn--md c-btn--disabled w-full pr-[12px]" href="/etkinlikler/vodafone-long-term-internship-program/">
+            Başvurular Tamamlandı
+            <i class="iconoir-nav-arrow-right text-[20px] leading-none"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="mt-[120px] lg:mt-[80px]" id="gecmis">
+<h2 class="font-heading text-[32px] font-medium leading-[40px] tracking-[-0.08px] text-neutral-900">Geçmiş etkinlikler</h2>
+<div class="mt-[32px] flex flex-col gap-[16px] lg:gap-[24px]">
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/ing-hubs-turkiye-agentic-hackathon/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="ING Hubs Türkiye Agentic AI Hackathon" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/72/4e/724ed05a392d33e3027d4bc835184edf.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">ING Hubs Türkiye Agentic AI Hackathon</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">ING Hubs Türkiye</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Kasım 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Kasım 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/ing-hubs-turkiye-agentic-ai-hiring-day/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="ING Hubs Türkiye Agentic AI Hiring Day" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/96/d8/96d807b15df12d2a709b28fc3dcd1263.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">ING Hubs Türkiye Agentic AI Hiring Day</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">ING Hubs Türkiye</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hiring Challenge</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hiring Challenge</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/women-in-tech-inspiring-career-stories/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Women in Tech: Inspiring Career Stories" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/80/3c/803c25436fba4e0a6b55316cd463ba44.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Women in Tech: Inspiring Career Stories</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Coderspace</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/kkb-hackathon-agentic-data-analytics/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="KKB Hackathon: Agentic Data Analytics" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/d8/b6/d8b6b8704cf219086500d53ed9355fb3.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">KKB Hackathon: Agentic Data Analytics</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">KKB Kredi Kayıt Bürosu</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/ai-business-series/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="AI in Business Series" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/d5/ed/d5ed8d9ca3b085258c41a6961836c5d9.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">AI in Business Series</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Coderspace</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/oksijen-future-forum-2026-after-ai/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Oksijen Future Forum 2026 | AFTER AI" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/83/2b/832b00241354e4061af4ac1708e64f0d.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Oksijen Future Forum 2026 | AFTER AI</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Oksijen</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/trendyol-teknofest-e-ticaret-yarismasi/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Trendyol TEKNOFEST E-Ticaret Yarışması" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/cf/0a/cf0a4636a44c2075c0c38badc3e61bdd.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Trendyol TEKNOFEST E-Ticaret Yarışması</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Trendyol</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Ekim 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/level-up-ai-roketsan-yapay-zeka-hackathonu/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="LEVEL UP AI | ROKETSAN Yapay Zekâ Hackathonu" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/32/97/329764476b9105fe062ae0f34bc06460.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">LEVEL UP AI | ROKETSAN Yapay Zekâ Hackathonu</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">ROKETSAN</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Eylül 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Eylül 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/grid-up-datathon/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Grid Up Datathon" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/cf/09/cf093a17f145864903d3940c80de2e6e.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Grid Up Datathon</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Gdz Elektrik</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Eylül 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Eylül 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/aktek-bilisim-gencyeteneklio-programi/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Aktek Bilişim Genç YetenekliO Programı" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/cd/49/cd49507fdda4c7b78f000e373ba619a0.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Aktek Bilişim Genç YetenekliO Programı</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Aktek Bilişim</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Ağustos 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Ağustos 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/Mobven-young-talent-ai-hackathon/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Mobven Young Talent AI Hackathon" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/dc/69/dc692c49ae6d8dc4149f74d70d858278.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Mobven Young Talent AI Hackathon</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Mobven</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Ağustos 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Ağustos 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/togg-beyonder/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Togg Beyonder" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/bb/19/bb19b2fc99dd479921e216009f53bc1a.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Togg Beyonder</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Togg</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Ağustos 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Ağustos 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/softtech-road-to-tech-staj-programi/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Softtech Road to Tech Staj Programı" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/03/d9/03d92d3066b4aab1dc92508cb5a43218.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Softtech Road to Tech Staj Programı</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Softtech</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Ağustos 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Ağustos 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/fintech-hackathon-hack-the-idea/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="FinTech Hackathon: Hack the Idea" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/8d/a3/8da31007d341c8ac76a4a7af3d01fd8e.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">FinTech Hackathon: Hack the Idea</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Moka United</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Temmuz 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Temmuz 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/global-talent-bridge-international-technology-internship-program/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="️Global Talent Bridge – International Technology Internship Program (Summer 2026)" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/8d/66/8d6672b86409835e5ab7177aab5583b5.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">️Global Talent Bridge – International Technology Internship Program (Summer 2026)</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Turkish Technology</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Temmuz 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Temmuz 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/yol-techx/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Bupa Acıbadem Sigorta Y.O.L TechX" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/e6/b5/e6b5bfa445dc15575a58e8534476feeb.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Bupa Acıbadem Sigorta Y.O.L TechX</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Bupa Acıbadem Sigorta</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Haziran 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Haziran 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/teb-one/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="TEB ONE" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/2f/b7/2fb7625ffa5914897543bd922c842161.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">TEB ONE</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">TEB</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Haziran 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Haziran 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/is-bankasi-masterclass-staj-programi/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="MasterClass Staj Programı" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/6a/d6/6ad62156fd48cb8722af40de1099d9dd.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">MasterClass Staj Programı</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Türkiye İş Bankası</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Haziran 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Haziran 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/teknoloji-zirvesi/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Teknoloji Zirvesi" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/38/e7/38e717e879a9ba8aad4037bfe17552fa.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Teknoloji Zirvesi</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Coderspace</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Haziran 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Haziran 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/softtech-yetenek-kusagi/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Softtech Yetenek Kuşağı" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/3c/5b/3c5b0a8e732350ea7dd1a6e4aee0e850.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Softtech Yetenek Kuşağı</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Softtech</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/garanti-bbva-talent-week/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Garanti BBVA Talent Week" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/55/f5/55f568aa59e2740127b86cdf0ba42515.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Garanti BBVA Talent Week</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Garanti BBVA</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/koc-genc-yetenek-programi/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Koç Genç Yetenek Programı" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/fc/f8/fcf8ce239e84b8920bc0587f2b7295fa.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Koç Genç Yetenek Programı</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Koç Holding</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/trendyol-talent-program-2026/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Trendyol Talent Program" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/1d/d4/1dd4790e883dbe2e3016a46b17a4b1d4.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Trendyol Talent Program</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Trendyol</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/future-lions-internship-program/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Future Lions Internship Program" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/06/25/06251a4ef4ee55043f79cf907641f243.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Future Lions Internship Program</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">ING Hubs Türkiye</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/tech-dev-talks/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Tech &amp; Dev Talks" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/4e/f3/4ef3d33cf4255c8ffaf8a49972c64aa1.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Tech &amp; Dev Talks</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Coderspace</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Mayıs 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/denizbank-bilgi-sistemleri-denetimi-mufettis-yardimcisi/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="DenizBank Bilgi Sistemleri Denetimi Müfettiş Yardımcısı" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/fe/fb/fefb91d52b2aa883c62c690d2c8f9a24.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">DenizBank Bilgi Sistemleri Denetimi Müfettiş Yardımcısı</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">DenizBank</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/mercedes-benz-drive-up-uzun-donem-staj-program/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Mercedes-Benz DRIVE-UP Uzun Dönem Staj Programı 2026" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/b8/3e/b83eccbd774e43342e29c172e4f6caec.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Mercedes-Benz DRIVE-UP Uzun Dönem Staj Programı 2026</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Mercedes-Benz Otomotiv</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/bi-thongo-web3-hackathon/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Bi-ThonGO: Web3 Hackathon" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/b2/12/b212a58e1f28a30b7d6e04946a9fb4ca.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Bi-ThonGO: Web3 Hackathon</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Biruni Teknopark</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/shipyard-vibecoding-bootcamp/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="AI Day | Shipyard: Vibecoding Bootcamp" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/cc/b1/ccb158d2c6a9180b8fcb4f7809f39889.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">AI Day | Shipyard: Vibecoding Bootcamp</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Solana</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Bootcamp</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Bootcamp</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/garanti-bbva-genc-fikrinle-parla/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Garanti BBVA Genç Fikrinle Parla" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/ed/7c/ed7c3b86f82fde98b14f5a3d71be4f69.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Garanti BBVA Genç Fikrinle Parla</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Garanti BBVA</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hackathon-Datathon</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/sahibinden-data-ai-hiring-challenge/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="sahibinden.com Data&amp;AI Hiring Challenge" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/27/fa/27fa1ff8590ef1181474631efc2ba417.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">sahibinden.com Data&amp;AI Hiring Challenge</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Sahibinden</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hiring Challenge</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Hiring Challenge</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/data-science-ai-day-2025-online/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Data Science &amp; AI Day" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/3e/f5/3ef5e3787ab07def31be2ac4c8b7e9f2.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Data Science &amp; AI Day</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Coderspace</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Nisan 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/vodafone-turkey-discover-graduate-program/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Vodafone Turkey Discover Graduate Program" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/e9/0f/e90fa6aaf35680ad4cc415849e3b8d0a.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Vodafone Turkey Discover Graduate Program</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Vodafone</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Mart 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Yetenek Programı</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Mart 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/borusan-alpha-staj-programi-webinari/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Borusan Alpha Staj Programı Webinarı" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/15/74/15741d5501a20c1be74e953f9a74203f.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Borusan Alpha Staj Programı Webinarı</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Borusan Grubu</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Mart 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Mart 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/cloudflare-peer-point-istanbul/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Cloudflare Peer Point İstanbul" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/89/e8/89e816eca5f8ec9b407c784b02336773.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Cloudflare Peer Point İstanbul</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Cloudflare</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Mart 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Mart 2026</span>
+</div>
+</div>
+</a>
+</div>
+<div class="flex items-center gap-[12px] lg:gap-[24px]">
+<a class="group flex min-w-0 flex-1 items-center gap-[12px] lg:gap-[24px]" href="/etkinlikler/vodafoneda-1-gun-network/">
+<div class="h-[48px] w-[80px] shrink-0 overflow-hidden rounded-[6.5px] border border-neutral-200 lg:h-[88px] lg:w-[168px] lg:rounded-[12px]">
+<img alt="Vodafone'da 1 Gün: Network" class="size-full object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/2a/6d/2a6d437acba9fac334fc6c51047bc243.webp"/>
+</div>
+<div class="flex min-w-0 flex-1 flex-col gap-[8px] lg:flex-row lg:items-center lg:gap-[24px]">
+<div class="flex min-w-0 flex-1 flex-col gap-[8px]">
+<p class="truncate font-heading text-[16px] font-medium leading-[20px] text-neutral-800 transition-colors group-hover:text-primary-500 lg:text-[20px] lg:leading-[28px]">Vodafone'da 1 Gün: Network</p>
+<p class="hidden truncate text-[18px] leading-[24px] text-neutral-800 lg:block">Vodafone</p>
+<div class="flex items-center justify-between gap-[12px] lg:hidden">
+<span class="inline-flex h-[20px] min-w-0 items-center truncate rounded-[4px] bg-white px-[12px] text-[12px] leading-[16px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="shrink-0 text-[12px] leading-[16px] text-neutral-600">Mart 2026</span>
+</div>
+</div>
+<div class="hidden shrink-0 flex-col items-end gap-[8px] lg:flex">
+<span class="inline-flex h-[24px] items-center rounded-[4px] bg-white px-[12px] text-[14px] leading-[20px] text-neutral-800 shadow-[0px_1px_2px_0px_rgba(80,80,96,0.12),0px_0px_0px_1px_rgba(213,213,224,0.6)]">Meet-up</span>
+<span class="text-[16px] leading-[24px] text-neutral-600">Mart 2026</span>
+</div>
+</div>
+</a>
+</div>
+</div>
+<div class="mt-[32px] lg:mt-[64px]">
+<nav aria-label="Sayfalama" class="flex items-center justify-center gap-[32px]">
+<span aria-hidden="true" class="c-btn c-btn--tertiary c-btn--icon-sm c-btn--disabled">
+<i class="iconoir-nav-arrow-left text-[16px] leading-none"></i>
+</span>
+<div class="flex items-center gap-[8px]">
+<span aria-current="page" class="flex size-[32px] items-center justify-center rounded-full bg-primary-500 text-[14px] font-medium leading-[20px] text-white">1</span>
+<a class="flex size-[32px] items-center justify-center rounded-full text-[14px] font-medium leading-[20px] text-neutral-900 transition-colors hover:bg-neutral-200/60" href="/etkinlikler?page=2#gecmis">2</a>
+<a class="flex size-[32px] items-center justify-center rounded-full text-[14px] font-medium leading-[20px] text-neutral-900 transition-colors hover:bg-neutral-200/60" href="/etkinlikler?page=3#gecmis">3</a>
+<a class="flex size-[32px] items-center justify-center rounded-full text-[14px] font-medium leading-[20px] text-neutral-900 transition-colors hover:bg-neutral-200/60" href="/etkinlikler?page=4#gecmis">4</a>
+<span class="flex size-[32px] items-center justify-center text-[14px] font-medium leading-[20px] text-neutral-900">…</span>
+<a class="flex size-[32px] items-center justify-center rounded-full text-[14px] font-medium leading-[20px] text-neutral-900 transition-colors hover:bg-neutral-200/60" href="/etkinlikler?page=11#gecmis">11</a>
+<a class="flex size-[32px] items-center justify-center rounded-full text-[14px] font-medium leading-[20px] text-neutral-900 transition-colors hover:bg-neutral-200/60" href="/etkinlikler?page=12#gecmis">12</a>
+</div>
+<a aria-label="Sonraki" class="c-btn c-btn--tertiary c-btn--icon-sm" href="/etkinlikler?page=2#gecmis">
+<i class="iconoir-nav-arrow-right text-[16px] leading-none"></i>
+</a>
+</nav>
+</div>
+</section>
+</div>
+
+<div @keydown.escape.window="close()" @open-popup-504.window="show()" aria-labelledby="popup-title-504" aria-modal="true" role="dialog" x-cloak="" x-data="{
+    open: false,
+    id: 504,
+    isAuth: false,
+    isAdmin: false,
+    cookieName: 'csViewedCareerRoleNotification-504',
+    csrf: 'yWZwH8XRR0fa6sgUtwW52oD5HHb6Wn73STzXdobU52x4GwdGmehnld486yWOwqfO',
+    err: false,
+    init() {
+      if (this.isAdmin) return;
+      if (!this.isAuth &amp;&amp; this.viewed()) return;
+      if (window.csPopupClaimed) return;
+      window.csPopupClaimed = true;
+      this.$nextTick(() =&gt; this.show());
+    },
+    viewed() { return document.cookie.split('; ').indexOf(this.cookieName + '=viewed') !== -1; },
+    remember() {
+      var d = new Date(Date.now() + 14 * 864e5);
+      document.cookie = this.cookieName + '=viewed; expires=' + d.toUTCString() + '; path=/';
+    },
+    show() {
+      this.open = true;
+      document.body.style.overflow = 'hidden';
+      if (!this.isAuth) this.remember();
+      this.track('/popups/api/increase_viewed_count/');
+    },
+    close() { this.open = false; document.body.style.overflow = ''; },
+    track(url) {
+      if (this.isAdmin) return;
+      fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': this.csrf }, body: JSON.stringify({ popup_id: this.id }) });
+    },
+    clickThrough(href) { this.track('/popups/api/increase_clicked_count/'); window.location.href = href; },
+    submitForm() {
+      var val = (this.$refs.field.value || '');
+      
+      if (!val) { this.err = true; return; }
+      fetch('/popups/api/popup-form', { method: 'POST', headers: { 'X-CSRFToken': this.csrf }, body: new URLSearchParams({ popup_id: this.id, field_value: val }) })
+        .then((r) =&gt; { if (r.ok) { this.err = false; this.close(); } else { this.err = true; } })
+        .catch(() =&gt; { this.err = true; });
+    }
+  }">
+<div class="fixed inset-0 z-[70] grid place-items-center overflow-y-auto p-5" x-show="open">
+<div @click="close()" class="fixed inset-0 bg-neutral-900/50" x-show="open" x-transition.opacity.duration.200ms=""></div>
+<div class="relative z-10 my-auto grid max-h-[calc(100dvh-40px)] w-full max-w-[600px] grid-cols-1 gap-y-[16px] overflow-y-auto rounded-[24px] bg-white pb-[24px] pt-[32px] shadow-elevation-200 sm:h-[500px] sm:max-w-[1000px] sm:grid-cols-2 sm:grid-rows-[auto_auto_1fr] sm:gap-y-0 sm:overflow-hidden sm:py-0" x-show="open" x-transition="">
+<button @click="close()" aria-label="Kapat" class="c-btn c-btn--secondary c-btn--icon-sm absolute right-[12px] top-[12px] z-10" type="button">
+<i class="iconoir-xmark text-[16px] leading-none"></i>
+</button>
+<div class="flex w-full flex-col items-start pl-[24px] pr-[48px] sm:col-start-2 sm:row-start-1 sm:pr-[24px] sm:pt-[32px]">
+<h2 class="font-heading text-[24px] font-medium leading-[32px] tracking-[-0.06px] text-neutral-800" id="popup-title-504">
+          🚀 Yeni Eğitim Yayında: Veri Bilimi ve Yapay Zeka!
+        </h2>
+</div>
+<div class="flex w-full justify-center bg-neutral-100 sm:col-start-1 sm:row-start-1 sm:row-span-3 sm:h-full sm:min-h-0">
+<img alt="🚀 Yeni Eğitim Yayında: Veri Bilimi ve Yapay Zeka!" class="block h-auto max-h-[min(400px,45dvh)] w-full object-contain sm:h-full sm:max-h-none" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/media/cache/4c/f7/4cf78ac056189e9396ce250120136ea5.webp"/>
+</div>
+<div class="w-full px-[24px] text-[16px] leading-[24px] text-neutral-700 [&amp;_:is(h1,h2,h3,h4)]:font-heading [&amp;_:is(h1,h2,h3,h4)]:font-medium [&amp;_:is(strong,b)]:font-semibold [&amp;_:is(ul,ol)]:ps-[20px] [&amp;_a]:text-primary-500 [&amp;_a]:underline [&amp;_ol]:list-decimal [&amp;_p]:mb-[8px] [&amp;_p:last-child]:mb-0 [&amp;_ul]:list-disc sm:col-start-2 sm:row-start-2 sm:mt-[16px] sm:overflow-y-auto">
+<p><strong>Veri bilimi ve yapay zeka </strong>dünyasına güçlü bir adım atmaya hazır mısın? 🤖</p>
+<p><strong>Coderspace Pro'nun yeni eğitimiyle </strong>geleceğin teknolojilerini öğren, uygulamalı projelerle becerilerini geliştir ve kariyerinde fark yarat!</p>
+</div>
+<div class="mt-[16px] w-full px-[24px] sm:col-start-2 sm:row-start-3 sm:mt-0 sm:self-end sm:pb-[32px]">
+<a @click.prevent="clickThrough($event.currentTarget.href)" class="c-btn c-btn--primary c-btn--lg w-full" data-cs-ref="popup" data-cs-title="pro-vb" href="https://coderspace.io/pro/veri-bilimi-ve-yapay-zeka/">
+  Eğitimi Keşfet!
+  <i class="iconoir-arrow-right text-[20px] leading-none"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+<div @v3-toast.window="push($event.detail.message, $event.detail.type)" class="pointer-events-none fixed bottom-[24px] left-[24px] z-[100] flex w-[calc(100%-48px)] max-w-[420px] flex-col gap-[8px]" x-data="{
+       toasts: [],
+       seq: 0,
+       push(message, type) {
+         if (!message) return;
+         const id = ++this.seq;
+         this.toasts.push({ id, message, type: type === 'success' ? 'success' : 'error' });
+         setTimeout(() =&gt; this.remove(id), 6000);
+       },
+       remove(id) {
+         this.toasts = this.toasts.filter((t) =&gt; t.id !== id);
+       },
+     }" x-init="window.v3Toast = (message, type) =&gt; push(message, type)">
+<template :key="toast.id" x-for="toast in toasts">
+<div :class="toast.type === 'error' ? 'bg-system-red-50 text-system-red-500' : 'bg-system-green-100 text-system-green-900'" class="pointer-events-auto flex items-start gap-[8px] rounded-[12px] p-[12px] text-[14px] leading-[20px] shadow-elevation-100" x-cloak="" x-show="true" x-transition.opacity="">
+<i :class="toast.type === 'error' ? 'iconoir-warning-circle' : 'iconoir-check-circle'" class="shrink-0 text-[20px] leading-none"></i>
+<p class="flex-1" x-text="toast.message"></p>
+<button @click="remove(toast.id)" class="shrink-0 opacity-60 transition-opacity hover:opacity-100" type="button">
+<i class="iconoir-xmark text-[18px] leading-none"></i>
+</button>
+</div>
+</template>
+</div>
+<div class="relative overflow-hidden bg-[#0d0c12]">
+<img alt="" aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-full min-h-[1200px] w-full select-none object-cover object-top" decoding="async" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/cta/atmosphere-b.webp"/>
+<canvas aria-hidden="true" class="pointer-events-none absolute inset-0 z-0 size-full select-none" id="cta-stars"></canvas>
+
+<section class="relative">
+<div class="relative mx-auto flex w-full max-w-[1440px] flex-col items-center px-5 py-[80px] text-center lg:px-[80px] lg:py-[160px] xl:px-[156px]">
+<h2 class="max-w-[940px] bg-gradient-to-r from-white to-[rgba(255,255,255,0.8)] bg-clip-text font-heading text-[32px] font-medium leading-[40px] tracking-[-0.08px] text-transparent lg:leading-[80px] lg:tracking-[-0.64px] lg:text-[64px]">
+      Etkinliklerden haberdar ol
+    </h2>
+<p class="mt-[24px] max-w-[552px] text-[16px] leading-[24px] text-neutral-400">Teknoloji dünyasındaki bootcamp, hackathon ve buluşmaları kaçırma. E-posta adresini bırak, sana en güncel etkinlikleri gönderelim.</p>
+<form action="/kayitol" class="relative mt-[32px] w-full max-w-[456px] lg:mt-[40px]" method="get">
+<input class="c-input c-input--lg c-input--on-dark c-input--ring rounded-[222px] pl-[24px] pr-[128px] font-medium tracking-[-0.08px]" name="email" placeholder="E-posta adresin" required="" type="email"/>
+<span aria-hidden="true" class="pointer-events-none absolute inset-0 rounded-[222px] border border-transparent [background:linear-gradient(180deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0)_100%)_border-box] [mask-image:linear-gradient(#000_0_0),linear-gradient(#000_0_0)] [mask-clip:padding-box,border-box] [mask-origin:padding-box,border-box] [mask-composite:exclude] [-webkit-mask-composite:xor]"></span>
+<button class="c-btn c-btn--secondary c-btn--lg absolute right-0 top-0" type="submit">Abone ol</button>
+</form>
+</div>
+</section>
+
+<footer class="v3-footer relative border-t border-white/10 bg-[rgba(13,12,18,0.9)] font-sans text-white [backdrop-filter:blur(50px)]">
+<div class="relative mx-auto max-w-[1440px] px-5 pb-[32px] pt-[47px] lg:px-[156px] lg:pt-[55px]">
+<div class="grid grid-cols-2 gap-x-[20px] gap-y-[40px] lg:flex lg:items-start lg:justify-between">
+<div class="order-1 col-span-2 flex flex-col gap-[24px] lg:order-none lg:gap-[48px]">
+<a aria-label="Coderspace" class="self-start" href="/">
+<img alt="Coderspace" class="h-[24px] w-auto lg:h-[32px]" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/brand/coderspace-white-logo.svg"/>
+</a>
+<div class="flex flex-col gap-[16px]">
+<div class="flex items-center gap-[16px]">
+<a aria-label="Instagram" class="text-neutral-500 transition-colors hover:text-white" href="https://instagram.com/coderspaceio" rel="noopener" target="_blank"><i class="ri-instagram-fill text-[24px] leading-none"></i></a>
+<a aria-label="LinkedIn" class="text-neutral-500 transition-colors hover:text-white" href="https://www.linkedin.com/company/coderspace-io/" rel="noopener nofollow" target="_blank"><i class="ri-linkedin-fill text-[24px] leading-none"></i></a>
+<a aria-label="X" class="text-neutral-500 transition-colors hover:text-white" href="https://twitter.com/coderspace_io" rel="noopener nofollow" target="_blank"><i class="ri-twitter-x-fill text-[24px] leading-none"></i></a>
+<a aria-label="Spotify" class="text-neutral-500 transition-colors hover:text-white" href="https://open.spotify.com/show/76XNB92UbdvDwTdeXDtzNF" rel="noopener nofollow" target="_blank"><i class="ri-spotify-fill text-[24px] leading-none"></i></a>
+<a aria-label="YouTube" class="text-neutral-500 transition-colors hover:text-white" href="https://www.youtube.com/@coderspaceio" rel="noopener nofollow" target="_blank"><i class="ri-youtube-fill text-[24px] leading-none"></i></a>
+<a aria-label="WhatsApp" class="text-neutral-500 transition-colors hover:text-white" href="https://chat.whatsapp.com/LKKETmB1wHpCGLAnUNY3dI" rel="noopener nofollow" target="_blank"><i class="ri-whatsapp-fill text-[24px] leading-none"></i></a>
+</div>
+<a class="hidden h-[40px] items-center gap-[8px] self-start py-[8px] pr-[8px] text-[16px] leading-[24px] text-neutral-500 transition-colors hover:text-white lg:flex" href="/set_language/en">
+<i class="iconoir-language text-[20px] leading-none"></i>
+<span>TR</span>
+<i class="iconoir-nav-arrow-down text-[16px] leading-none"></i>
+</a>
+</div>
+</div>
+<div class="order-4 flex flex-col gap-[24px] lg:order-none">
+<p class="text-[14px] font-normal leading-[20px] text-white">Yetenekler için</p>
+<div class="v3-footer-links flex flex-col gap-[8px] text-[14px] leading-[20px]">
+<a href="/etkinlikler">Etkinlikler</a>
+<a href="/egitimler/teknoloji-okulu/">Eğitimler</a>
+<a href="/yazilim-kursu-ve-yazilim-egitimi">Yazılım Kursu ve Yazılım Eğitimi</a>
+<a href="/pro/">Pro</a>
+<a href="/testler">Testler</a>
+<a href="/ozet">Profil Özeti</a>
+<a href="/davet">Arkadaşını Davet Et</a>
+<a href="/tersine-beyin-gocu/">Tersine Beyin Göçü</a>
+</div>
+</div>
+<div class="order-2 flex flex-col gap-[24px] lg:order-none">
+<p class="text-[14px] font-normal leading-[20px] text-white">Şirketler için</p>
+<div class="v3-footer-links flex flex-col gap-[8px] text-[14px] leading-[20px]">
+<a href="/ise-alim">İşe Alım</a>
+<a href="/isveren-markasi">İşveren Markası</a>
+<a href="/etkinlikler/bootcamp/">Bootcamp</a>
+<a href="/etkinlikler/hackathon/">Hackathon</a>
+<a href="/etkinlikler/hiring-challenge/">Hiring Challenge</a>
+<a href="https://gethirex.com/?utm_source=coderspace&amp;utm_medium=footer&amp;utm_campaign=hirex+landing+page" rel="noopener" target="_blank">Hirex (ATS)</a>
+<a href="/assessment-hub">Assessment Hub</a>
+<a href="/basari-hikayeleri/">Başarı Hikayeleri</a>
+<a href="/e-kitaplar/">E-kitaplar</a>
+<a href="/webinar/">HR Webinarları</a>
+<a href="/ik-hesaplama-araclari/">İK Hesaplama Araçları</a>
+<a href="/tersine-beyin-gocu/">Tersine Beyin Göçü</a>
+</div>
+</div>
+<div class="order-3 flex flex-col gap-[24px] lg:order-none">
+<p class="text-[14px] font-normal leading-[20px] text-white">Kaynaklar</p>
+<div class="v3-footer-links flex flex-col gap-[8px] text-[14px] leading-[20px]">
+<a href="/blog/">Blog</a>
+<a href="/podcast">Podcast</a>
+<a href="/roadmap/">Yol Haritaları</a>
+<a href="/portfolyo/">Portfolyo Hazırlama Aracı</a>
+<a href="/sozluk">Yazılımcı Sözlüğü</a>
+<a href="/mulakat-sorulari/">Mülakat Soruları</a>
+<a href="/universite-taban-puanlari/">Üniversite Tercihleri</a>
+<a href="/maaslar/">Maaşlar</a>
+<a href="/araclar/pomodoro-zamanlayici/">Pomodoro Zamanlayıcı</a>
+<a href="/araclar/">Yazılım Araçları</a>
+<a href="/yapay-zeka-araclari/">Yapay Zeka Araçları</a>
+<a href="/en/cheat-sheets/">Cheat Sheets</a>
+</div>
+</div>
+<div class="order-5 flex flex-col gap-[24px] lg:order-none">
+<p class="text-[14px] font-normal leading-[20px] text-white">Kurumsal</p>
+<div class="v3-footer-links flex flex-col gap-[8px] text-[14px] leading-[20px]">
+<a href="/bize-katil" rel="nofollow">Bize Katıl</a>
+<a href="/iletisim">İletişim</a>
+<a href="/yardim-merkezi/">Yardım Merkezi</a>
+<a href="/kvkk">KVKK</a>
+<a href="/kullanicisozlesmesi">Kullanıcı Sözleşmesi</a>
+<a href="/gizlilik">Gizlilik Sözleşmesi</a>
+</div>
+</div>
+</div>
+<div class="mt-[64px] flex items-center justify-between gap-[20px] lg:mt-[108px] lg:justify-end lg:gap-[32px]">
+<img alt="Ödeme yöntemleri" class="h-[20px] w-auto opacity-[0.59] lg:h-[32px]" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/payment.webp"/>
+<a aria-label="ETBİS" class="shrink-0" href="https://etbis.eticaret.gov.tr/sitedogrulama/2603348280428323" rel="noopener" target="_blank">
+<img alt="ETBİS" class="h-[33px] w-auto lg:h-[52px]" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/etbis.webp"/>
+</a>
+</div>
+<div class="mt-[24px] h-[2px] w-full bg-white/20"></div>
+<div class="mt-[24px] flex items-start gap-[10px] lg:items-center">
+<img alt="OİB" class="size-[30px] shrink-0 object-cover" loading="lazy" src="https://coderspace-storage-prod.s3.eu-central-1.amazonaws.com/static/img/brand/oiblogo.webp"/>
+<p class="text-[10px] font-light leading-[16px] text-neutral-200/70">CS İnsan Kaynakları Tanıtım ve Danışmanlık A.Ş. Özel İstihdam Bürosu Olarak 18.03.2026 – 17.03.2029 tarihleri arasında faaliyette bulunmak üzere, Türkiye İş Kurumu’nun 19.03.2026 tarih ve 1151 numaralı aracılık izin belgesi ile faaliyet göstermektedir. 4904 sayılı Kanun uyarınca iş arayanlardan ücret alınması yasaktır.</p>
+</div>
+</div>
+</footer>
+
+</div>
+</div>
+<!-- Google Tag Manager (noscript) -->
+
+<!-- End Google Tag Manager (noscript) -->
+
+
+</body>
+</html>
