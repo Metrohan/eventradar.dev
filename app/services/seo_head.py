@@ -277,3 +277,53 @@ def build_head(path: str, db: Session) -> str:
             meta = _Meta(f"{post.title} | TechEventRadar", str(post.summary), path)
 
     return _render(meta or _Meta(DEFAULT_TITLE, DEFAULT_DESCRIPTION, None))
+
+
+HOME_EVENT_LIMIT = 20
+# Shown only until the SPA mounts; uses the site's theme variables so the swap is
+# not a jarring flash. Removed together with the wrapper.
+_HOME_BODY_STYLE = (
+    "<style>[data-ssr-fallback]{max-width:850px;margin:0 auto;padding:24px 20px}"
+    "[data-ssr-fallback] a{color:var(--action-primary)}"
+    "[data-ssr-fallback] li{margin:8px 0}</style>"
+)
+
+
+def build_home_body(path: str, db: Session) -> str:
+    """Crawler-readable content for the home page, placed inside #root by nginx SSI.
+
+    Returns "" for every other path and when nothing is upcoming, so the SSI
+    include never injects a list onto unrelated URLs. The wrapper carries
+    `data-ssr-fallback`: the client discards it and renders the SPA normally
+    (it is not a prerender snapshot, so it must not be hydrated).
+    """
+    if _normalize(path) != "/":
+        return ""
+    events = (
+        db.query(Event)
+        .filter(*visible_event_filter())
+        .order_by(Event.date.is_(None), Event.date, Event.id)
+        .limit(HOME_EVENT_LIMIT)
+        .all()
+    )
+    if not events:
+        return ""
+    items = "".join(
+        f'<li><a href="{_esc(event_path(event))}">{_esc(str(event.title))}</a>'
+        + (
+            f" · {_esc(event.date.strftime('%d.%m.%Y'))}"
+            if event.date is not None
+            else ""
+        )
+        + (f" · {_esc(str(event.location))}" if event.location else "")
+        + "</li>"
+        for event in events
+    )
+    return (
+        "<div data-ssr-fallback>" + _HOME_BODY_STYLE + "<h1>TechEventRadar</h1>"
+        f"<p>{_esc(DEFAULT_DESCRIPTION)}</p>"
+        f"<h2>Yaklaşan etkinlikler</h2><ul>{items}</ul>"
+        '<nav><a href="/kategoriler">Kategoriler</a> · '
+        '<a href="/sehirler">Şehirler</a></nav>'
+        "</div>"
+    )

@@ -13,7 +13,7 @@ from ..services.source_catalog import get_enabled_sources
 from ..services.rate_limiter import FixedWindowRateLimiter, client_key
 from ..services.rss_service import build_events_rss
 from ..services.sitemap_service import build_sitemap
-from ..services.seo_head import build_head
+from ..services.seo_head import build_head, build_home_body
 from ..services.event_lifecycle import visible_event_filter
 from ..models.blog_post import BlogPost
 from ..services import email_service, push_service
@@ -145,6 +145,12 @@ async def get_sitemap(db: Session = Depends(get_db)):
 async def get_seo_head(path: str, db: Session = Depends(get_db)):
     """<head> tags for one SPA URL; nginx includes this into index.html (SSI)."""
     return HTMLResponse(build_head(path, db))
+
+
+@router.get("/seo/body/{path:path}", include_in_schema=False)
+async def get_seo_body(path: str, db: Session = Depends(get_db)):
+    """Crawler-readable page body for the home URL; nginx includes it into #root (SSI)."""
+    return HTMLResponse(build_home_body(path, db))
 
 
 @router.post("/subscribe")

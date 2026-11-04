@@ -11,7 +11,7 @@ from app.api import public
 from app.core.database import get_db
 from app.models.blog_post import BlogPost
 from app.models.event import Event
-from app.services.seo_head import DEFAULT_TITLE, build_head
+from app.services.seo_head import DEFAULT_TITLE, build_head, build_home_body
 
 FUTURE = datetime.now() + timedelta(days=10)
 
@@ -177,3 +177,66 @@ def test_endpoint_returns_html_fragment(test_db):
     assert response.headers["content-type"].startswith("text/html")
     assert "Hackathon Etkinlikleri" in response.text
     assert f"<title>{html.escape(DEFAULT_TITLE)}</title>" in root.text
+
+
+def test_home_body_lists_upcoming_events_and_escapes_text(test_db):
+    _event(
+        test_db,
+        title="<script>x</script> Zirve",
+        location="Ankara",
+        url="https://x.dev/1",
+    )
+    _event(
+        test_db,
+        title="Geçmiş",
+        url="https://x.dev/2",
+        date=datetime.now() - timedelta(days=30),
+    )
+    _event(test_db, title="Gizli", url="https://x.dev/3", is_active=False)
+
+    body = build_home_body("/", test_db)
+
+    assert body.startswith("<div data-ssr-fallback>")
+    assert "&lt;script&gt;x&lt;/script&gt; Zirve" in body
+    assert "<script>x" not in body
+    assert "Ankara" in body and 'href="/events/' in body
+    assert "Geçmiş" not in body and "Gizli" not in body
+
+
+def test_home_body_is_limited_and_ordered_by_date(test_db):
+    for i in range(25):
+        _event(
+            test_db,
+            title=f"E{i:02d}",
+            url=f"https://x.dev/e{i}",
+            date=FUTURE + timedelta(days=i),
+        )
+
+    body = build_home_body("/", test_db)
+
+    assert body.count("<li>") == 20
+    assert body.index("E00") < body.index("E19") and "E20" not in body
+
+
+@pytest.mark.parametrize("path", ["/kategoriler", "/events/x", "/yok"])
+def test_home_body_is_empty_for_other_paths(test_db, path):
+    _event(test_db)
+
+    assert build_home_body(path, test_db) == ""
+
+
+def test_home_body_is_empty_without_upcoming_events(test_db):
+    assert build_home_body("/", test_db) == ""
+
+
+def test_body_endpoint_serves_fragment_only_for_home(test_db):
+    _event(test_db)
+    app = FastAPI()
+    app.include_router(public.router, prefix="/api")
+    app.dependency_overrides[get_db] = lambda: test_db
+    with TestClient(app) as client:
+        home = client.get("/api/seo/body/")
+        other = client.get("/api/seo/body/takvim")
+
+    assert home.status_code == 200 and "data-ssr-fallback" in home.text
+    assert other.status_code == 200 and other.text == ""

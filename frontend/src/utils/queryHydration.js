@@ -34,7 +34,12 @@ export function readEmbeddedQueryState() {
 export function isPrerendered() {
   if (typeof document === "undefined") return false;
   const root = document.getElementById("root");
-  return !!root && root.childElementCount > 0;
+  // Server-injected crawler content (nginx SSI, data-ssr-fallback) is not a
+  // prerender snapshot: it must be replaced, not hydrated.
+  return (
+    !!root &&
+    Array.from(root.children).some((el) => !el.hasAttribute("data-ssr-fallback"))
+  );
 }
 
 export function watchAndEmbedQueryState(queryClient, dehydrate) {

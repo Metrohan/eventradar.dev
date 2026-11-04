@@ -85,7 +85,13 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <!--
+      Crawler-readable home content (upcoming events) for clients that do not run
+      JS, included by nginx SSI; the backend answers empty for every path but "/".
+      The wrapper has data-ssr-fallback, so main.jsx discards it instead of hydrating.
+    -->
+    <!--# block name="seo_body_default" --><!--# endblock -->
+    <div id="root"><!--# include virtual="/_seo_body$seo_orig" stub="seo_body_default" --></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
