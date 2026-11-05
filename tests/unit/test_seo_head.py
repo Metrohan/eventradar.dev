@@ -11,7 +11,13 @@ from app.api import public
 from app.core.database import get_db
 from app.models.blog_post import BlogPost
 from app.models.event import Event
-from app.services.seo_head import DEFAULT_TITLE, build_head, build_home_body
+from app.services.seo_head import (
+    DEFAULT_TITLE,
+    TITLE_MAX,
+    build_head,
+    build_home_body,
+    page_title,
+)
 
 FUTURE = datetime.now() + timedelta(days=10)
 
@@ -240,3 +246,40 @@ def test_body_endpoint_serves_fragment_only_for_home(test_db):
 
     assert home.status_code == 200 and "data-ssr-fallback" in home.text
     assert other.status_code == 200 and other.text == ""
+
+
+def test_page_title_keeps_suffix_when_it_fits():
+    assert page_title("Hackathon 2026") == "Hackathon 2026 | TechEventRadar"
+
+
+def test_page_title_drops_suffix_before_truncating():
+    title = "x" * (TITLE_MAX - 5)
+
+    assert page_title(title) == title
+
+
+def test_page_title_truncates_titles_longer_than_the_limit():
+    result = page_title("y" * 200)
+
+    assert len(result) == TITLE_MAX
+    assert result.endswith("…")
+
+
+def test_long_event_title_stays_within_title_limit(test_db):
+    event = _event(test_db, title="Uzun etkinlik adı " * 8)
+
+    head = build_head(f"/events/{event.slug}", test_db)
+
+    title = html.unescape(re.search(r"<title>(.*?)</title>", head).group(1))
+    assert len(title) <= TITLE_MAX
+
+
+def test_event_page_card_image_has_descriptive_alt(test_db):
+    from app.api.discovery import event_detail
+
+    event = _event(test_db, title="Ben & Sen <3")
+
+    page = event_detail(event.slug, test_db).body.decode()
+
+    assert 'alt="Ben &amp; Sen &lt;3 etkinlik kartı"' in page
+    assert 'alt=""' not in page

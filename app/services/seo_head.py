@@ -93,6 +93,9 @@ STATIC_PAGES: dict[str, tuple[str, str]] = {
 
 _EVENT_RE = re.compile(r"^/etkinlik/(\d{1,9})$")
 _BLOG_RE = re.compile(r"^/blog/([A-Za-z0-9_-]{1,255})$")
+SITE_NAME = "TechEventRadar"
+TITLE_MAX = 70  # Bing flags longer <title> values
+
 _ONLINE_RE = re.compile(r"online|çevrim\s?içi", re.IGNORECASE)
 
 
@@ -103,6 +106,16 @@ class _Meta:
     path: str | None  # canonical path; None means noindex and no canonical
     image: str = BANNER_URL
     json_ld: list[tuple[str, dict]] = field(default_factory=list)  # (script id, data)
+
+
+def page_title(title: str) -> str:
+    """`title | TechEventRadar`, shortened to TITLE_MAX: drop the suffix, then truncate."""
+    full = f"{title} | {SITE_NAME}"
+    if len(full) <= TITLE_MAX:
+        return full
+    if len(title) <= TITLE_MAX:
+        return title
+    return title[: TITLE_MAX - 1].rstrip() + "…"
 
 
 def _esc(value: str) -> str:
@@ -240,7 +253,7 @@ def _event_meta(event: Event) -> _Meta:
             },
         )
     )
-    return _Meta(f"{title} | TechEventRadar", description, path, image, json_ld)
+    return _Meta(page_title(title), description, path, image, json_ld)
 
 
 def _normalize(path: str) -> str:
@@ -274,7 +287,7 @@ def build_head(path: str, db: Session) -> str:
             .first()
         )
         if post:
-            meta = _Meta(f"{post.title} | TechEventRadar", str(post.summary), path)
+            meta = _Meta(page_title(str(post.title)), str(post.summary), path)
 
     return _render(meta or _Meta(DEFAULT_TITLE, DEFAULT_DESCRIPTION, None))
 

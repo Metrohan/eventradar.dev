@@ -13,7 +13,14 @@ from ..models.event import Event
 from ..models.tag import Tag
 from ..services.location_normalizer import CITY_NAMES
 from ..services.event_lifecycle import history_event_filter, visible_event_filter
-from ..services.seo_head import _event_meta, _render, _Meta, _ld_json, SITE_URL
+from ..services.seo_head import (
+    _event_meta,
+    _render,
+    _Meta,
+    _ld_json,
+    page_title,
+    SITE_URL,
+)
 from ..utils.event_dates import day_start, local_now
 from ..utils.event_urls import event_path
 
@@ -130,7 +137,10 @@ def event_detail(slug: str, db: Session = Depends(get_db)):
         body = (
             '<img src="'
             + esc(card)
-            + '" alt="" width="400" height="200" style="max-width:100%;height:auto">'
+            + '" alt="'
+            + esc(str(event.title))
+            + ' etkinlik kartı" width="400" height="200"'
+            + ' style="max-width:100%;height:auto">'
             + body
         )
     share_url = quote(SITE_URL + event_path(event), safe="")
@@ -168,7 +178,7 @@ def listing(path, title, events):
     if not events:
         body += "<p>Şu anda güncel etkinlik bulunmuyor.</p>"
     return page(
-        _render(_Meta(title + " | TechEventRadar", title, path if events else None)),
+        _render(_Meta(page_title(title), title, path if events else None)),
         body,
     )
 
