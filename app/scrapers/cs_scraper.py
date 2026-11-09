@@ -128,7 +128,12 @@ def parse_coderspace_events(
             {
                 "title": title,
                 "url": f"https://coderspace.io{href}",
-                "date": date_val.strftime("%-d %B %Y") if date_val else None,
+                # ISO, not "%B": the month name follows the process locale and an
+                # English "November" is not understood by parse_event_date.
+                "date": date_val.strftime("%Y-%m-%d %H:%M:%S") if date_val else None,
+                "application_deadline": (
+                    deadline.strftime("%Y-%m-%d %H:%M:%S") if deadline else None
+                ),
                 "description": (
                     description_node.get_text(strip=True) if description_node else ""
                 )

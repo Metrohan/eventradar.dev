@@ -1,3 +1,5 @@
+import re
+
 import requests
 from bs4 import BeautifulSoup, Tag
 from datetime import datetime
@@ -18,6 +20,15 @@ def _build_description(title: str, egitmenler: str, application_deadline: str) -
     if application_deadline:
         parts.append(f"Son başvuru: {application_deadline}.")
     return " ".join(parts)
+
+
+def _range_start(text: str) -> str:
+    """'11 Kasım 2026 - 12 Kasım 2026' -> '11 Kasım 2026'.
+
+    Multi-day events come as a range, which parse_event_date cannot read; the
+    start date is what the event is listed by.
+    """
+    return re.split(r"\s+[-–—]\s+", text.strip(), maxsplit=1)[0]
 
 
 def scrape_pupilica_events() -> List[Dict[str, Any]]:
@@ -86,7 +97,7 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
             for i, span in enumerate(all_spans):
                 text = span.get_text(strip=True)
                 if "Tarih" in text and i + 1 < len(all_spans):
-                    date_text = all_spans[i + 1].get_text(strip=True)
+                    date_text = _range_start(all_spans[i + 1].get_text(strip=True))
                 elif "Son Başvuru" in text and i + 1 < len(all_spans):
                     application_deadline = all_spans[i + 1].get_text(strip=True)
                 elif "Eğitmen" in text and i + 1 < len(all_spans):
@@ -107,8 +118,6 @@ def scrape_pupilica_events() -> List[Dict[str, Any]]:
             if a_tag:
                 url_ = base_url + str(a_tag["href"])
             else:
-                import re
-
                 # Generate a unique slug from title if no link is found
                 slug = re.sub(r"[\W_]+", "-", title.lower()).strip("-")
                 url_ = f"{url}#{slug}"
