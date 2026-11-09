@@ -81,8 +81,15 @@ def test_today_visitors_excludes_yesterday(test_db):
                 user_agent="ua",
                 timestamp=yesterday,
             ),
+            # Explicit local time: the column default is func.now(), which SQLite
+            # evaluates in UTC, so between 00:00 and 03:00 (UTC+3) it would land
+            # on yesterday while the service counts "today" in local time.
             TrafficLog(
-                path="/api/events", method="GET", ip_address="1.1.1.1", user_agent="ua"
+                path="/api/events",
+                method="GET",
+                ip_address="1.1.1.1",
+                user_agent="ua",
+                timestamp=datetime.now(),
             ),
         ]
     )
