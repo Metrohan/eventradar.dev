@@ -97,20 +97,20 @@ SOURCE_CATALOG: tuple[SourceDefinition, ...] = (
         _lazy_runner("app.scrapers.komunite_scraper", "scrape_komunite_events"),
     ),
     SourceDefinition(
+        "youthall",
+        "Youthall",
+        "https://www.youthall.com/tr/etkinlikler/",
+        "static",
+        True,
+        _lazy_runner("app.scrapers.youthall_scraper", "scrape_youthall_events"),
+    ),
+    SourceDefinition(
         "techcareer",
         "TechCareer.net",
         "https://www.techcareer.net/events",
         "browser",
         True,
         _lazy_runner("app.scrapers.techcareer_scraper", "scrape_techcareer_events"),
-    ),
-    SourceDefinition(
-        "youthall",
-        "Youthall",
-        "https://www.youthall.com/tr/events",
-        "browser",
-        True,
-        _lazy_runner("app.scrapers.youthall_scraper", "scrape_youthall_events"),
     ),
     SourceDefinition(
         "coderspace",

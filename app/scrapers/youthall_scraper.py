@@ -1,120 +1,148 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from bs4 import BeautifulSoup
 import re
-import time
-import os
+from datetime import datetime
+from typing import Optional
 
-from .driver_utils import ensure_chromedriver
-from app.services.date_extractor import parse_event_date
+import requests
+from bs4 import BeautifulSoup
+
+LIST_URL = "https://www.youthall.com/tr/etkinlikler/"
+BASE_URL = "https://www.youthall.com"
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; TechEventRadar/1.0)"}
+
+_MONTHS = {
+    "oca": 1,
+    "şub": 2,
+    "mar": 3,
+    "nis": 4,
+    "may": 5,
+    "haz": 6,
+    "tem": 7,
+    "ağu": 8,
+    "eyl": 9,
+    "eki": 10,
+    "kas": 11,
+    "ara": 12,
+}
+_DAY_MONTH = re.compile(r"(\d{1,2})\s+([^\W\d_]+)", re.UNICODE)
 
 
-def scrape_youthall_events():
-    """Youthall scraper"""
-    driver_path = ensure_chromedriver()
-    if not driver_path:
-        raise RuntimeError("Youthall: ChromeDriver unavailable")
+def _day_month(text: str) -> list[tuple[int, int]]:
+    """'01 – 02 Aralık' -> [(1, 12), (2, 12)]; '03 Oca – 30 Eyl' -> [(3, 1), (30, 9)].
 
-    options = Options()
-    options.add_argument("--headless=new")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument(f"--user-data-dir=/tmp/youthall_chrome_{os.getpid()}")
+    A bare day before the range separator ('01 – 02 Aralık') has no month of
+    its own and is borrowed from the month that follows.
+    """
+    text = text.replace("İ", "i").replace("I", "ı").lower()
+    found = [
+        (int(day), _MONTHS[word[:3]])
+        for day, word in _DAY_MONTH.findall(text)
+        if word[:3] in _MONTHS
+    ]
+    days = re.findall(r"\d{1,2}", text)
+    if len(found) == 1 and len(days) == 2:
+        found.insert(0, (int(days[0]), found[0][1]))
+    return found
 
-    service = Service(executable_path=driver_path)
-    driver = None
 
+def _nearest_year(day: int, month: int, now: datetime) -> Optional[datetime]:
+    """The listing omits the year; take the year that lands closest to today."""
+    best = None
+    for year in (now.year - 1, now.year, now.year + 1):
+        try:
+            candidate = datetime(year, month, day)
+        except ValueError:
+            continue
+        if best is None or abs(candidate - now) < abs(best - now):
+            best = candidate
+    return best
+
+
+def _event_end(parts: list[tuple[int, int]], start: datetime) -> datetime:
+    """Last day of a range; a range that wraps the year ends in the next one."""
+    day, month = parts[-1]
     try:
-        driver = webdriver.Chrome(service=service, options=options)
-        driver.get("https://www.youthall.com/tr/events")
+        end = datetime(start.year, month, day)
+    except ValueError:
+        return start
+    return end if end >= start else end.replace(year=start.year + 1)
 
-        time.sleep(5)
 
-        soup = BeautifulSoup(driver.page_source, "html.parser")
-        event_cards = soup.find_all("div", class_="event-row")
+def _deadline(day: int, month: int, event_end: datetime) -> Optional[datetime]:
+    """A deadline is never after the event ends: use its year, else the year before."""
+    for year in (event_end.year, event_end.year - 1):
+        try:
+            candidate = datetime(year, month, day)
+        except ValueError:
+            continue
+        if candidate <= event_end:
+            return candidate
+    return None
 
-        events = []
-        for card in event_cards:
-            try:
-                title_elem = card.find("h3") or card.find("h2") or card.find("h4")
-                if not title_elem:
-                    continue
-                title = title_elem.text.strip()
 
-                link_elem = card.find("a", href=True)
-                if not link_elem:
-                    continue
-                url = link_elem["href"]
-                if not url.startswith("http"):
-                    url = "https://www.youthall.com" + url
+def _fmt(value: Optional[datetime]) -> Optional[str]:
+    return value.strftime("%Y-%m-%d %H:%M:%S") if value else None
 
-                date_elem = card.find("div", class_="events__content__datebox")
-                date_str = date_elem.text.strip() if date_elem else None
 
-                desc_elem = card.find("div", class_="events__content__details")
-                raw_details = desc_elem.text.strip() if desc_elem else ""
-                clean_details = " ".join(raw_details.split())
+def _location(card) -> Optional[str]:
+    """With two or more tags the first is the venue/city/'Online', the last the category."""
+    tags = [t.get_text(" ", strip=True) for t in card.select(".events-card__tag")]
+    return tags[0] if len(tags) >= 2 else None
 
-                if not date_str:
-                    date_str = "Tarih belirtilmemiş"
-                location = None
 
-                # Parse date using shared helper
-                event_date = parse_event_date(date_str)
+def parse_youthall_events(html: str, now: Optional[datetime] = None) -> list[dict]:
+    now = now or datetime.now()
+    soup = BeautifulSoup(html, "html.parser")
+    events, seen = [], set()
+    for card in soup.select("article.events-card"):
+        link = card.select_one("a.events-card__link[href]")
+        title = card.select_one(".events-card__title")
+        if not link or not title:
+            continue
+        url = str(link["href"])
+        if not url.startswith("http"):
+            url = BASE_URL + url
+        # The page renders the same cards twice (carousel and list).
+        if url in seen:
+            continue
+        seen.add(url)
 
-                # Extract location from details
-                loc_match = re.search(
-                    r"^(?:\d{1,2}\s+\w+\s+\w+),\s*\d{1,2}:\d{2}\s*(.*)$", clean_details
-                )
-                if loc_match and loc_match.group(1).strip():
-                    location = loc_match.group(1).strip()
-                elif "Online" in clean_details:
-                    location = "Online"
+        when = card.select_one(".events-card__when .events-card__val")
+        start_parts = _day_month(when.get_text(" ", strip=True)) if when else []
+        start = _nearest_year(*start_parts[0], now) if start_parts else None
 
-                description = (
-                    clean_details
-                    if clean_details
-                    else "Etkinlik açıklaması mevcut değil."
-                )
+        deadline_el = card.select_one(".events-card__deadline-val")
+        deadline_parts = (
+            _day_month(deadline_el.get_text(" ", strip=True)) if deadline_el else []
+        )
+        deadline = (
+            _deadline(*deadline_parts[-1], _event_end(start_parts, start))
+            if deadline_parts and start
+            else None
+        )
 
-                img_elem = card.find("img")
-                image_url = img_elem.get("src", "") if img_elem else ""
-                if image_url and not image_url.startswith("http"):
-                    image_url = "https://www.youthall.com" + image_url
+        img = card.select_one("img.events-card__img")
+        events.append(
+            {
+                "title": title.get_text(" ", strip=True),
+                "url": url,
+                "date": _fmt(start),
+                "application_deadline": _fmt(deadline),
+                "description": "Etkinlik açıklaması mevcut değil.",
+                "image_url": img.get("src", "") if img else "",
+                "source": "Youthall",
+                "location": _location(card),
+                "is_active": True,
+            }
+        )
+    return events
 
-                events.append(
-                    {
-                        "title": title,
-                        "url": url,
-                        "date": (
-                            event_date.strftime("%Y-%m-%d %H:%M:%S")
-                            if event_date
-                            else date_str
-                        ),
-                        "description": description,
-                        "image_url": image_url,
-                        "source": "Youthall",
-                        "location": location,
-                        "is_active": True,
-                    }
-                )
 
-            except Exception as e:
-                print(f"Youthall kart hatası: {e}")
-                continue
-
-        return events
-
-    except Exception as e:
-        print(f"Youthall genel hatası: {e}")
-        import traceback
-
-        traceback.print_exc()
+def scrape_youthall_events() -> list[dict]:
+    try:
+        response = requests.get(LIST_URL, timeout=30, headers=HEADERS)
+        response.raise_for_status()
+        response.encoding = "utf-8"
+        return parse_youthall_events(response.text)
+    except requests.RequestException as exc:
+        print(f"Youthall: network error: {exc}")
         raise
-
-    finally:
-        if driver:
-            driver.quit()

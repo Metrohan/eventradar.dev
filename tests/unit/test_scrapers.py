@@ -122,53 +122,85 @@ def test_patika_decodes_utf8_when_server_sends_no_charset():
 # ── Youthall ──────────────────────────────────────────────────────────────────
 
 
-def test_youthall_returns_events():
-    from app.scrapers.youthall_scraper import scrape_youthall_events
+def _youthall():
+    from app.scrapers.youthall_scraper import parse_youthall_events
 
-    mock_driver = _make_selenium_driver(_html("youthall.html"))
+    return {
+        e["title"]: e
+        for e in parse_youthall_events(
+            _html("youthall_cards.html"), now=datetime(2026, 11, 10)
+        )
+    }
+
+
+def test_youthall_parses_cards_and_drops_duplicates():
+    events = _youthall()
+    assert len(events) == 5  # fixture repeats its first card
+    assert events["AI & Data Career Summit"]["url"] == (
+        "https://www.youthall.com/tr/etkinlikler/ai-data-career-summit/"
+    )
+
+
+def test_youthall_extracts_start_date_and_deadline():
+    event = _youthall()["AI & Data Career Summit"]
+    assert event["date"] == "2026-11-12 00:00:00"
+    assert event["application_deadline"] == "2026-11-12 00:00:00"
+
+
+def test_youthall_range_uses_first_day_and_deadline_before_event():
+    events = _youthall()
+    assert (
+        events["Engineering Career Summit (Fiziksel)"]["date"] == "2026-12-01 00:00:00"
+    )
+    assert events["Water AI Hackathon 2026"]["date"] == "2026-12-05 00:00:00"
+    assert (
+        events["Water AI Hackathon 2026"]["application_deadline"]
+        == "2026-10-30 00:00:00"
+    )
+
+
+def test_youthall_deadline_may_fall_on_last_day_of_a_range():
+    # "01 – 02 Aralık" with deadline "02 Aralık": the deadline is the event's
+    # last day, not a year earlier.
+    event = _youthall()["Engineering Career Summit (Fiziksel)"]
+    assert event["application_deadline"] == "2026-12-02 00:00:00"
+
+
+def test_youthall_year_rolls_forward_for_next_year_start():
+    # "03 Oca – 30 Eyl" listed in November: January means next year, the
+    # October deadline stays in the past.
+    event = _youthall()["Akbank Fellowship Programı"]
+    assert event["date"] == "2027-01-03 00:00:00"
+    assert event["application_deadline"] == "2026-10-10 00:00:00"
+
+
+def test_youthall_location_is_first_tag_unless_only_category():
+    events = _youthall()
+    assert events["AI & Data Career Summit"]["location"] == "Online"
+    assert events["Engineering Career Summit (Fiziksel)"]["location"] == "İstanbul"
+    assert events["Water AI Hackathon 2026"]["location"] is None
+
+
+def test_youthall_unparseable_date_stays_empty():
+    from app.scrapers.youthall_scraper import parse_youthall_events
+
+    html = _html("youthall_cards.html").replace("12 Kasım", "Yakında")
+    events = parse_youthall_events(html, now=datetime(2026, 11, 10))
+    first = next(e for e in events if e["title"] == "AI & Data Career Summit")
+    assert first["date"] is None
+    assert first["application_deadline"] is None
+
+
+def test_youthall_network_error_raises():
+    import requests
+    from app.scrapers.youthall_scraper import scrape_youthall_events
 
     with patch(
-        "app.scrapers.youthall_scraper.ensure_chromedriver",
-        return_value="/usr/bin/chromedriver",
-    ), patch(
-        "app.scrapers.youthall_scraper.webdriver.Chrome", return_value=mock_driver
-    ), patch(
-        "app.scrapers.youthall_scraper.time.sleep"
+        "app.scrapers.youthall_scraper.requests.get",
+        side_effect=requests.ConnectionError("down"),
     ):
-        events = scrape_youthall_events()
-
-    assert isinstance(events, list)
-    assert len(events) >= 1
-    assert all("title" in e for e in events)
-    assert all("url" in e for e in events)
-
-
-def test_youthall_no_chromedriver_raises_failure():
-    from app.scrapers.youthall_scraper import scrape_youthall_events
-
-    with patch("app.scrapers.youthall_scraper.ensure_chromedriver", return_value=None):
-        with pytest.raises(RuntimeError, match="ChromeDriver unavailable"):
+        with pytest.raises(requests.ConnectionError):
             scrape_youthall_events()
-
-
-def test_youthall_defaults_location_to_none_when_venue_unknown():
-    from app.scrapers.youthall_scraper import scrape_youthall_events
-
-    mock_driver = _make_selenium_driver(_html("youthall.html"))
-
-    with patch(
-        "app.scrapers.youthall_scraper.ensure_chromedriver",
-        return_value="/usr/bin/chromedriver",
-    ), patch(
-        "app.scrapers.youthall_scraper.webdriver.Chrome", return_value=mock_driver
-    ), patch(
-        "app.scrapers.youthall_scraper.time.sleep"
-    ):
-        events = scrape_youthall_events()
-
-    # Neither fixture card matches the "<date>, <time> <venue>" pattern nor
-    # mentions "Online" explicitly, so venue extraction genuinely fails here.
-    assert all(e["location"] is None for e in events)
 
 
 # ── TechCareer ────────────────────────────────────────────────────────────────
@@ -453,8 +485,32 @@ def test_coderspace_parses_upcoming_cards_and_skips_past_section():
     assert "Grid Up Datathon" not in titles  # lives under "Geçmiş etkinlikler"
     first = events[0]
     assert first["url"] == "https://coderspace.io/etkinlikler/data-science-ai-day/"
-    assert first["date"].endswith("November 2026") and first["date"].startswith("19")
+    assert first["date"] == "2026-11-19 00:00:00"  # ISO, independent of locale
+    assert first["application_deadline"] == "2026-11-18 00:00:00"
     assert first["source"] == "Coderspace"
+
+
+def test_coderspace_date_is_understood_by_ingestion_whatever_the_locale():
+    from app.scrapers.cs_scraper import parse_coderspace_events
+    from app.services.event_ingestion import normalize_date
+
+    events = parse_coderspace_events(
+        _html("coderspace_list.html"), now=datetime(2026, 11, 3)
+    )
+    dated = [e for e in events if e["date"]]
+    assert dated
+    assert all(normalize_date(e["date"]) is not None for e in dated)
+    assert all(normalize_date(e["application_deadline"]) is not None for e in dated)
+
+
+def test_coderspace_card_without_date_labels_stays_undated():
+    from app.scrapers.cs_scraper import parse_coderspace_events
+
+    events = parse_coderspace_events(
+        _html("coderspace_list.html"), now=datetime(2026, 11, 3)
+    )
+    card = next(e for e in events if e["title"].startswith("Vodafone Business"))
+    assert card["date"] is None and card["application_deadline"] is None
 
 
 def test_coderspace_drops_events_whose_application_is_closed():
@@ -548,6 +604,42 @@ def test_pupilica_scraper_returns_list(mock_chrome):
         result = scrape_pupilica_events()
 
     assert isinstance(result, list)
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        ("10 Kasım 2026", "10 Kasım 2026"),
+        ("11 Kasım 2026 - 12 Kasım 2026", "11 Kasım 2026"),
+        ("23 Kasım 2026 – 2 Aralık 2026", "23 Kasım 2026"),
+        ("", ""),
+    ],
+)
+def test_pupilica_range_start(raw, expected):
+    from app.scrapers.pupilica_scraper import _range_start
+
+    assert _range_start(raw) == expected
+
+
+@patch("undetected_chromedriver.Chrome")
+def test_pupilica_multi_day_events_get_start_date(mock_chrome):
+    from app.scrapers.pupilica_scraper import scrape_pupilica_events
+    from app.services.event_ingestion import normalize_date
+
+    mock_chrome.return_value = _make_selenium_driver(_html("pupilica_range.html"))
+
+    with patch(
+        "app.scrapers.cs_scraper.get_chrome_options", return_value=MagicMock()
+    ), patch("selenium.webdriver.support.ui.WebDriverWait"):
+        events = {e["title"]: e for e in scrape_pupilica_events()}
+
+    assert normalize_date(events["Büyük Veri Temelleri"]["date"]) == datetime(
+        2026, 11, 10
+    )
+    assert normalize_date(events["Temel Excel"]["date"]) == datetime(2026, 11, 11)
+    assert normalize_date(events["Generative AI Temelleri"]["date"]) == datetime(
+        2026, 11, 23
+    )
 
 
 # ── Tech Istanbul ────────────────────────────────────────────────────────────
