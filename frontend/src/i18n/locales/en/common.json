@@ -354,12 +354,12 @@
     "turnOnPush": "Turn On Push Notifications"
   },
   "supportModal": {
-    "heading": "Support the Project",
-    "description": "TechEventRadar is an open-source project built entirely by volunteers. You can help by buying us a coffee or sharing the project with others.",
+    "heading": "Want to buy us a coffee?",
+    "description": "TechEventRadar is an open-source project we build as volunteers. If you like it, a coffee or a share with a friend means a lot to us. Thank you!",
     "serverCost": "Server / month",
     "domainCost": "Domain / year",
-    "linkCopied": "Link Copied!",
-    "share": "Share"
+    "linkCopied": "Link copied, thank you!",
+    "share": "Share with a friend"
   },
   "themeToggle": {
     "toLightMode": "Switch to Light Mode",

@@ -59,7 +59,7 @@ const SupportModal = ({ show, handleClose }) => {
 
                         <div className="d-grid gap-3">
                             <a
-                                href="https://www.buymeacoffee.com/metehangnn"
+                                href="https://buymeacoffee.com/metrohan"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn btn-lg fw-bold d-flex align-items-center justify-content-center gap-2 transition-all hover-scale"

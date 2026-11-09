@@ -349,12 +349,12 @@
     "turnOnPush": "Push Bildirimlerini Aç"
   },
   "supportModal": {
-    "heading": "Projeye Destek Ol",
-    "description": "TechEventRadar tamamen gönüllülük esasıyla geliştirilen açık kaynaklı bir projedir. Geliştirmemize katkıda bulunmak için bize bir kahve ısmarlayabilir veya projemizi çevrenizle paylaşabilirsiniz.",
+    "heading": "Bize bir kahve ısmarlar mısın?",
+    "description": "TechEventRadar, gönüllülük esasıyla geliştirdiğimiz açık kaynaklı bir proje. Beğendiysen bize bir kahve ısmarlayarak ya da çevrenle paylaşarak yanımızda olabilirsin. Her destek bizim için çok değerli, teşekkürler!",
     "serverCost": "Sunucu / ay",
     "domainCost": "Domain / yıl",
-    "linkCopied": "Link Kopyalandı!",
-    "share": "Paylaş"
+    "linkCopied": "Link kopyalandı, teşekkürler!",
+    "share": "Arkadaşlarınla paylaş"
   },
   "themeToggle": {
     "toLightMode": "Açık Mod'a Geç",
