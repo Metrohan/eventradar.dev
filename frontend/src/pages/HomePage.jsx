@@ -11,7 +11,7 @@ const HomePage = () => {
   const { t } = useTranslation()
   const params = new URLSearchParams(window.location.search)
   const [searchTerm, setSearchTerm] = React.useState(params.get('q') || '')
-  const { sources } = useSources()
+  const { sources, isSuccess: sourcesLoaded } = useSources()
   const isPrerenderPass = params.get('__prerender') === '1'
 
   const { data: eventsData } = useQuery(
@@ -25,7 +25,11 @@ const HomePage = () => {
     { retry: false }
   )
 
-  const totalCount = eventsData?.data?.total_count || 0
+  // Until the fetches settle (or if they fail) there is no real figure, so show
+  // a dash rather than "0+" / "0", which readers take for an empty site.
+  const totalCount = eventsData?.data?.total_count
+  const totalCountLabel = typeof totalCount === 'number' ? `${totalCount}+` : '—'
+  const sourcesLabel = sourcesLoaded ? sources.length : '—'
   const announcement = announcementData?.data
 
   return (
@@ -67,12 +71,12 @@ const HomePage = () => {
             {/* Stats */}
             <div className="hero-stats">
               <div className="hero-stat">
-                <span className="hero-stat-number">{totalCount}+</span>
+                <span className="hero-stat-number">{totalCountLabel}</span>
                 <span className="hero-stat-label">{t('home.hero.statActive')}</span>
               </div>
               <div className="hero-stat-divider" />
               <div className="hero-stat">
-                <span className="hero-stat-number">{sources.length}</span>
+                <span className="hero-stat-number">{sourcesLabel}</span>
                 <span className="hero-stat-label">{t('home.hero.statPlatforms')}</span>
               </div>
               <div className="hero-stat-divider" />
