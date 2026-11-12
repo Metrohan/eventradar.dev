@@ -50,13 +50,21 @@ test('admin editor preserves wall-clock time and serializes blank dates as null'
   expect(payload.application_deadline).toBeNull()
 })
 
-test('event SEO omits unsupported free/availability/online claims', async ({ page }) => {
-  await page.route('**/api/events/1', route => route.fulfill({ json: { ...future, location: null } }))
+test('event SEO omits unsupported free/availability claims', async ({ page }) => {
+  await page.route('**/api/events/1', route => route.fulfill({ json: { ...future, location: 'Istanbul' } }))
   await page.goto('/etkinlik/1')
   await expect(page.locator('#event-jsonld')).toBeAttached()
   const schema = await page.locator('#event-jsonld').evaluate(el => JSON.parse(el.textContent))
   expect(schema).not.toHaveProperty('isAccessibleForFree')
   expect(schema).not.toHaveProperty('offers')
-  expect(schema).not.toHaveProperty('location')
-  expect(schema).not.toHaveProperty('eventAttendanceMode')
+  expect(schema.location).toMatchObject({ '@type': 'Place', name: 'Istanbul' })
+})
+
+test('event without a location gets no Event JSON-LD (Google requires one)', async ({ page }) => {
+  await page.route('**/api/events/1', route => route.fulfill({ json: { ...future, location: null } }))
+  await page.goto('/etkinlik/1')
+  // The breadcrumb is injected by the same effect, so once it exists the Event
+  // markup has had its chance to appear.
+  await expect(page.locator('#breadcrumb-jsonld')).toBeAttached()
+  await expect(page.locator('#event-jsonld')).toHaveCount(0)
 })

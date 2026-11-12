@@ -193,8 +193,10 @@ def _event_meta(event: Event) -> _Meta:
     image = SITE_URL + card if card.startswith("/") else BANNER_URL
 
     json_ld: list[tuple[str, dict]] = []
-    if date:  # Google's Event rich result requires startDate
-        location_text = str(event.location or "")
+    location_text = str(event.location or "")
+    # Google's Event rich result requires startDate and location; with either
+    # unknown there is no Event markup rather than an invented value.
+    if date and location_text:
         is_online = bool(_ONLINE_RE.search(location_text))
         source_url = str(event.url or "")
         schema: dict = {
@@ -225,9 +227,6 @@ def _event_meta(event: Event) -> _Meta:
             schema["description"] = str(event.description)
         if image != BANNER_URL:
             schema["image"] = image
-        if not location_text:
-            schema.pop("location", None)
-            schema.pop("eventAttendanceMode", None)
         json_ld.append(("event-jsonld", schema))
 
     json_ld.append(

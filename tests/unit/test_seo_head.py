@@ -110,6 +110,19 @@ def test_event_without_date_gets_no_event_json_ld(test_db):
     assert 'content="index, follow"' in head
 
 
+@pytest.mark.parametrize("location", [None, ""])
+def test_event_without_location_gets_no_event_json_ld(test_db, location):
+    # Google rejects an Event without a location (Search Console: critical
+    # "location alanı eksik"); the page stays indexable with its breadcrumb.
+    event = _event(test_db, location=location)
+
+    head = build_head(f"/etkinlik/{event.id}", test_db)
+
+    assert _ld(head, "event-jsonld") is None
+    assert _ld(head, "breadcrumb-jsonld") is not None
+    assert 'content="index, follow"' in head
+
+
 def test_event_without_card_falls_back_to_banner(test_db):
     event = _event(test_db, thumbnail_url=None)
 

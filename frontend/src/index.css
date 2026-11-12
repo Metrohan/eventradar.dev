@@ -661,10 +661,12 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 2.5rem;
 }
 
+/* Stays on one row while it fits (selects shrink first); wraps rather than
+   spilling out of the card when it does not (it overflowed at ~1450px). */
 .filter-row {
   display: flex;
   gap: 0.75rem;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
 }
 
@@ -712,7 +714,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .filter-select-wrap {
   position: relative;
-  min-width: 160px;
+  flex: 0 1 160px;
+  min-width: 120px;
 }
 
 /* Reusing .filter-select-wrap's 160px min-width for this group (two date
@@ -723,6 +726,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .filter-date-input {
@@ -753,6 +757,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s ease;
   font-family: inherit;
   user-select: none;
@@ -1591,6 +1596,8 @@ code {
   }
 
   .filter-select-wrap {
+    /* flex-basis would be a height in a column; undo the desktop 0 1 160px */
+    flex: none;
     width: 100%;
     min-width: unset;
   }
