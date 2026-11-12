@@ -28,7 +28,7 @@ const HomePage = () => {
   // Until the fetches settle (or if they fail) there is no real figure, so show
   // a dash rather than "0+" / "0", which readers take for an empty site.
   const totalCount = eventsData?.data?.total_count
-  const totalCountLabel = typeof totalCount === 'number' ? `${totalCount}+` : '—'
+  const totalCountLabel = typeof totalCount === 'number' ? String(totalCount) : '—'
   const sourcesLabel = sourcesLoaded ? sources.length : '—'
   const announcement = announcementData?.data
 

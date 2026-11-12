@@ -101,9 +101,10 @@ const EventDetailPage = () => {
     // if sources start reporting hybrid events separately.
     const isOnline = /online|çevrim\s?içi/i.test(event.location || '')
 
-    // Google's Event rich result requires startDate; an event without a date
-    // gets no Event JSON-LD (it is removed below / by the effect cleanup).
-    const schema = event.date && !historical && {
+    // Google's Event rich result requires startDate and location; an event
+    // missing either gets no Event JSON-LD rather than an invented value (it is
+    // removed below / by the effect cleanup).
+    const schema = event.date && event.location && !historical && {
       '@context': 'https://schema.org',
       '@type': 'Event',
       name: event.title,
@@ -120,10 +121,6 @@ const EventDetailPage = () => {
         ? { '@type': 'VirtualLocation', url: event.url }
         : { '@type': 'Place', name: event.location, address: event.location },
 
-    }
-    if (schema && !event.location) {
-      delete schema.location
-      delete schema.eventAttendanceMode
     }
     document.getElementById('event-jsonld')?.remove()
     if (schema) {
