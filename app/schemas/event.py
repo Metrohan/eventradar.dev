@@ -80,6 +80,8 @@ class EventResponse(EventBase):
     slug: str
     scraped_at: datetime
     thumbnail_url: Optional[str] = None
+    city: Optional[str] = None
+    attendance: Optional[str] = None
     tags: list[str] = Field(default_factory=list)
 
     @field_validator("tags", mode="before")

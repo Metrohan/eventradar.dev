@@ -1,5 +1,6 @@
 import re
-import unicodedata
+
+from ..utils.location import search_key as _search_key
 
 ONLINE_VALUES = {
     "online",
@@ -21,14 +22,6 @@ CITY_NAMES = {
     "elazig": "Elazığ",
     "kocaeli": "Kocaeli",
 }
-
-
-def _search_key(value: str) -> str:
-    normalized = unicodedata.normalize("NFKD", value.casefold())
-    ascii_value = "".join(
-        char for char in normalized if not unicodedata.combining(char)
-    )
-    return re.sub(r"\s+", " ", ascii_value).strip()
 
 
 def normalize_location(value: str | None) -> str | None:

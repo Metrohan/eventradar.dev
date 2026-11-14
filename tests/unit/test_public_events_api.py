@@ -54,3 +54,21 @@ def test_public_event_detail_hides_source_image_url(client, event):
 
 def test_admin_schema_still_carries_image_url_for_the_edit_form():
     assert "image_url" in EventResponse.model_fields
+
+
+def test_public_event_exposes_structured_location(client, test_db):
+    event = Event(
+        title="Meetup",
+        url="https://example.com/m",
+        source="Komünite",
+        date=datetime.now() + timedelta(days=5),
+        location="Kadıköy",
+    )
+    test_db.add(event)
+    test_db.commit()
+
+    payload = client.get(f"/api/events/{event.id}").json()
+
+    assert payload["city"] == "İstanbul"
+    assert payload["attendance"] == "in_person"
+    assert payload["location"] == "Kadıköy"
