@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 
 from ..models.blog_post import BlogPost
 from ..models.event import Event
-from ..utils.event_urls import event_path
+from ..utils.event_urls import event_path, resolve_event_slug
 from ..utils.location import HYBRID, IN_PERSON, ONLINE
 from .event_service import EventService
 from .event_lifecycle import visible_event_filter
@@ -289,12 +289,8 @@ def build_head(path: str, db: Session) -> str:
         event = EventService(db).get_public_event_by_id(int(match.group(1)))
         meta = _event_meta(event) if event else None
     elif path.startswith("/events/"):
-        event = (
-            db.query(Event)
-            .filter(
-                Event.slug == path.removeprefix("/events/"), *visible_event_filter()
-            )
-            .first()
+        event = resolve_event_slug(
+            db, path.removeprefix("/events/"), include_past=False
         )
         meta = _event_meta(event) if event else None
     elif match := _BLOG_RE.match(path):
