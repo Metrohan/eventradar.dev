@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from sqlalchemy import or_
 from app.core.database import SessionLocal
 from app.models.event import Event
-from app.services.topic_policy import is_technical_event
+from app.services.topic_policy import classify_event
 from app.utils.event_dates import day_start
 
 
@@ -25,7 +25,8 @@ def plan_changes(events):
     for event in events:
         if not event.is_active and event.deactivation_reason not in ("topic", "past"):
             continue
-        allowed = is_technical_event(event.title, event.description)
+        decision = classify_event(event.title, event.description, event.source)
+        allowed = decision.allowed
         before = [bool(event.is_active), event.deactivation_reason]
         if not allowed:
             after = [False, "topic"]
@@ -40,6 +41,7 @@ def plan_changes(events):
                     id=event.id,
                     url=event.url,
                     title=event.title,
+                    reason=f"{decision.tier}: {decision.reason}",
                     content_hash=content_hash(event),
                     before=before,
                     after=after,

@@ -1,39 +1,155 @@
+import pytest
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 from app.models.event import Event
-from app.services.topic_policy import is_technical_event
+from app.services.topic_policy import classify_event, is_technical_event
 from app.services.event_ingestion import EventIngestion, ScrapedEvent
 
 
-def test_technical_content_required_not_format():
-    for title in [
-        "Python Atölyesi",
-        "Siber Güvenlik Okulu",
-        "Data Engineering Bootcamp",
-        "AI Writing Bootcamp",
-        "No-Code MVP",
-        "Elektronik ve Gömülü Sistemler",
-        "Computer Science Days",
-    ]:
-        assert is_technical_event(title)
-    for title in [
-        "Engineering Career Summit",
-        "Talent Summit",
-        "Girişimcilik Okulu Çocuk",
-        "Payroll Forecast 2027",
-        "Cool Chain Club",
-        "Bootcamp",
-        "Hackathon",
-        "Seminer",
-        "Penti Retail Challenge",
-    ]:
-        assert not is_technical_event(title)
+@pytest.mark.parametrize(
+    ("title", "source", "tier"),
+    [
+        # 1. a technical term in the title
+        ("Python Atölyesi", "Anbean", "technical"),
+        ("Siber Güvenlik Okulu", "Anbean", "technical"),
+        ("Data Engineering Bootcamp", "Tech Istanbul", "technical"),
+        ("AI & Data Career Summit", "Youthall", "technical"),
+        ("Elektronik ve Gömülü Sistemler", None, "technical"),
+        # 2. a tech-career / role term in the title: relevant, not technical content
+        ("Engineering Career Summit (Online)", "Youthall", "adjacent"),
+        (
+            "Sektör Buluşmaları Bir CTO’nun Deneyimleri ve Güncel Ajandası",
+            "Anbean",
+            "adjacent",
+        ),
+        ("Stellar Pro Hackathon - 720.000 TL Ödül Havuzu", "Patika.dev", "adjacent"),
+        ("Grid Up Datathon", "Youthall", "adjacent"),
+        ("Startup Pitch Günü", "Komünite", "adjacent"),
+        ("Product Management 101", "Komünite", "adjacent"),
+        ("Hackathon", None, "adjacent"),
+        # every career summit stays: the site does not judge which are "tech enough"
+        ("Aegean Career Summit #2", "Youthall", "adjacent"),
+        ("Insurance & More Career Summit", "Youthall", "adjacent"),
+        ("Diversity & Inclusion Career Summit", "Youthall", "adjacent"),
+        ("Kariyer Zirvesi 2026", "Anbean", "adjacent"),
+        # 4. a source that only lists technology events
+        ("Temel Excel", "Pupilica", "source"),
+        ("Robot Kol Atölyesi Özel Programı", "Coderspace", "source"),
+        ("Kariyer Pusulası", "Kodluyoruz", "source"),
+        ("Geleceği Yazanlar BiP Night", "coderspace", "source"),  # case-insensitive
+    ],
+)
+def test_relevant_to_a_tech_audience_is_kept(title, source, tier):
+    decision = classify_event(title, None, source)
+    assert decision.allowed and decision.tier == tier
+    assert is_technical_event(title, None, source)
+
+
+@pytest.mark.parametrize(
+    ("title", "source"),
+    [
+        # a format word alone is not evidence
+        ("Bootcamp", None),
+        ("Seminer", None),
+        ("YouTalkZ", "Youthall"),
+        ("BUEC Enerji Zirvesi", "Youthall"),
+        ("Neova Ideathon", "Youthall"),
+        # explicit non-tech topics
+        ("Talent Summit", "Anbean"),
+        ("Girişimcilik Okulu Çocuk", "Pupilica"),  # beats the tech source
+        ("Payroll Forecast 2027", "Komünite"),
+        ("Cool Chain Club", "Anbean"),
+        ("Nestlé Youth Academy", "Anbean"),
+        ("Penti Retail Challenge", "Anbean"),
+        ("FMCG Camp", "Anbean"),
+        ("Girişimciler için Markalaşma ve Pazarlama Stratejileri", "Tech Istanbul"),
+        ("Girişimciler için Yatırıma Hazırlık Semineri", "Tech Istanbul"),
+        ("CEF ile Finans Eğitimi", "Akbank Gençlik Akademisi"),
+    ],
+)
+def test_without_tech_relevance_is_hidden(title, source):
+    decision = classify_event(title, None, source)
+    assert not decision.allowed and decision.tier == "general"
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Bir CTO’nun Deneyimleri",
+        "CTO'nun Günlüğü",
+        "Python'da Asenkron",
+        "AI’ın Geleceği",
+    ],
+)
+def test_a_turkish_suffix_after_an_apostrophe_keeps_the_term(title):
+    assert is_technical_event(title, None, "Anbean")
+
+
+def test_description_only_evidence_counts_but_not_against_a_non_tech_title():
+    assert is_technical_event(
+        "Sıfırdan Bire", "Yapay zeka ile ürün geliştirme", "Komünite"
+    )
     assert not is_technical_event(
         "Talent Summit", "Python yazılım kariyeri hakkında genel bir buluşma"
+    )
+    assert not is_technical_event(
+        "Payroll Forecast 2027",
+        "Bordroyu yapay zekâ destekli senaryolarla kur",
+        "Komünite",
+    )
+    # "engineer" in the description is not a title-level role term
+    assert not is_technical_event(
+        "Food Science Day", "Gıda mühendisleriyle bir gün", "Anbean"
     )
     assert is_technical_event(
         "One-Person Company Bootcamp", "AI agent ile otomasyon geliştirme"
     )
+
+
+def test_decision_carries_a_reason_for_review():
+    assert classify_event("Engineering Career Summit").reason == "title: engineering"
+    assert classify_event("Talent Summit").reason == "not tech: talent summit"
+    assert (
+        classify_event("Temel Excel", None, "Pupilica").reason
+        == "tech source: Pupilica"
+    )
+    assert classify_event("Bootcamp").reason == "no technical evidence"
+
+
+def test_ingestion_passes_the_source_to_the_policy(test_db):
+    service = EventIngestion(
+        sessionmaker(bind=test_db.get_bind()),
+        topic_filter=is_technical_event,
+        clock=lambda: datetime(2026, 11, 14),
+    )
+    service.ingest(
+        [
+            ScrapedEvent(
+                title="Temel Excel", url="https://example.org/a", source="Pupilica"
+            ),
+            ScrapedEvent(
+                title="Temel Excel", url="https://example.org/b", source="Anbean"
+            ),
+        ]
+    )
+    rows = {r.url: r for r in test_db.query(Event).all()}
+    assert rows["https://example.org/a"].is_active
+    assert not rows["https://example.org/b"].is_active
+    assert rows["https://example.org/b"].deactivation_reason == "topic"
+
+
+def test_plan_rows_say_why_an_event_is_hidden(test_db):
+    from scripts.review_topic_scope import plan_changes
+
+    e = Event(
+        title="Talent Summit",
+        url="https://example.org/why",
+        source="Anbean",
+        is_active=True,
+    )
+    test_db.add(e)
+    test_db.commit()
+    assert plan_changes([e])[0]["reason"] == "general: not tech: talent summit"
 
 
 def test_scope_hide_restore_and_manual_hide(test_db):
