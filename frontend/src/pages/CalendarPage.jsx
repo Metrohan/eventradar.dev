@@ -104,6 +104,9 @@ const CalendarPage = () => {
         <p className="text-muted" style={{ maxWidth: '640px' }}>
           {t('calendar.subtitle')}
         </p>
+        <a href="/api/events/calendar.ics" className="filter-toggle">
+          {i18n.language.startsWith('tr') ? 'Takvime abone ol (ICS)' : 'Subscribe to calendar (ICS)'}
+        </a>
       </div>
 
       <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">

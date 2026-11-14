@@ -12,6 +12,7 @@ from ..services.event_request_service import EventRequestService
 from ..services.source_catalog import get_enabled_sources
 from ..services.rate_limiter import FixedWindowRateLimiter, client_key
 from ..services.rss_service import build_events_rss
+from ..services.calendar_service import build_events_calendar
 from ..services.sitemap_service import build_sitemap
 from ..services.seo_head import build_head, build_home_body
 from ..services.event_lifecycle import visible_event_filter
@@ -130,6 +131,18 @@ async def get_events_rss(db: Session = Depends(get_db)):
     events = event_service.get_events(active_only=True, limit=100)
     feed_xml = build_events_rss(events)
     return Response(content=feed_xml, media_type="application/rss+xml")
+
+
+@router.get("/events/calendar.ics")
+async def get_events_calendar(db: Session = Depends(get_db)):
+    """Visible dated events; floating times use the site's Istanbul convention."""
+    events = (
+        db.query(Event).filter(*visible_event_filter(), Event.date.is_not(None)).all()
+    )
+    return Response(
+        content=build_events_calendar(events),
+        media_type="text/calendar; charset=utf-8",
+    )
 
 
 @router.get("/events/sitemap.xml")
