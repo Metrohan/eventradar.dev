@@ -1,4 +1,17 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Text,
+    DateTime,
+    Boolean,
+    ForeignKey,
+    event,
+    inspect,
+    select,
+    insert,
+    update,
+)
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship, validates
 from ..core.database import Base
@@ -11,6 +24,7 @@ class Event(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     slug = Column(String(160), unique=True, nullable=False, default=new_event_slug)
+    slug_version = Column(Integer, nullable=False, default=2, server_default="1")
     title = Column(String(500), nullable=False)
     description = Column(Text)
     date = Column(DateTime)
@@ -42,3 +56,39 @@ class Event(Base):
 
     def __repr__(self):
         return f"<Event {self.title}>"
+
+
+class EventSlugAlias(Base):
+    __tablename__ = "event_slug_aliases"
+
+    slug = Column(String(160), primary_key=True)
+    # Nullable only during a new Event INSERT's default evaluation. Linked by
+    # the mapper hook before the transaction can commit.
+    event_id = Column(
+        Integer, ForeignKey("events.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+
+
+def _reserve_route(_mapper, connection, target):
+    table = EventSlugAlias.__table__
+    row = connection.execute(
+        select(table.c.event_id).where(table.c.slug == target.slug)
+    ).first()
+    if row is None:
+        connection.execute(insert(table).values(slug=target.slug, event_id=target.id))
+    elif row.event_id is None:
+        connection.execute(
+            update(table).where(table.c.slug == target.slug).values(event_id=target.id)
+        )
+    elif row.event_id != target.id:
+        # Raise a real uniqueness error so callers roll back the whole insert.
+        connection.execute(insert(table).values(slug=target.slug, event_id=target.id))
+
+
+def _reserve_updated_route(mapper, connection, target):
+    if inspect(target).attrs.slug.history.has_changes():
+        _reserve_route(mapper, connection, target)
+
+
+event.listen(Event, "after_insert", _reserve_route)
+event.listen(Event, "after_update", _reserve_updated_route)

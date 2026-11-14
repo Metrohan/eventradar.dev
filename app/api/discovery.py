@@ -22,7 +22,7 @@ from ..services.seo_head import (
     SITE_URL,
 )
 from ..utils.event_dates import day_start, local_now
-from ..utils.event_urls import event_path
+from ..utils.event_urls import event_path, resolve_event_slug
 
 router = APIRouter(include_in_schema=False)
 
@@ -74,9 +74,11 @@ def legacy_event(event_id: int, db: Session = Depends(get_db)):
 
 @router.get("/events/{slug}")
 def event_detail(slug: str, db: Session = Depends(get_db)):
-    event = db.query(Event).filter(Event.slug == slug, history_event_filter()).first()
+    event = resolve_event_slug(db, slug)
     if not event:
         return missing()
+    if event.slug != slug:
+        return RedirectResponse(event_path(event), status_code=301)
     past = event.date is not None and event.date < day_start()
     meta = _event_meta(event)
     if past or not event.is_active:
