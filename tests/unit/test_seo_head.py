@@ -100,6 +100,69 @@ def test_online_event_is_marked_online(test_db):
     }
 
 
+def _schema(db, **over):
+    event = _event(db, **over)
+    return _ld(build_head(f"/etkinlik/{event.id}", db), "event-jsonld")
+
+
+def test_in_person_event_with_known_city_has_a_postal_address(test_db):
+    schema = _schema(test_db, location="Kadıköy")
+
+    assert schema["eventAttendanceMode"].endswith("OfflineEventAttendanceMode")
+    assert schema["location"] == {
+        "@type": "Place",
+        "name": "Kadıköy",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "İstanbul",
+            "addressCountry": "TR",
+        },
+    }
+
+
+def test_in_person_event_without_a_known_city_keeps_a_text_address(test_db):
+    schema = _schema(test_db, location="Boğaziçi Üniversitesi Garant...")
+
+    assert schema["location"]["address"] == "Boğaziçi Üniversitesi Garant..."
+    assert schema["eventAttendanceMode"].endswith("OfflineEventAttendanceMode")
+
+
+def test_hybrid_event_is_mixed_with_a_place_and_a_virtual_location(test_db):
+    schema = _schema(test_db, location="Hibrit ( Istanbul & Zoom )")
+
+    assert schema["eventAttendanceMode"].endswith("MixedEventAttendanceMode")
+    place, virtual = schema["location"]
+    assert place["@type"] == "Place"
+    assert place["address"]["addressLocality"] == "İstanbul"
+    assert virtual == {
+        "@type": "VirtualLocation",
+        "url": "https://youthall.com/events/h",
+    }
+
+
+@pytest.mark.parametrize(
+    ("location", "mode", "location_type"),
+    [
+        ("Online", "OnlineEventAttendanceMode", "VirtualLocation"),
+        ("İstanbul", "OfflineEventAttendanceMode", "Place"),
+    ],
+)
+def test_event_not_yet_refreshed_keeps_the_old_markup(
+    test_db, location, mode, location_type
+):
+    # A row scraped before the structured fields existed has none of them.
+    event = _event(test_db, location=location)
+    event.city = event.attendance = event.venue = None
+    test_db.commit()
+
+    schema = _ld(build_head(f"/etkinlik/{event.id}", test_db), "event-jsonld")
+
+    assert schema["eventAttendanceMode"].endswith(mode)
+    assert schema["location"]["@type"] == location_type
+    if location_type == "Place":
+        assert schema["location"]["address"] == location  # plain text, as before
+
+
 def test_event_without_date_gets_no_event_json_ld(test_db):
     event = _event(test_db, date=None)
 

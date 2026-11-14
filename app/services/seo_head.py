@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 from ..models.blog_post import BlogPost
 from ..models.event import Event
 from ..utils.event_urls import event_path
+from ..utils.location import HYBRID, IN_PERSON, ONLINE
 from .event_service import EventService
 from .event_lifecycle import visible_event_filter
 from .image_pipeline import MONTHS_TR
@@ -97,6 +98,36 @@ SITE_NAME = "TechEventRadar"
 TITLE_MAX = 70  # Bing flags longer <title> values
 
 _ONLINE_RE = re.compile(r"online|çevrim\s?içi", re.IGNORECASE)
+
+
+def _event_location(event: Event, location_text: str) -> tuple[str, dict | list]:
+    """Event attendance-mode URL and schema.org location for an event.
+
+    Uses the structured fields when a scrape has filled them; until then it
+    falls back to the old online-keyword check, so the markup is unchanged for
+    rows that have not been refreshed yet.
+    """
+    attendance = event.attendance or (
+        ONLINE if _ONLINE_RE.search(location_text) else IN_PERSON
+    )
+    city = str(event.city) if event.city else None
+    venue = str(event.venue or location_text)
+    virtual = {"@type": "VirtualLocation", "url": str(event.url or "")}
+    place = {
+        "@type": "Place",
+        "name": venue,
+        # Turkish provinces only, so the country is known when a city is.
+        "address": (
+            {"@type": "PostalAddress", "addressLocality": city, "addressCountry": "TR"}
+            if city
+            else venue
+        ),
+    }
+    if attendance == ONLINE:
+        return "https://schema.org/OnlineEventAttendanceMode", virtual
+    if attendance == HYBRID:
+        return "https://schema.org/MixedEventAttendanceMode", [place, virtual]
+    return "https://schema.org/OfflineEventAttendanceMode", place
 
 
 @dataclass
@@ -197,8 +228,7 @@ def _event_meta(event: Event) -> _Meta:
     # Google's Event rich result requires startDate and location; with either
     # unknown there is no Event markup rather than an invented value.
     if date and location_text:
-        is_online = bool(_ONLINE_RE.search(location_text))
-        source_url = str(event.url or "")
+        attendance_mode, location = _event_location(event, location_text)
         schema: dict = {
             "@context": "https://schema.org",
             "@type": "Event",
@@ -208,20 +238,8 @@ def _event_meta(event: Event) -> _Meta:
             "startDate": date.isoformat(),
             "url": SITE_URL + path,
             "eventStatus": "https://schema.org/EventScheduled",
-            "eventAttendanceMode": (
-                "https://schema.org/OnlineEventAttendanceMode"
-                if is_online
-                else "https://schema.org/OfflineEventAttendanceMode"
-            ),
-            "location": (
-                {"@type": "VirtualLocation", "url": source_url}
-                if is_online
-                else {
-                    "@type": "Place",
-                    "name": location_text,
-                    "address": location_text,
-                }
-            ),
+            "eventAttendanceMode": attendance_mode,
+            "location": location,
         }
         if event.description:
             schema["description"] = str(event.description)

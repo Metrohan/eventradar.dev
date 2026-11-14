@@ -27,6 +27,27 @@ function setMeta(name, content, property = false) {
   el.setAttribute('content', content)
 }
 
+const ONLINE_RE = /online|çevrim\s?içi/i
+
+// Mirrors app/services/seo_head.py::_event_location. Uses the structured fields
+// from the API when a scrape has filled them; until then it falls back to the
+// online-keyword check.
+function eventLocationMarkup(event) {
+  const attendance = event.attendance || (ONLINE_RE.test(event.location || '') ? 'online' : 'in_person')
+  const virtual = { '@type': 'VirtualLocation', url: event.url }
+  const place = {
+    '@type': 'Place',
+    name: event.location,
+    // Provinces are Turkish only, so the country is known when a city is.
+    address: event.city
+      ? { '@type': 'PostalAddress', addressLocality: event.city, addressCountry: 'TR' }
+      : event.location,
+  }
+  if (attendance === 'online') return { mode: 'https://schema.org/OnlineEventAttendanceMode', location: virtual }
+  if (attendance === 'hybrid') return { mode: 'https://schema.org/MixedEventAttendanceMode', location: [place, virtual] }
+  return { mode: 'https://schema.org/OfflineEventAttendanceMode', location: place }
+}
+
 const EventDetailPage = () => {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
@@ -96,10 +117,7 @@ const EventDetailPage = () => {
     canonical.setAttribute('href', canonicalUrl)
 
     // JSON-LD Event schema
-    // shortcut: a location containing "online" counts as online, so a hybrid
-    // "Istanbul / Online" is labelled online-only; upgrade to MixedEventAttendanceMode
-    // if sources start reporting hybrid events separately.
-    const isOnline = /online|çevrim\s?içi/i.test(event.location || '')
+    const { mode: attendanceMode, location: eventLocation } = eventLocationMarkup(event)
 
     // Google's Event rich result requires startDate and location; an event
     // missing either gets no Event JSON-LD rather than an invented value (it is
@@ -114,13 +132,8 @@ const EventDetailPage = () => {
       ...(cardUrl && { image: cardUrl }),
       url: `https://eventradar.dev${event.slug ? `/events/${event.slug}` : `/etkinlik/${id}`}`,
       eventStatus: 'https://schema.org/EventScheduled',
-      eventAttendanceMode: isOnline
-        ? 'https://schema.org/OnlineEventAttendanceMode'
-        : 'https://schema.org/OfflineEventAttendanceMode',
-      location: isOnline
-        ? { '@type': 'VirtualLocation', url: event.url }
-        : { '@type': 'Place', name: event.location, address: event.location },
-
+      eventAttendanceMode: attendanceMode,
+      location: eventLocation,
     }
     document.getElementById('event-jsonld')?.remove()
     if (schema) {
