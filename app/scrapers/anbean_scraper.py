@@ -1,14 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime
 from urllib.parse import urljoin
 import re
 from app.services.date_extractor import parse_event_date
-
-try:
-    from dateparser.search import search_dates  # optional, improves robustness
-except Exception:  # pragma: no cover
-    search_dates = None
 
 
 def _fetch_anbean_description(detail_soup):
@@ -17,6 +11,26 @@ def _fetch_anbean_description(detail_soup):
     if not desc_elem:
         return None
     return desc_elem.get_text(" ", strip=True) or None
+
+
+def _explicit_date(value):
+    # A year must be supplied by the source, never inferred from today's date.
+    return parse_event_date(value) if re.search(r"\b20\d{2}\b", value) else None
+
+
+def _detail_dates(soup):
+    start, deadline = None, None
+    for wrapper in soup.select(".eventDetail-rs-ie-rightWrapper"):
+        spans = wrapper.find_all("span", recursive=False)
+        if len(spans) < 2:
+            continue
+        label = spans[0].get_text(" ", strip=True)
+        value = spans[1].get_text(" ", strip=True)
+        if "Başlangıç" in label and "Etkinlik" in label:
+            start = _explicit_date(value)
+        elif "Son Kayıt" in label or "Son Başvuru" in label:
+            deadline = _explicit_date(value)
+    return start, deadline
 
 
 def scrape_anbean_events():
@@ -75,19 +89,11 @@ def scrape_anbean_events():
                     break
 
         event_date_obj = None
-        if last_application_date_str != "Tarih Bulunamadı":
-            event_date_obj = parse_event_date(last_application_date_str)
-
-        # Saat bilgisi eksikse listeden gelen tarih daha az güvenilirdir;
-        # detay sayfasından gelen tarih bu durumda tercih edilir.
-        prefer_detail_date = (event_date_obj is None) or (
-            event_date_obj and event_date_obj.hour == 0 and event_date_obj.minute == 0
-        )
+        application_deadline = _explicit_date(last_application_date_str)
 
         # Açıklama her zaman detay sayfasından çekildiği için artık her
         # zaman detay sayfasına gidiyoruz (öncesinde sadece tarih/saat eksikse
         # gidiliyordu).
-        detail_date = None
         description = None
         if link:
             try:
@@ -99,65 +105,9 @@ def scrape_anbean_events():
 
                 description = _fetch_anbean_description(detail_soup)
 
-                # Primary selector: right wrapper spans (label + value)
-                found_from_spans = False
-                wrappers = detail_soup.select(".eventDetail-rs-ie-rightWrapper")
-                for wrapper in wrappers:
-                    spans = wrapper.find_all("span")
-                    if len(spans) >= 2:
-                        label = spans[0].get_text(strip=True)
-                        value = spans[1].get_text(strip=True) if len(spans) > 1 else ""
-                        if any(
-                            k in label
-                            for k in ["Son Kayıt", "Son Başvuru", "Son Kayıt Tarihi"]
-                        ):
-                            dd = parse_event_date(value)
-                            if dd:
-                                detail_date = dd
-                                found_from_spans = True
-                                break
-
-                # Secondary: parse from <title>
-                if not detail_date and detail_soup.title and detail_soup.title.string:
-                    title_text = detail_soup.title.string.strip()
-                    m = re.search(
-                        r"(\d{1,2}[\.\s]\w+\s\d{4}(?:\s\d{1,2}[:\.]\d{2})?)|(\d{1,2}[\./]\d{1,2}[\./]\d{4}(?:\s\d{1,2}[:\.]\d{2})?)",
-                        title_text,
-                    )
-                    if m:
-                        dd = parse_event_date(m.group(0))
-                        if dd:
-                            detail_date = dd
-
-                # Tertiary: search around label in full text
-                if not detail_date:
-                    detail_text = " ".join(detail_soup.stripped_strings)
-                    label_match = re.search(
-                        r"Son\s*(Kayıt|Başvuru)[^\d]{0,60}([\d\s:\.]+\w+\s+\d{4}(?:\s+[\d:\.]{4,5})?)",
-                        detail_text,
-                        flags=re.IGNORECASE,
-                    )
-                    if label_match:
-                        captured = (
-                            label_match.group(2)
-                            if label_match.lastindex and label_match.lastindex >= 2
-                            else label_match.group(0)
-                        )
-                        detail_date = parse_event_date(captured)
-
-                # Last resort: generic date search
-                if not detail_date and search_dates:
-                    dates_found = (
-                        search_dates(
-                            " ".join(detail_soup.stripped_strings), languages=["tr"]
-                        )
-                        or []
-                    )
-                    if dates_found:
-                        detail_date = dates_found[0][1]
-
-                if detail_date and prefer_detail_date:
-                    event_date_obj = detail_date
+                event_date_obj, detail_deadline = _detail_dates(detail_soup)
+                if detail_deadline is not None:
+                    application_deadline = detail_deadline
             except requests.exceptions.RequestException as de:
                 print(f"Anbean detay sayfası alınamadı ({title}): {de}")
 
@@ -185,6 +135,7 @@ def scrape_anbean_events():
                     "title": title,
                     "description": description,
                     "date": event_date_obj,
+                    "application_deadline": application_deadline,
                     "location": location,
                     "url": link,
                     "source": "Anbean",
