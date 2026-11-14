@@ -60,6 +60,35 @@ test('event SEO omits unsupported free/availability claims', async ({ page }) =>
   expect(schema.location).toMatchObject({ '@type': 'Place', name: 'Istanbul' })
 })
 
+async function eventSchema(page, overrides) {
+  await page.route('**/api/events/1', route => route.fulfill({ json: { ...future, ...overrides } }))
+  await page.goto('/etkinlik/1')
+  await expect(page.locator('#event-jsonld')).toBeAttached()
+  return page.locator('#event-jsonld').evaluate(el => JSON.parse(el.textContent))
+}
+
+test('in-person event with a known city gets a postal address', async ({ page }) => {
+  const schema = await eventSchema(page, { location: 'Kadıköy', city: 'İstanbul', attendance: 'in_person' })
+  expect(schema.eventAttendanceMode).toMatch(/OfflineEventAttendanceMode$/)
+  expect(schema.location).toEqual({
+    '@type': 'Place',
+    name: 'Kadıköy',
+    address: { '@type': 'PostalAddress', addressLocality: 'İstanbul', addressCountry: 'TR' },
+  })
+})
+
+test('hybrid event is mixed, with a place and a virtual location', async ({ page }) => {
+  const schema = await eventSchema(page, { location: 'Hibrit ( Istanbul & Zoom )', city: 'İstanbul', attendance: 'hybrid' })
+  expect(schema.eventAttendanceMode).toMatch(/MixedEventAttendanceMode$/)
+  expect(schema.location.map(l => l['@type'])).toEqual(['Place', 'VirtualLocation'])
+})
+
+test('event not yet refreshed (no structured fields) keeps the old markup', async ({ page }) => {
+  const schema = await eventSchema(page, { location: 'Istanbul' })
+  expect(schema.eventAttendanceMode).toMatch(/OfflineEventAttendanceMode$/)
+  expect(schema.location).toEqual({ '@type': 'Place', name: 'Istanbul', address: 'Istanbul' })
+})
+
 test('event without a location gets no Event JSON-LD (Google requires one)', async ({ page }) => {
   await page.route('**/api/events/1', route => route.fulfill({ json: { ...future, location: null } }))
   await page.goto('/etkinlik/1')
