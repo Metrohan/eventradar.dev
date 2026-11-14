@@ -9,6 +9,7 @@ from ..models.event import Event
 from ..models.tag import Tag
 from .date_extractor import parse_event_date
 from .tag_service import classify_event
+from .topic_policy import is_technical_event
 from .location_normalizer import normalize_location
 from ..utils.event_dates import day_start, local_datetime, local_now
 
@@ -100,11 +101,13 @@ class EventIngestion:
         notification_adapter: NotificationAdapter | None = None,
         clock: Clock = local_now,
         thumbnail_fn: ThumbnailFn | None = None,
+        topic_filter: Callable[[str | None, str | None], bool] | None = None,
     ):
         self._session_factory = session_factory
         self._notification_adapter = notification_adapter
         self._clock = clock
         self._thumbnail_fn = thumbnail_fn
+        self._topic_filter = topic_filter
 
     def ingest(self, events: Iterable[ScrapedEvent]) -> IngestionResult:
         items = list(events)
@@ -171,7 +174,14 @@ class EventIngestion:
                         date_value = normalize_date(item.date)
                         deadline_value = normalize_date(item.application_deadline)
                         existing = existing_map.get(item.url)
-
+                        effective_description = item.description or (
+                            cast(str | None, existing.description) if existing else None
+                        )
+                        topic_allowed = (
+                            self._topic_filter(item.title, effective_description)
+                            if self._topic_filter
+                            else True
+                        )
                         if existing:
                             self._update_event(
                                 existing,
@@ -181,6 +191,7 @@ class EventIngestion:
                                 now,
                                 all_tags,
                                 thumbnail_url,
+                                topic_allowed,
                             )
                         else:
                             self._create_event(
@@ -191,12 +202,14 @@ class EventIngestion:
                                 now,
                                 all_tags,
                                 thumbnail_url,
+                                topic_allowed,
                             )
                             is_new = True
 
                     if is_new:
                         result.new += 1
-                        new_events.append(item)
+                        if topic_allowed:
+                            new_events.append(item)
                     else:
                         result.updated += 1
                 except Exception:
@@ -274,6 +287,7 @@ class EventIngestion:
         now: datetime,
         all_tags: dict[str, Tag],
         thumbnail_url: str | None = None,
+        topic_allowed: bool = True,
     ) -> None:
         event.title = item.title or cast(str, event.title)  # type: ignore[assignment]
         event.description = item.description or cast(  # type: ignore[assignment]
@@ -282,10 +296,10 @@ class EventIngestion:
         if date_value is not None:
             event.date = date_value  # type: ignore[assignment]
         effective_date = date_value or cast(datetime | None, event.date)
-        if event.deactivation_reason in ("past", "missing") or event.is_active:
+        if event.deactivation_reason in ("past", "missing", "topic") or event.is_active:
             # Only known automatic lifecycle decisions may be reversed by a scrape.
-            event.is_active = effective_date is None or effective_date >= day_start(now)  # type: ignore[assignment]
-            event.deactivation_reason = None if event.is_active else "past"  # type: ignore[assignment]
+            event.is_active = topic_allowed and (effective_date is None or effective_date >= day_start(now))  # type: ignore[assignment]
+            event.deactivation_reason = (None if event.is_active else "past") if topic_allowed else "topic"  # type: ignore[assignment]
         if deadline_value is not None:
             event.application_deadline = deadline_value  # type: ignore[assignment]
         event.location = item.location or cast(  # type: ignore[assignment]
@@ -315,6 +329,7 @@ class EventIngestion:
         now: datetime,
         all_tags: dict[str, Tag],
         thumbnail_url: str | None = None,
+        topic_allowed: bool = True,
     ) -> None:
         event = Event(
             title=item.title,
@@ -326,11 +341,16 @@ class EventIngestion:
             image_url=item.image_url,
             thumbnail_url=thumbnail_url,
             source=item.source,
-            is_active=date_value is None or date_value >= day_start(now),
+            is_active=topic_allowed
+            and (date_value is None or date_value >= day_start(now)),
             deactivation_reason=(
-                "past"
-                if date_value is not None and date_value < day_start(now)
-                else None
+                "topic"
+                if not topic_allowed
+                else (
+                    "past"
+                    if date_value is not None and date_value < day_start(now)
+                    else None
+                )
             ),
             scraped_at=now,
             last_seen_at=now,
@@ -372,4 +392,9 @@ def build_event_ingestion() -> EventIngestion:
             settings.thumbnail_public_prefix,
         )
 
-    return EventIngestion(SessionLocal, notify_all, thumbnail_fn=make_thumbnail)
+    return EventIngestion(
+        SessionLocal,
+        notify_all,
+        thumbnail_fn=make_thumbnail,
+        topic_filter=is_technical_event,
+    )
