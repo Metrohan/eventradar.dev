@@ -4,6 +4,7 @@ from typing import Optional
 
 import requests
 from bs4 import BeautifulSoup
+from ..services.date_extractor import parse_event_date
 
 LIST_URL = "https://www.youthall.com/tr/etkinlikler/"
 BASE_URL = "https://www.youthall.com"
@@ -137,12 +138,42 @@ def parse_youthall_events(html: str, now: Optional[datetime] = None) -> list[dic
     return events
 
 
+def parse_youthall_detail_dates(html: str):
+    """Only labeled values with an explicit source year can refine list dates."""
+    soup = BeautifulSoup(html, "html.parser")
+    values = {}
+    for block in soup.select(".c-job_detail_content_list_features"):
+        label, value = block.find("h6"), block.find("small")
+        if label is None or value is None:
+            continue
+        name, text = label.get_text(" ", strip=True), value.get_text(" ", strip=True)
+        if name in ("Etkinlik Başlangıç", "Son Başvuru") and re.search(
+            r"\b20\d{2}\b", text
+        ):
+            values[name] = parse_event_date(text)
+    return values.get("Etkinlik Başlangıç"), values.get("Son Başvuru")
+
+
 def scrape_youthall_events() -> list[dict]:
     try:
         response = requests.get(LIST_URL, timeout=30, headers=HEADERS)
         response.raise_for_status()
         response.encoding = "utf-8"
-        return parse_youthall_events(response.text)
+        events = parse_youthall_events(response.text)
+        for event in events:
+            try:
+                detail = requests.get(event["url"], timeout=15, headers=HEADERS)
+                detail.raise_for_status()
+                detail.encoding = "utf-8"
+                start, deadline = parse_youthall_detail_dates(detail.text)
+                if start is not None:
+                    event["date"] = _fmt(start)
+                if deadline is not None:
+                    event["application_deadline"] = _fmt(deadline)
+            except requests.RequestException:
+                # Keep independently parsed list values on transient detail errors.
+                continue
+        return events
     except requests.RequestException as exc:
         print(f"Youthall: network error: {exc}")
         raise

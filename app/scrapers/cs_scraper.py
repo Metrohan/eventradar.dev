@@ -1,4 +1,5 @@
 import logging
+import re
 import time
 from datetime import datetime
 from typing import List, Dict, Any, Optional
@@ -31,29 +32,40 @@ _MONTH_TR = {
 }
 
 
-def _parse_tr_date(date_str: str, prefer_future: bool = False) -> Optional[datetime]:
-    """
-    '12 Temmuz' veya '12 Temmuz 2026' gibi Türkçe tarihi parse eder.
-    prefer_future=True: yil yoksa ve tarih gecmisteyse bir sonraki yila atar.
-    prefer_future=False: yil yoksa her zaman mevcut yili kullanir (deadline filtresi icin).
-    """
+def _parse_tr_date(date_str: str, now: Optional[datetime] = None) -> Optional[datetime]:
+    """Respect explicit years; yearless list dates use the nearest calendar year."""
     if not date_str:
         return None
-    parts = date_str.strip().lower().split()
-    if len(parts) < 2:
+    now = now or datetime.now()
+    match = re.fullmatch(
+        r"\s*(\d{1,2})\s+([^\W\d_]+)(?:\s+(20\d{2}))?(?:\s*(?:-|–)?\s*(\d{1,2})[.:](\d{2}))?\s*",
+        date_str.lower(),
+    )
+    if not match:
         return None
-    try:
-        day = int(parts[0])
-        month = _MONTH_TR.get(parts[1])
-        if not month:
-            return None
-        year = int(parts[2]) if len(parts) >= 3 else datetime.now().year
-        dt = datetime(year, month, day)
-        if prefer_future and len(parts) < 3 and dt < datetime.now():
-            dt = dt.replace(year=dt.year + 1)
-        return dt
-    except (ValueError, TypeError):
+    month = _MONTH_TR.get(match.group(2))
+    if month is None:
         return None
+    years = (
+        [int(match.group(3))]
+        if match.group(3)
+        else [now.year - 1, now.year, now.year + 1]
+    )
+    candidates = []
+    for year in years:
+        try:
+            candidates.append(
+                datetime(
+                    year,
+                    month,
+                    int(match.group(1)),
+                    int(match.group(4) or 0),
+                    int(match.group(5) or 0),
+                )
+            )
+        except ValueError:
+            continue
+    return min(candidates, key=lambda value: abs(value - now)) if candidates else None
 
 
 def get_chrome_options() -> uc.ChromeOptions:
@@ -107,18 +119,19 @@ def parse_coderspace_events(
             if value:
                 date_map[label_node.get_text(strip=True)] = value.get_text(strip=True)
 
-        # prefer_future=False: a year-less past date must stay in the past.
-        deadline_str = date_map.get("Son Başvuru") or date_map.get("Bitiş")
-        deadline = _parse_tr_date(deadline_str) if deadline_str else None
-        if deadline and deadline < now:
-            continue
+        deadline_str = date_map.get("Son Başvuru")
+        deadline = _parse_tr_date(deadline_str, now=now) if deadline_str else None
+        if deadline:
+            limit = (
+                now
+                if deadline.time().isoformat() != "00:00:00"
+                else now.replace(hour=0, minute=0, second=0, microsecond=0)
+            )
+            if deadline < limit:
+                continue
 
-        date_val = None
-        for label in ("Bitiş", "Başlangıç", "Son Başvuru"):
-            if label in date_map:
-                date_val = _parse_tr_date(date_map[label], prefer_future=True)
-                if date_val:
-                    break
+        start_text = date_map.get("Başlangıç")
+        date_val = _parse_tr_date(start_text, now=now) if start_text else None
 
         seen.add(href)
         description_node = card.select_one("p")
