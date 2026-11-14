@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import re
+from datetime import datetime
 import requests
 import time
 
@@ -43,6 +44,24 @@ def _fetch_event_details(detail_url: str) -> dict:
         raw_text = tarih_label.parent.get_text(" ", strip=True)
         raw_text = raw_text.replace("Tarih:", "", 1).strip()
         result["date"] = parse_relative_turkish_datetime(raw_text)
+
+    # Bootcamp pages use a dedicated education-date summary instead of the
+    # events template's <strong>Tarih:</strong>. Only this explicit start-date
+    # field may be used; the application deadline is a different field.
+    if result["date"] is None:
+        education_date = soup.find(
+            True, attrs={"data-test": "event-summary-education-date-content"}
+        )
+        if education_date:
+            match = re.match(
+                r"\s*(\d{2}\.\d{2}\.\d{4})(?:\s*-|\s*$)",
+                education_date.get_text(" ", strip=True),
+            )
+            if match:
+                try:
+                    result["date"] = datetime.strptime(match.group(1), "%d.%m.%Y")
+                except ValueError:
+                    pass
 
     about_elem = soup.find(True, attrs={"data-test": "event-section-content-about"})
     if about_elem:
