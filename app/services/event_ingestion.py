@@ -101,7 +101,9 @@ class EventIngestion:
         notification_adapter: NotificationAdapter | None = None,
         clock: Clock = local_now,
         thumbnail_fn: ThumbnailFn | None = None,
-        topic_filter: Callable[[str | None, str | None], bool] | None = None,
+        topic_filter: (
+            Callable[[str | None, str | None, str | None], bool] | None
+        ) = None,
     ):
         self._session_factory = session_factory
         self._notification_adapter = notification_adapter
@@ -178,7 +180,9 @@ class EventIngestion:
                             cast(str | None, existing.description) if existing else None
                         )
                         topic_allowed = (
-                            self._topic_filter(item.title, effective_description)
+                            self._topic_filter(
+                                item.title, effective_description, item.source
+                            )
                             if self._topic_filter
                             else True
                         )

@@ -1,11 +1,36 @@
-"""Reversible technical-content scope; format words alone are not technical evidence."""
+"""Reversible topic scope for scraped events.
+
+The question is not "is this purely technical?" but "is it relevant to a tech
+audience?". A career summit for engineers or a talk by a CTO belongs on the
+site even though it teaches no code. Four rules, in this order, each with a
+reason that the review script can show:
+
+1. A technical term in the title (software, data/AI, security, electronics...).
+2. A tech-career/role term in the title (engineering, CTO, startup, hackathon,
+   product management, career summit...). Title only: a description that merely
+   mentions an engineer does not make a food-science day technical. Every
+   career summit is kept: the site does not decide which ones are "tech enough";
+   a visitor can narrow the list with the search box.
+3. An explicit non-tech topic in the title (payroll, retail, a brand's youth
+   academy...) hides the event, even when the description mentions AI.
+4. A technical term in the description, or an event from a source that only
+   lists technology events (see ``_TECH_SOURCES``).
+
+Everything else is hidden. A bare format word (bootcamp, summit, seminar) is
+not evidence on its own; "hackathon" and "datathon" are,
+because they mean building software, "ideathon" is not.
+"""
 
 import re
 import unicodedata
+from dataclasses import dataclass
 
 
 def _normalise(value: str) -> str:
     value = value.lower().replace("c++", "cplusplus").replace("c#", "csharp")
+    # A Turkish suffix after an apostrophe ("CTO’nun", "Python'da") must not
+    # glue to the word, or the term loses its word boundary.
+    value = re.sub("[’'`´]", " ", value)
     value = value.translate(str.maketrans("ıİşŞğĞüÜöÖçÇ", "iIsSgGuUoOcC"))
     return (
         unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode().lower()
@@ -20,15 +45,54 @@ _TECHNICAL = re.compile(
     r"teknoloji|technology|no[ -]?code|low[ -]?code|sql|linux|network engineering|network security|ag teknolojileri|sebeke|"
     r"blockchain|web3|software|programlama|programming)\b"
 )
+# Relevant to people who work in tech without being technical content itself.
+_ADJACENT = re.compile(
+    r"\b(?:cto|cio|chief technology|engineering|muhendis\w*|tech lead|engineering manager|"
+    r"startup|product management|urun yonetimi|product owner|agile|scrum|ux|"
+    r"hackathon|datathon|open source|acik kaynak|developer|gelistirici|programci|"
+    r"career summit|kariyer zirvesi)\b"
+)
+# Explicit non-tech topics. They override weak evidence (description, source),
+# not a technical term in the title.
 _GENERAL_TITLE = re.compile(
-    r"\b(?:career summit|talent summit|business strategy|future of hr|retail challenge|"
+    r"\b(?:talent summit|business strategy|future of hr|retail challenge|"
     r"youth academy|mentor|case maratonu|fellowship|girisimcilik okulu|cool chain|"
     r"payroll|youtalkz|hikaye hasadi)\b"
 )
+# Sources that only list technology events (names as stored in Event.source).
+# Tech Istanbul is deliberately not here: it also runs entrepreneurship and
+# business seminars (sales, branding, legal set-up) that are not tech content.
+_TECH_SOURCES = frozenset(
+    {"kodluyoruz", "pupilica", "coderspace", "techcareer.net", "patika.dev"}
+)
 
 
-def is_technical_event(title: str | None, description: str | None = None) -> bool:
+@dataclass(frozen=True)
+class TopicDecision:
+    allowed: bool
+    tier: str  # technical | adjacent | source | general
+    reason: str
+
+
+def classify_event(
+    title: str | None, description: str | None = None, source: str | None = None
+) -> TopicDecision:
     title_text = _normalise(title or "")
-    if _GENERAL_TITLE.search(title_text):
-        return False
-    return bool(_TECHNICAL.search(title_text + " " + _normalise(description or "")))
+    description_text = _normalise(description or "")
+    if match := _TECHNICAL.search(title_text):
+        return TopicDecision(True, "technical", f"title: {match.group(0)}")
+    if match := _ADJACENT.search(title_text):
+        return TopicDecision(True, "adjacent", f"title: {match.group(0)}")
+    if match := _GENERAL_TITLE.search(title_text):
+        return TopicDecision(False, "general", f"not tech: {match.group(0)}")
+    if match := _TECHNICAL.search(description_text):
+        return TopicDecision(True, "technical", f"description: {match.group(0)}")
+    if _normalise(source or "") in _TECH_SOURCES:
+        return TopicDecision(True, "source", f"tech source: {source}")
+    return TopicDecision(False, "general", "no technical evidence")
+
+
+def is_technical_event(
+    title: str | None, description: str | None = None, source: str | None = None
+) -> bool:
+    return classify_event(title, description, source).allowed
