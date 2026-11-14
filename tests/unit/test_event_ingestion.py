@@ -319,3 +319,42 @@ def test_reconcile_source_deactivates_only_stale_missing_events(test_db):
     ]
     assert count == 1
     assert states == [False, True, True]
+
+
+def test_ingest_derives_structured_location(test_db):
+    now = datetime(2026, 7, 11, 12, 0)
+    ingestion = EventIngestion(lambda: test_db, clock=lambda: now)
+    item = ScrapedEvent(
+        title="Meetup",
+        url="https://example.com/structured",
+        source="test",
+        date="01 Ocak 2027",
+        location="Şişli",
+    )
+
+    ingestion.ingest([item])
+
+    stored = test_db.query(Event).filter(Event.url == item.url).one()
+    assert (stored.city, stored.attendance, stored.venue) == (
+        "İstanbul",
+        "in_person",
+        "Şişli",
+    )
+
+
+def test_ingest_refreshes_structured_location_when_the_source_changes_it(test_db):
+    now = datetime(2026, 7, 11, 12, 0)
+    ingestion = EventIngestion(lambda: test_db, clock=lambda: now)
+    url = "https://example.com/moves"
+    first = ScrapedEvent(
+        title="Meetup", url=url, source="test", date="01 Ocak 2027", location="Şişli"
+    )
+    second = ScrapedEvent(
+        title="Meetup", url=url, source="test", date="01 Ocak 2027", location="Online"
+    )
+
+    ingestion.ingest([first])
+    ingestion.ingest([second])
+
+    stored = test_db.query(Event).filter(Event.url == url).one()
+    assert (stored.city, stored.attendance, stored.venue) == (None, "online", None)
