@@ -120,6 +120,46 @@ const AnalyticsPage = () => {
                 </div>
             </div>
 
+            <div className="card border-secondary bg-card mb-4" data-testid="ai-referrals">
+                <div className="card-header border-secondary bg-transparent">
+                    <h5 className="mb-0">Yapay Zekâ Yönlendirmeleri (son 30 gün)</h5>
+                    <small className="text-muted">
+                        ChatGPT, Claude, Perplexity, Gemini ve benzerlerinin gönderdiği sayfa görüntülemeleri (Referer ya da utm_source). Kaynak adresi saklanmaz, yalnızca etiket.
+                    </small>
+                </div>
+                <div className="table-responsive">
+                    <table className="table table-dark table-hover mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th>Kaynak</th>
+                                <th className="text-end">Görüntülenme</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {stats?.ai_referrals?.by_source?.map(row => (
+                                <tr key={row.source}>
+                                    <td className="text-info">{row.source}</td>
+                                    <td className="text-end fw-bold">{row.count}</td>
+                                </tr>
+                            ))}
+                            {!stats?.ai_referrals?.by_source?.length && (
+                                <tr>
+                                    <td colSpan="2" className="text-center text-muted">Henüz yönlendirme yok.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+                {stats?.ai_referrals?.top_pages?.length > 0 && (
+                    <div className="card-footer border-secondary bg-transparent small">
+                        <span className="text-muted">En çok gelen sayfalar: </span>
+                        {stats.ai_referrals.top_pages.map(page => (
+                            <span key={page.path} className="me-3 text-info">{page.path} <span className="text-muted">({page.count})</span></span>
+                        ))}
+                    </div>
+                )}
+            </div>
+
             <style jsx>{`
                 .bg-card { background-color: var(--bg-card); }
                 .border-secondary { border-color: rgba(148, 163, 184, 0.1) !important; }

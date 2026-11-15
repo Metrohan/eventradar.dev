@@ -4,6 +4,7 @@ from time import monotonic
 
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
+from ..models.ai_referral import AiReferral
 from ..models.traffic_log import TrafficLog
 from datetime import datetime, timedelta
 
@@ -45,8 +46,15 @@ class AnalyticsService:
         self.db.commit()
         self._purge_if_due()
 
+    def log_ai_referral(self, source: str, path: str) -> None:
+        self.db.add(AiReferral(source=source, path=path[:255]))
+        self.db.commit()
+
     def purge_old_logs(self, days: int = RETENTION_DAYS) -> int:
         cutoff = datetime.now() - timedelta(days=days)
+        self.db.query(AiReferral).filter(AiReferral.timestamp < cutoff).delete(
+            synchronize_session=False
+        )
         deleted = (
             self.db.query(TrafficLog)
             .filter(TrafficLog.timestamp < cutoff)
@@ -102,6 +110,22 @@ class AnalyticsService:
             .all()
         )
 
+        ai_by_source = (
+            self.db.query(AiReferral.source, func.count(AiReferral.id).label("count"))
+            .filter(AiReferral.timestamp >= start_date)
+            .group_by(AiReferral.source)
+            .order_by(desc("count"))
+            .all()
+        )
+        ai_pages = (
+            self.db.query(AiReferral.path, func.count(AiReferral.id).label("count"))
+            .filter(AiReferral.timestamp >= start_date)
+            .group_by(AiReferral.path)
+            .order_by(desc("count"))
+            .limit(5)
+            .all()
+        )
+
         return {
             "daily_traffic": [
                 {"date": str(d.date), "count": d.count} for d in daily_traffic
@@ -109,4 +133,12 @@ class AnalyticsService:
             "today_visitors": today_count,
             "total_visitors": total_count,
             "top_pages": [{"path": p.path, "count": p.count} for p in top_pages],
+            # Page views that an AI assistant sent, over the same window.
+            "ai_referrals": {
+                "total": sum(r.count for r in ai_by_source),
+                "by_source": [
+                    {"source": r.source, "count": r.count} for r in ai_by_source
+                ],
+                "top_pages": [{"path": p.path, "count": p.count} for p in ai_pages],
+            },
         }
