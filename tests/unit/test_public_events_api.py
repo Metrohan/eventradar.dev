@@ -72,3 +72,33 @@ def test_public_event_exposes_structured_location(client, test_db):
     assert payload["city"] == "İstanbul"
     assert payload["attendance"] == "in_person"
     assert payload["location"] == "Kadıköy"
+
+
+def test_public_event_list_exposes_how_relevant_each_event_is(client, test_db):
+    for title, source in [
+        ("Python Atölyesi", "Anbean"),
+        ("Engineering Career Summit", "Youthall"),
+        ("Temel Excel", "Pupilica"),
+        ("Talent Summit", "Anbean"),
+    ]:
+        test_db.add(
+            Event(
+                title=title,
+                url=f"https://example.com/{title}",
+                source=source,
+                date=datetime.now() + timedelta(days=5),
+            )
+        )
+    test_db.commit()
+
+    topics = {
+        e["title"]: e["topic"] for e in client.get("/api/events").json()["events"]
+    }
+
+    # Nothing is hidden for being off-topic; the tier lets a visitor filter.
+    assert topics == {
+        "Python Atölyesi": "technical",
+        "Engineering Career Summit": "adjacent",
+        "Temel Excel": "source",
+        "Talent Summit": "general",
+    }

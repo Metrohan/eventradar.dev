@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from sqlalchemy import or_
 from app.core.database import SessionLocal
 from app.models.event import Event
-from app.services.topic_policy import classify_event
+from app.utils.topic_policy import classify_event
 from app.utils.event_dates import day_start
 
 

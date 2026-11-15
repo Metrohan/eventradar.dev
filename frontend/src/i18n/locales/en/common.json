@@ -91,6 +91,7 @@
     "showPast": "Show Past Events",
     "freeOnly": "Free",
     "favoritesOnly": "My Favorites",
+    "techOnly": "Tech related",
     "dateFrom": "Start date",
     "dateTo": "End date",
     "clear": "Clear",

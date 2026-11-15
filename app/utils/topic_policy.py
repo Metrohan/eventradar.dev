@@ -1,4 +1,12 @@
-"""Reversible topic scope for scraped events.
+"""How relevant an event is to a tech audience: a tier and a reason.
+
+Since 2026-11-15 this no longer hides anything. Every scraped event is shown;
+the API exposes the tier as ``topic`` and visitors can narrow the list with the
+"tech related" filter. ``EventIngestion`` still accepts a ``topic_filter`` and
+``scripts/review_topic_scope.py`` can still plan hides, but production does
+not enable either.
+
+Reversible topic scope for scraped events (how the tier is decided).
 
 The question is not "is this purely technical?" but "is it relevant to a tech
 audience?". A career summit for engineers or a talk by a CTO belongs on the
