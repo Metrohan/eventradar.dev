@@ -228,21 +228,29 @@ def category_page(category: str, db: Session = Depends(get_db)):
 
 
 @router.get("/sehirler")
-def cities():
-    body = (
-        "<h1>Şehirler</h1><ul>"
-        + "".join(
-            '<li><a href="/sehirler/' + slug + '">' + city + "</a></li>"
-            for slug, city in CITIES.items()
-        )
-        + "</ul>"
+def cities(db: Session = Depends(get_db)):
+    # Link only cities that have a current event: an empty city page is noindex
+    # and only looks like a soft 404 to a crawler that follows the link.
+    with_events = {
+        name
+        for (name,) in db.query(Event.city)
+        .filter(*visible_event_filter(), Event.city.isnot(None))
+        .distinct()
+    }
+    populated = {slug: city for slug, city in CITIES.items() if city in with_events}
+    body = "<h1>Şehirler</h1><ul>" + "".join(
+        '<li><a href="/sehirler/' + slug + '">' + city + "</a></li>"
+        for slug, city in populated.items()
     )
+    body += "</ul>"
+    if not populated:
+        body += "<p>Şu anda şehir bazlı etkinlik bulunmuyor.</p>"
     return page(
         _render(
             _Meta(
                 "Şehirlere göre etkinlikler | TechEventRadar",
                 "Şehrindeki teknoloji etkinlikleri.",
-                "/sehirler",
+                "/sehirler" if populated else None,
             )
         ),
         body,
@@ -254,10 +262,11 @@ def city_page(city: str, db: Session = Depends(get_db)):
     name = CITIES.get(city)
     if name is None:
         return missing()
-    # Exact normalized city values only: do not infer a venue's city or include online events.
+    # Event.city is set only when the location names the city (or a curated
+    # district of it); online-only events have none and stay out.
     events = (
         db.query(Event)
-        .filter(*visible_event_filter(), Event.location == name)
+        .filter(*visible_event_filter(), Event.city == name)
         .order_by(Event.date, Event.id)
         .all()
     )
