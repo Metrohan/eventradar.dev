@@ -16,6 +16,7 @@ sys.path.insert(0, project_root)
 
 from app.core.database import SessionLocal
 from app.models.event import Event
+from app.utils.topic_policy import is_technical_event
 from app.services.telegram_service import send_weekly_digest
 
 
@@ -36,6 +37,10 @@ def main() -> None:
             .all()
         )
 
+        # Everything is listed on the site; only tech-relevant events are announced.
+        events = [
+            e for e in events if is_technical_event(e.title, e.description, e.source)
+        ]
         event_dicts = [
             {"title": e.title, "url": e.url, "source": e.source} for e in events
         ]

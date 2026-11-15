@@ -372,8 +372,13 @@ def build_event_ingestion() -> EventIngestion:
     from .telegram_service import notify_new_events as notify_telegram
     from . import push_service
     from . import image_pipeline
+    from ..utils.topic_policy import announceable
 
     def notify_all(events: list[dict]) -> None:
+        # Everything is listed on the site; only tech-relevant events are announced.
+        events = announceable(events)
+        if not events:
+            return
         notify_telegram(events)
         db = SessionLocal()
         try:

@@ -320,3 +320,84 @@ def test_partial_update_keeps_existing_technical_evidence(test_db):
     )
     test_db.expire_all()
     assert test_db.query(Event).filter(Event.url == url).one().is_active
+
+
+def test_only_tech_relevant_events_are_announced():
+    from app.utils.topic_policy import announceable
+
+    events = [
+        {"title": "Python Atölyesi", "description": None, "source": "Anbean"},
+        {
+            "title": "Engineering Career Summit",
+            "description": None,
+            "source": "Youthall",
+        },
+        {"title": "Talent Summit", "description": None, "source": "Anbean"},
+        {"title": "Nestlé Youth Academy", "description": "AI", "source": "Anbean"},
+    ]
+
+    assert [e["title"] for e in announceable(events)] == [
+        "Python Atölyesi",
+        "Engineering Career Summit",
+    ]
+
+
+def test_instant_announcements_skip_off_topic_events(monkeypatch):
+    from app.services import event_ingestion, push_service, telegram_service
+
+    sent, pushed = [], []
+    monkeypatch.setattr(telegram_service, "notify_new_events", sent.append)
+    monkeypatch.setattr(
+        push_service, "notify_new_events", lambda _db, events: pushed.append(events)
+    )
+    monkeypatch.setattr(
+        "app.core.database.SessionLocal",
+        lambda: type("D", (), {"close": lambda self: None})(),
+    )
+
+    notify = event_ingestion.build_event_ingestion()._notification_adapter
+    notify([{"title": "Talent Summit", "description": None, "source": "Anbean"}])
+    assert sent == [] and pushed == []  # nothing left to announce
+
+    notify(
+        [
+            {"title": "Talent Summit", "description": None, "source": "Anbean"},
+            {"title": "Python Atölyesi", "description": None, "source": "Anbean"},
+        ]
+    )
+    assert [e["title"] for e in sent[0]] == ["Python Atölyesi"]
+    assert [e["title"] for e in pushed[0]] == ["Python Atölyesi"]
+
+
+@pytest.mark.parametrize("script", ["send_daily_digest", "send_weekly_digest"])
+def test_digests_skip_off_topic_events(monkeypatch, test_db, script):
+    import importlib
+    from datetime import timedelta
+
+    module = importlib.import_module(f"scripts.{script}")
+    yesterday = datetime.now() - timedelta(days=1)
+    for title in ("Python Atölyesi", "Talent Summit"):
+        test_db.add(
+            Event(
+                title=title,
+                url=f"https://example.org/{script}/{title}",
+                source="Anbean",
+                is_active=True,
+                scraped_at=yesterday,
+            )
+        )
+    test_db.commit()
+    captured = {}
+    monkeypatch.setattr(module, "SessionLocal", lambda: test_db)
+    monkeypatch.setattr(
+        module,
+        "send_daily_digest" if script == "send_daily_digest" else "send_weekly_digest",
+        lambda events, label: captured.setdefault(
+            "titles", [e["title"] for e in events]
+        )
+        or True,
+    )
+
+    module.main()
+
+    assert captured["titles"] == ["Python Atölyesi"]
