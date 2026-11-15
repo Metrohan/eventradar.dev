@@ -203,3 +203,60 @@ def test_explicit_deadline_time_expires_today(client, test_db, monkeypatch):
     event.application_deadline = now.replace(hour=0)
     test_db.commit()
     assert "Başvurular kapandı" not in client.get(f"/events/{event.slug}").text
+
+
+def test_city_page_follows_the_structured_city_not_the_exact_location(client, test_db):
+    district = make_event(test_db, title="Kadıköy Meetup", location="Kadıköy")
+    hybrid = make_event(
+        test_db,
+        title="Hibrit Meetup",
+        url="https://example.org/hybrid",
+        location="Hibrit ( Istanbul & Zoom )",
+    )
+    online = make_event(
+        test_db,
+        title="Online Meetup",
+        url="https://example.org/online",
+        location="Online (Zoom)",
+    )
+    ankara = make_event(
+        test_db,
+        title="Çankaya Meetup",
+        url="https://example.org/ankara",
+        location="Çankaya",
+    )
+
+    istanbul_page = client.get("/sehirler/istanbul").text
+    ankara_page = client.get("/sehirler/ankara").text
+
+    assert district.title in istanbul_page and hybrid.title in istanbul_page
+    assert online.title not in istanbul_page and ankara.title not in istanbul_page
+    assert ankara.title in ankara_page and district.title not in ankara_page
+
+
+def test_city_index_links_only_cities_with_a_current_event(client, test_db):
+    make_event(test_db, location="Kadıköy")
+
+    page = client.get("/sehirler").text
+
+    assert 'href="/sehirler/istanbul"' in page
+    assert 'href="/sehirler/ankara"' not in page
+    assert "noindex" not in page
+
+
+def test_city_index_without_any_city_is_noindex(client, test_db):
+    make_event(test_db, location="Online")
+
+    page = client.get("/sehirler").text
+
+    assert 'href="/sehirler/istanbul"' not in page
+    assert "noindex" in page
+
+
+def test_sitemap_lists_a_city_page_only_when_the_city_has_events(client, test_db):
+    make_event(test_db, location="Kadıköy")
+
+    sitemap = client.get("/sitemap.xml").text
+
+    assert "https://eventradar.dev/sehirler/istanbul" in sitemap
+    assert "https://eventradar.dev/sehirler/ankara" not in sitemap

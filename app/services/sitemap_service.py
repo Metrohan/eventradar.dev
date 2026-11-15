@@ -66,7 +66,7 @@ def build_sitemap(events: list[Event], posts: list[BlogPost]) -> str:
         if isinstance(tags, (list, tuple)):
             categories.update(str(tag.name) for tag in tags)
         for slug, city in CITY_NAMES.items():
-            if getattr(event, "location", None) == city:
+            if getattr(event, "city", None) == city:
                 cities.add(slug)
     import re
 
