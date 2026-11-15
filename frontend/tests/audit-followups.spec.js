@@ -89,6 +89,28 @@ test('event not yet refreshed (no structured fields) keeps the old markup', asyn
   expect(schema.location).toEqual({ '@type': 'Place', name: 'Istanbul', address: 'Istanbul' })
 })
 
+test('admin analytics lists the AI assistants that sent visitors', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('admin_token', 'synthetic-test-token'))
+  const stats = (ai) => ({ daily_traffic: [], today_visitors: 1, total_visitors: 5, top_pages: [], ai_referrals: ai })
+  await page.route('**/api/admin/analytics/traffic*', route => route.fulfill({
+    json: stats({ total: 3, by_source: [{ source: 'chatgpt', count: 2 }, { source: 'claude', count: 1 }], top_pages: [{ path: '/events/a', count: 2 }] }),
+  }))
+  await page.goto('/admin/analytics')
+  const card = page.getByTestId('ai-referrals')
+  await expect(card.getByRole('cell', { name: 'chatgpt', exact: true })).toBeVisible()
+  await expect(card.getByRole('cell', { name: 'claude', exact: true })).toBeVisible()
+  await expect(card.getByText('/events/a')).toBeVisible()
+})
+
+test('admin analytics says so when no assistant has sent anyone yet', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('admin_token', 'synthetic-test-token'))
+  await page.route('**/api/admin/analytics/traffic*', route => route.fulfill({
+    json: { daily_traffic: [], today_visitors: 0, total_visitors: 0, top_pages: [], ai_referrals: { total: 0, by_source: [], top_pages: [] } },
+  }))
+  await page.goto('/admin/analytics')
+  await expect(page.getByTestId('ai-referrals').getByText('Henüz yönlendirme yok.')).toBeVisible()
+})
+
 test('tech-related filter narrows the list; with it off every event is shown', async ({ page }) => {
   const events = [
     { ...future, id: 11, title: 'Python Atölyesi', topic: 'technical' },

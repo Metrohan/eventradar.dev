@@ -79,12 +79,43 @@ app.mount(
 from fastapi import Request
 from .core.database import SessionLocal
 from .services.analytics_service import AnalyticsService
+from .utils.referrers import ai_source
+
+SEO_HEAD_PREFIX = "/api/seo/head"
+
+
+def _record_ai_referral(source: str, path: str) -> None:
+    db = None
+    try:
+        db = SessionLocal()
+        AnalyticsService(db).log_ai_referral(source, path)
+    except Exception as e:
+        print(f"Error logging AI referral: {e}")
+    finally:
+        if db is not None:
+            db.close()
 
 
 @app.middleware("http")
 async def log_traffic(request: Request, call_next):
-    # Skip logging for static files, docs, and admin API
     path = request.url.path
+    ai = (
+        ai_source(
+            request.headers.get("referer"), request.query_params.get("utm_source")
+        )
+        if request.method == "GET"
+        else None
+    )
+    if ai and path.startswith(SEO_HEAD_PREFIX + "/"):
+        # nginx SSI subrequest that builds the <head> of a SPA page view. It is
+        # not a page view of its own, but it carries the visitor's Referer (not
+        # the query string), so it is the one place an AI visit to a SPA page
+        # can be seen.
+        response = await call_next(request)
+        if response.status_code == 200:
+            _record_ai_referral(ai, path.removeprefix(SEO_HEAD_PREFIX) or "/")
+        return response
+    # Skip logging for static files, docs, and admin API
     if (
         path.startswith("/static")
         or path.startswith("/docs")
@@ -96,6 +127,15 @@ async def log_traffic(request: Request, call_next):
         return await call_next(request)
 
     response = await call_next(request)
+
+    # A page (HTML) that an AI assistant sent the visitor to. Images or API
+    # calls with such a Referer are not page views.
+    if (
+        ai
+        and response.status_code == 200
+        and response.headers.get("content-type", "").startswith("text/html")
+    ):
+        _record_ai_referral(ai, path)
 
     # Log valid successful requests
     if 200 <= response.status_code < 400:

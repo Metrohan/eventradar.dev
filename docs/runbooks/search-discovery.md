@@ -62,6 +62,24 @@ Do not classify all google/bing traffic as AI; no-referrer traffic remains unatt
 UTM-tagged source values and provider domains can change; review observed values.
 Record actual results only after owner grants access and real session data exists.
 
+### First-party AI-referral counter (no GA4)
+The backend counts page views that arrive from an AI assistant, so the question
+"is ChatGPT sending visitors?" has an answer without a tag or consent banner.
+It is shown in the admin analytics page (card "Yapay Zekâ Yönlendirmeleri").
+
+- Stored per hit: allowlisted source label (`chatgpt`, `claude`, ...), page path,
+  timestamp. No IP, user agent or referrer URL; `traffic_logs` is unchanged.
+- Labels come from `app/utils/referrers.py`; keep its domain list in step with the
+  GA4 regex above. Matching is exact host or subdomain, so lookalikes
+  (`notchatgpt.com`) do not count. A `utm_source` value is used when the Referer is absent.
+- Counted: successful (200) GET HTML responses. Rows follow the traffic-log
+  retention (`purge_old_logs`).
+- Limit: for SPA pages nginx forwards only the Referer to the `/api/seo/head`
+  subrequest and strips the query string, so a landing that carries only
+  `utm_source` (no Referer) on an SPA page is not counted. Passing `$args` through
+  the SSI include would close this; it needs testing against real nginx.
+- Limit: no-referrer traffic stays unattributed, and a count is page views, not sessions.
+
 Sources checked 2026-10-30:
 - https://developers.google.com/search/docs/appearance/structured-data/event
 - https://support.google.com/analytics/answer/13051316
