@@ -104,3 +104,20 @@ def is_technical_event(
     title: str | None, description: str | None = None, source: str | None = None
 ) -> bool:
     return classify_event(title, description, source).allowed
+
+
+def announceable(events):
+    """Keep the events that are worth announcing (Telegram, push).
+
+    Every event is listed on the site; the announcements are the channel for
+    people who asked to hear about technology events, so the ones with no
+    technical relevance are left out. Items are mappings with ``title``,
+    ``description`` and ``source``.
+    """
+    return [
+        event
+        for event in events
+        if is_technical_event(
+            event.get("title"), event.get("description"), event.get("source")
+        )
+    ]
