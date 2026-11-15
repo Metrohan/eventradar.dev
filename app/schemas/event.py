@@ -1,8 +1,9 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 from typing import List, Optional
 from datetime import datetime
 from urllib.parse import urlparse
 from ..utils.event_dates import local_datetime
+from ..utils.topic_policy import classify_event
 
 
 class EventValidation(BaseModel):
@@ -83,6 +84,12 @@ class EventResponse(EventBase):
     city: Optional[str] = None
     attendance: Optional[str] = None
     tags: list[str] = Field(default_factory=list)
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def topic(self) -> str:
+        """technical | adjacent | source | general: how relevant to a tech audience."""
+        return classify_event(self.title, self.description, self.source).tier
 
     @field_validator("tags", mode="before")
     @classmethod

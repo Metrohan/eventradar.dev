@@ -89,6 +89,23 @@ test('event not yet refreshed (no structured fields) keeps the old markup', asyn
   expect(schema.location).toEqual({ '@type': 'Place', name: 'Istanbul', address: 'Istanbul' })
 })
 
+test('tech-related filter narrows the list; with it off every event is shown', async ({ page }) => {
+  const events = [
+    { ...future, id: 11, title: 'Python Atölyesi', topic: 'technical' },
+    { ...future, id: 12, title: 'Engineering Career Summit', topic: 'adjacent' },
+    { ...future, id: 13, title: 'Talent Summit', topic: 'general' },
+  ]
+  await page.route('**/api/events?*', route => route.fulfill({ json: { events, total_count: 3, total_pages: 1 } }))
+  await page.goto('/')
+  await expect(page.locator('.event-card')).toHaveCount(3)
+  await page.getByText('Tech related', { exact: true }).click()
+  await expect(page.locator('.event-card')).toHaveCount(2)
+  await expect(page.getByText('Talent Summit', { exact: true })).toHaveCount(0)
+  await expect(page).toHaveURL(/tech=1/)
+  await page.getByText('Tech related', { exact: true }).click()
+  await expect(page.locator('.event-card')).toHaveCount(3)
+})
+
 test('event without a location gets no Event JSON-LD (Google requires one)', async ({ page }) => {
   await page.route('**/api/events/1', route => route.fulfill({ json: { ...future, location: null } }))
   await page.goto('/etkinlik/1')

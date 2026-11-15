@@ -53,6 +53,8 @@ const EventListing = ({
   })
   const [freeOnly, setFreeOnly] = React.useState(() => searchParams.has('free') ? searchParams.get('free') === '1' : Boolean(savedFilters.freeOnly))
   const [favoritesOnly, setFavoritesOnly] = React.useState(() => searchParams.get('favorites') === '1')
+  // Nothing is hidden for being off-topic; a visitor can narrow the list to tech-related events.
+  const [techOnly, setTechOnly] = React.useState(() => searchParams.get('tech') === '1')
   const [dateFrom, setDateFrom] = React.useState(() => searchParams.get('from') || '')
   const [dateTo, setDateTo] = React.useState(() => searchParams.get('to') || '')
 
@@ -67,11 +69,12 @@ const EventListing = ({
     if (selectedTags.length > 0) params.tags = selectedTags.join(',')
     if (freeOnly) params.free = '1'
     if (favoritesOnly) params.favorites = '1'
+    if (techOnly) params.tech = '1'
     if (dateFrom) params.from = dateFrom
     if (dateTo) params.to = dateTo
     setSearchParams(params, { replace: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, selectedSource, selectedLocation, showPastEvents, selectedTags, freeOnly, favoritesOnly, dateFrom, dateTo])
+  }, [searchTerm, selectedSource, selectedLocation, showPastEvents, selectedTags, freeOnly, favoritesOnly, techOnly, dateFrom, dateTo])
 
   React.useEffect(() => {
     if (usesPresetFilters) return
@@ -117,6 +120,7 @@ const EventListing = ({
       if (!freeKeywords.some(k => text.includes(k))) return false
     }
     if (favoritesOnly && !favorites.includes(String(event.id))) return false
+    if (techOnly && event.topic === 'general') return false
     if (dateFrom) {
       if (!event.date || new Date(event.date) < new Date(dateFrom)) return false
     }
@@ -142,6 +146,7 @@ const EventListing = ({
     setSelectedTags([])
     setFreeOnly(false)
     setFavoritesOnly(false)
+    setTechOnly(false)
     setDateFrom('')
     setDateTo('')
   }
@@ -153,7 +158,7 @@ const EventListing = ({
   }
 
   const hasFilters = searchTerm || selectedSource || selectedLocation || showPastEvents ||
-    selectedTags.length > 0 || freeOnly || favoritesOnly || dateFrom || dateTo
+    selectedTags.length > 0 || freeOnly || favoritesOnly || techOnly || dateFrom || dateTo
 
   return (
     <div className="container py-4">
@@ -222,6 +227,16 @@ const EventListing = ({
             />
             <i className="fas fa-bookmark"></i>
             {t('eventListing.favoritesOnly')}
+          </label>
+
+          <label className={`filter-toggle ${techOnly ? 'active' : ''}`}>
+            <input
+              type="checkbox"
+              checked={techOnly}
+              onChange={e => setTechOnly(e.target.checked)}
+            />
+            <i className="fas fa-microchip"></i>
+            {t('eventListing.techOnly')}
           </label>
           <div className="filter-date-range" style={{ marginLeft: 'auto' }}>
             <input

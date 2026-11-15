@@ -9,7 +9,6 @@ from ..models.event import Event
 from ..models.tag import Tag
 from .date_extractor import parse_event_date
 from .tag_service import classify_event
-from .topic_policy import is_technical_event
 from .location_normalizer import normalize_location
 from ..utils.event_dates import day_start, local_datetime, local_now
 
@@ -400,5 +399,4 @@ def build_event_ingestion() -> EventIngestion:
         SessionLocal,
         notify_all,
         thumbnail_fn=make_thumbnail,
-        topic_filter=is_technical_event,
     )

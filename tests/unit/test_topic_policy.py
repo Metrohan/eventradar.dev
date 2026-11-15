@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 from app.models.event import Event
-from app.services.topic_policy import classify_event, is_technical_event
+from app.utils.topic_policy import classify_event, is_technical_event
 from app.services.event_ingestion import EventIngestion, ScrapedEvent
 
 
@@ -193,10 +193,38 @@ def test_topic_hidden_records_not_public(client, test_db):
     assert "topic-test" not in client.get("/api/events/calendar.ics").text
 
 
-def test_production_factory_enables_scope_policy():
+def test_production_does_not_hide_events_by_topic():
     from app.services.event_ingestion import build_event_ingestion
 
-    assert build_event_ingestion()._topic_filter is is_technical_event
+    assert build_event_ingestion()._topic_filter is None
+
+
+def test_a_scrape_reopens_a_topic_hidden_event_when_no_filter_is_set(test_db):
+    url = "https://example.org/reopen"
+    row = Event(
+        title="Talent Summit",
+        url=url,
+        source="Anbean",
+        date=datetime(2026, 12, 10),
+        is_active=False,
+        deactivation_reason="topic",
+    )
+    test_db.add(row)
+    test_db.commit()
+    service = EventIngestion(
+        sessionmaker(bind=test_db.get_bind()), clock=lambda: datetime(2026, 11, 15)
+    )
+
+    service.ingest(
+        [
+            ScrapedEvent(
+                title="Talent Summit", url=url, source="Anbean", date="2026-12-10"
+            )
+        ]
+    )
+
+    test_db.expire_all()
+    assert row.is_active and row.deactivation_reason is None
 
 
 def test_international_network_is_not_a_technical_topic():
