@@ -133,6 +133,10 @@ const EventListing = ({
     if (extraFilter && !extraFilter(event)) return false
     return true
   }).sort((a, b) => {
+    // Hand-added events (source "Admin") that haven't passed yet come first.
+    const pinnedA = a.source === 'Admin' && !isPastEvent(a)
+    const pinnedB = b.source === 'Admin' && !isPastEvent(b)
+    if (pinnedA !== pinnedB) return pinnedA ? -1 : 1
     if (!a.date) return 1
     if (!b.date) return -1
     return new Date(a.date) - new Date(b.date)
