@@ -205,3 +205,51 @@ def test_get_events_no_tag_filter_returns_all(test_db):
 
     result = service.get_events(tags=None)
     assert len(result) == 2
+
+
+def test_create_event_assigns_tags_and_card(test_db, thumbnail_dir):
+    _seed_and_get_tags(test_db)
+    event = EventService(test_db).create_event(
+        _create_data(title="Bilişim Zirvesi 2026", description=None)
+    )
+
+    assert [t.name for t in event.tags] == ["konferans"]
+    assert event.thumbnail_url.startswith("/media/thumbnails/")
+    assert (thumbnail_dir / event.thumbnail_url.rsplit("/", 1)[-1]).exists()
+
+
+def test_create_event_without_seeded_tags_still_gets_card(test_db):
+    event = EventService(test_db).create_event(_create_data())
+
+    assert event.tags == []
+    assert event.thumbnail_url
+
+
+def test_update_event_reclassifies_and_redraws_card(test_db):
+    _seed_and_get_tags(test_db)
+    service = EventService(test_db)
+    event = service.create_event(
+        _create_data(title="Bilişim Zirvesi 2026", description=None)
+    )
+    old_card = event.thumbnail_url
+
+    updated = service.update_event(
+        event.id, EventUpdate(title="Yapay Zeka Hackathon 2026")
+    )
+
+    assert [t.name for t in updated.tags] == ["hackathon"]
+    assert updated.thumbnail_url != old_card
+
+
+def test_card_failure_keeps_previous_card(test_db, monkeypatch):
+    service = EventService(test_db)
+    event = service.create_event(_create_data())
+    card = event.thumbnail_url
+    monkeypatch.setattr(
+        "app.services.event_service.image_pipeline.ensure_card",
+        lambda *args, **kwargs: None,
+    )
+
+    updated = service.update_event(event.id, EventUpdate(title="Yeni Başlık"))
+
+    assert updated.thumbnail_url == card
