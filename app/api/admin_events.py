@@ -13,6 +13,35 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+def _announce(db: Session, event) -> None:
+    """Announce a hand-added event like a scraped one (Telegram + push).
+
+    Runs after the commit and never fails the request. Inactive events and
+    ones without technical relevance are not announced.
+    """
+    from ..services import push_service, telegram_service
+    from ..utils.topic_policy import announceable
+
+    if not event.is_active:
+        return
+    payload = {
+        "title": event.title,
+        "url": event.url,
+        "source": event.source,
+        "description": event.description or "",
+        "date": event.date.strftime("%Y-%m-%d %H:%M:%S") if event.date else "",
+        "location": event.location,
+    }
+    try:
+        events = announceable([payload])
+        if not events:
+            return
+        telegram_service.notify_new_events(events)
+        push_service.notify_new_events(db, events)
+    except Exception:
+        logger.exception("Event announcement failed")
+
+
 @router.get("/events", response_model=EventListResponse)
 async def get_admin_events(
     db: Session = Depends(get_db), current_admin: str = Depends(get_current_admin)
@@ -41,12 +70,14 @@ async def create_event(
     current_admin: str = Depends(get_current_admin),
 ):
     try:
-        return EventService(db).create_event(event_data)
+        event = EventService(db).create_event(event_data)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
         logger.exception("Admin request failed")
         raise HTTPException(status_code=500, detail="Error creating event")
+    _announce(db, event)
+    return event
 
 
 @router.put("/events/{event_id}", response_model=EventResponse)
