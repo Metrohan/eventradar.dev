@@ -163,3 +163,64 @@ def test_quality_returns_metric_for_every_enabled_source(client, auth_headers):
     payload = resp.json()
     assert len(payload["sources"]) == 10
     assert any(source["key"] == "tech-istanbul" for source in payload["sources"])
+
+
+def _capture_announcements(monkeypatch):
+    sent = {"telegram": [], "push": []}
+    monkeypatch.setattr(
+        "app.services.telegram_service.notify_new_events",
+        lambda events: sent["telegram"].append(events),
+    )
+    monkeypatch.setattr(
+        "app.services.push_service.notify_new_events",
+        lambda db, events: sent["push"].append(events),
+    )
+    return sent
+
+
+def test_create_event_announces_technical_event(client, auth_headers, monkeypatch):
+    sent = _capture_announcements(monkeypatch)
+    payload = {
+        "title": "Python Bootcamp Istanbul",
+        "url": "https://example.com/py",
+        "source": "Admin",
+        "date": "2027-05-15T10:00:00",
+    }
+
+    resp = client.post("/api/admin/events", json=payload, headers=auth_headers)
+
+    assert resp.status_code == 200
+    assert [e["title"] for e in sent["telegram"][0]] == ["Python Bootcamp Istanbul"]
+    assert sent["telegram"][0][0]["date"] == "2027-05-15 10:00:00"
+    assert len(sent["push"]) == 1
+
+
+def test_create_inactive_event_is_not_announced(client, auth_headers, monkeypatch):
+    sent = _capture_announcements(monkeypatch)
+    payload = {
+        "title": "Python Bootcamp Istanbul",
+        "url": "https://example.com/py2",
+        "source": "Admin",
+        "is_active": False,
+    }
+
+    resp = client.post("/api/admin/events", json=payload, headers=auth_headers)
+
+    assert resp.status_code == 200
+    assert sent == {"telegram": [], "push": []}
+
+
+def test_announcement_failure_does_not_fail_creation(client, auth_headers, monkeypatch):
+    def boom(events):
+        raise RuntimeError("telegram down")
+
+    monkeypatch.setattr("app.services.telegram_service.notify_new_events", boom)
+    payload = {
+        "title": "Python Bootcamp Istanbul",
+        "url": "https://example.com/py3",
+        "source": "Admin",
+    }
+
+    resp = client.post("/api/admin/events", json=payload, headers=auth_headers)
+
+    assert resp.status_code == 200
