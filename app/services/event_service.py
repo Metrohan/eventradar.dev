@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -5,15 +7,38 @@ from typing import List, Optional
 from datetime import datetime
 from ..models.event import Event
 from ..models.tag import Tag
+from ..core.config import settings
 from ..schemas.event import EventCreate, EventUpdate
+from . import image_pipeline
 from .location_normalizer import normalize_location
 from .event_lifecycle import history_event_filter, visible_event_filter
+from .tag_service import classify_event
 from ..utils.event_dates import local_now
 
 
 class EventService:
     def __init__(self, db: Session):
         self.db = db
+
+    def _classify_and_card(self, event: Event) -> None:
+        """Give a hand-written event the tags and card the scraper path gives it.
+
+        Both depend only on the event's own fields, so they are recomputed on
+        every create/update. A card that cannot be drawn keeps the previous one.
+        """
+        names = classify_event(str(event.title), event.description)  # type: ignore[arg-type]
+        found = {str(t.name): t for t in self.db.query(Tag).filter(Tag.name.in_(names))}
+        event.tags = [found[n] for n in names if n in found]
+        card = image_pipeline.ensure_card(
+            str(event.title),
+            event.date,  # type: ignore[arg-type]
+            event.location,  # type: ignore[arg-type]
+            str(event.source),
+            Path(settings.thumbnail_dir),
+            settings.thumbnail_public_prefix,
+        )
+        if card:
+            event.thumbnail_url = card  # type: ignore[assignment]
 
     def get_events(
         self,
@@ -69,6 +94,7 @@ class EventService:
                 scraped_at=local_now(),
             )
             self.db.add(db_event)
+            self._classify_and_card(db_event)
             self.db.commit()
             self.db.refresh(db_event)
             return db_event
@@ -98,6 +124,7 @@ class EventService:
                 else:
                     setattr(db_event, field, value)
             db_event.scraped_at = local_now()  # type: ignore[assignment]
+            self._classify_and_card(db_event)
             self.db.commit()
             self.db.refresh(db_event)
             return db_event

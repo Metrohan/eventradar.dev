@@ -41,6 +41,15 @@ def test_db():
     engine.dispose()
 
 
+@pytest.fixture(autouse=True)
+def thumbnail_dir(tmp_path, monkeypatch):
+    """Keep generated event cards out of the real data/thumbnails directory."""
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "thumbnail_dir", str(tmp_path / "thumbnails"))
+    return tmp_path / "thumbnails"
+
+
 @pytest.fixture
 def valid_event():
     return {
